@@ -4,7 +4,7 @@ CFLAGS = -g -Wall -O3
 SRC := src
 BUILD := build
 
-LIBS = -pthread
+LIBS = -pthread -lfabric
 
 
 SOURCES := $(wildcard $(SRC)/*.cpp)
