@@ -1,40 +1,18 @@
-#include<iostream>
+#include <iostream>
 
-#include <rdma/fabric.h>
-#include <rdma/fi_errno.h>
-
-#include <gflags/gflags.h>
-
-#include "cmdline.cpp"
+#include "cmd_line.h"
+#include "fi_info.h"
 
 using namespace std;
-
-static int print_short_info(struct fi_info *info)
-{
-	struct fi_info *cur;
-	for (cur = info; cur; cur = cur->next) {
-		printf("provider: %s\n", cur->fabric_attr->prov_name);
-		printf("    fabric: %s\n", cur->fabric_attr->name),
-		printf("    domain: %s\n", cur->domain_attr->name),
-		printf("    version: %d.%d\n", FI_MAJOR(cur->fabric_attr->prov_version),
-			FI_MINOR(cur->fabric_attr->prov_version));
-		printf("    type: %s\n", fi_tostr(&cur->ep_attr->type, FI_TYPE_EP_TYPE));
-		printf("    protocol: %s\n", fi_tostr(&cur->ep_attr->protocol, FI_TYPE_PROTOCOL));
-	}
-	return EXIT_SUCCESS;
-}
 
 int main(int argc, char *argv[])
 {
 	gflags::ParseCommandLineFlags(&argc, &argv, true);
-	cout << "Got info " << FLAGS_fi_info << endl;
 
-    // struct fi_info *hints, *info;
+	if (FLAGS_fi_info) {
+		print_fi_info();
+		return 0;
+	}
 
-    // hints = fi_allocinfo();
-
-    // fi_getinfo(FI_VERSION(1, 4), NULL, NULL, 0, hints, &info);
-    // print_short_info(info);
-    // fi_freeinfo(hints);
-    return 0;
+	return 0;
 }
