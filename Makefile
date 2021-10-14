@@ -6,6 +6,8 @@ BUILD := build
 
 LIBS = -pthread -lfabric
 
+LFABRIC_SRC := -L/opt/amazon/efa/lib64/
+LFABRIC_INCLUDES := -I/opt/amazon/efa/include/
 
 SOURCES := $(wildcard $(SRC)/*.cpp)
 OBJECTS := $(patsubst $(SRC)/%.cpp, $(BUILD)/%.o, $(SOURCES))
@@ -17,7 +19,7 @@ clean:
 	mkdir -p $(BUILD)
 
 benchmark: $(OBJECTS)
-	$(CC) $(CFLAGS) $^ -o build/$@ $(LIBS)
+	$(CC) $(CFLAGS) $(LFABRIC_SRC) $^ -o build/$@ $(LIBS)
 
 $(BUILD)/%.o: $(SRC)/%.cpp
-	$(CC) $(CFLAGS) -I$(SRC) -c $< -o $@
+	$(CC) $(CFLAGS) -I$(SRC) $(LFABRIC_INCLUDES) -c $< -o $@
