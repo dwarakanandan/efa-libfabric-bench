@@ -2,6 +2,7 @@
 
 #include "cmd_line.h"
 #include "fi_info.h"
+#include "fi_ping.h"
 
 using namespace std;
 
@@ -23,11 +24,13 @@ int main(int argc, char *argv[])
 {
 	init_command_line(argc, argv);
 
-	if (FLAGS_fi_info)
+	if (FLAGS_fiinfo)
 	{
 		print_fi_info();
 		return 0;
 	}
+
+	fi_ping();
 
 	return 0;
 }

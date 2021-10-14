@@ -1,7 +1,5 @@
 #include "fi_info.h"
 
-using namespace std;
-
 void print_short_info(struct fi_info *info)
 {
     struct fi_info *cur;
