@@ -3,6 +3,10 @@
 #include <rdma/fabric.h>
 #include <rdma/fi_errno.h>
 
+#include <gflags/gflags.h>
+
+#include "cmdline.cpp"
+
 using namespace std;
 
 static int print_short_info(struct fi_info *info)
@@ -20,14 +24,17 @@ static int print_short_info(struct fi_info *info)
 	return EXIT_SUCCESS;
 }
 
-int main(int argc, char const *argv[])
+int main(int argc, char *argv[])
 {
-    struct fi_info *hints, *info;
+	gflags::ParseCommandLineFlags(&argc, &argv, true);
+	cout << "Got info " << FLAGS_fi_info << endl;
 
-    hints = fi_allocinfo();
+    // struct fi_info *hints, *info;
 
-    fi_getinfo(FI_VERSION(1, 4), NULL, NULL, 0, hints, &info);
-    print_short_info(info);
-    fi_freeinfo(hints);
+    // hints = fi_allocinfo();
+
+    // fi_getinfo(FI_VERSION(1, 4), NULL, NULL, 0, hints, &info);
+    // print_short_info(info);
+    // fi_freeinfo(hints);
     return 0;
 }
