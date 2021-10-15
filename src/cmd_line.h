@@ -7,3 +7,8 @@ const std::string gflags_version_string = "1.0";
 
 DECLARE_bool(fiinfo);
 DECLARE_bool(debug);
+DECLARE_string(mode);
+DECLARE_uint32(src_port);
+DECLARE_uint32(dst_port);
+DECLARE_string(provider);
+DECLARE_string(dst_addr);

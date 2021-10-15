@@ -2,7 +2,8 @@
 
 #include "cmd_line.h"
 #include "fi_info.h"
-#include "fi_ping.h"
+#include "server.h"
+#include "client.h"
 
 using namespace std;
 
@@ -30,7 +31,15 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	fi_ping();
+	if (FLAGS_mode == "server")
+    {
+        start_server();
+    }
+
+    if (FLAGS_mode == "client")
+    {
+        start_client();
+    }
 
 	return 0;
 }

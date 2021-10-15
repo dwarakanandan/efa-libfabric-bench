@@ -1,3 +1,3 @@
 #include "common.h"
 
-void fi_ping();
+void start_server();

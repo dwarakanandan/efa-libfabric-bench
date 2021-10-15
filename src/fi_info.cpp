@@ -3,7 +3,7 @@
 void print_short_info(struct fi_info *info)
 {
     struct fi_info *cur;
-    for (cur = info; cur; cur = cur->next)
+    for (cur = info; cur ; cur = cur->next)
     {
         printf("provider: %s\n", cur->fabric_attr->prov_name);
         printf("    fabric: %s\n", cur->fabric_attr->name),
@@ -17,9 +17,27 @@ void print_short_info(struct fi_info *info)
 
 void print_fi_info()
 {
+    int ret;
+    uint64_t flags = 0;
+
     struct fi_info *hints, *info;
     hints = fi_allocinfo();
-    fi_getinfo(FI_VERSION(1, 4), NULL, NULL, 0, hints, &info);
-    print_short_info(info);
-    fi_freeinfo(hints);
+    char provider[] = "sockets";
+    hints->fabric_attr->prov_name = provider;
+    hints->ep_attr->type = FI_EP_DGRAM;
+    hints->caps = FI_MSG;
+    hints->mode = FI_CONTEXT | FI_CONTEXT2 | FI_MSG_PREFIX;
+    hints->domain_attr->mr_mode = FI_MR_LOCAL;
+
+    ret = fi_getinfo(FI_VERSION(FI_MAJOR_VERSION, FI_MINOR_VERSION),
+                     NULL, NULL, flags, hints, &info);
+
+    if (ret)
+    {
+        PRINTERR("fi_getinfo", ret);
+    }
+    else
+    {
+        print_short_info(info);
+    }
 }
