@@ -7,8 +7,8 @@ Clone the repository, and make sure all the prerequisites are installed.
 **Prerequisites**
 - g++ >= 7.0
 - cmake >= 3.10
-- [gflags] <https://github.com/gflags/gflags>
-- [libfabric] <https://ofiwg.github.io/libfabric/>
+- [gflags](https://github.com/gflags/gflags)
+- [libfabric](https://ofiwg.github.io/libfabric/)
 
 ```shell
 mkdir build && cd build
