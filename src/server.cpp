@@ -42,7 +42,7 @@ static int ctrl_init_server(struct ctx_connection *ct)
         return -1;
     }
 
-    DEBUG("SERVER: waiting for connection\n");
+    printf("SERVER: waiting for connection\n");
 
     ct->ctrl_connfd = accept(listenfd, NULL, NULL);
     if (ct->ctrl_connfd == -1)
@@ -118,7 +118,7 @@ static int init_fabric_server(struct ctx_connection *ct)
     if (ret)
         return ret;
 
-    DEBUG("Fabric Initialized\n");
+    printf("Fabric Initialized\n");
 
     return ret;
 }
@@ -138,7 +138,7 @@ static int run_dgram_server(struct ctx_connection *ct)
 
 void start_server()
 {
-    DEBUG("Starting server\n");
+    printf("Starting server\n");
 
     struct ctx_connection ct = {};
 

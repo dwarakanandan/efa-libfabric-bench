@@ -53,10 +53,12 @@ int fabric_getinfo(struct ctx_connection *ct, struct fi_info *hints, struct fi_i
 	ct->tx_ctx_ptr = NULL;
 	ct->rx_ctx_ptr = NULL;
 
-	print_short_info(*info);
-
-	std::cout << std::endl
-			  << std::endl;
+	if (FLAGS_debug)
+	{
+		print_short_info(*info);
+		std::cout << std::endl
+				  << std::endl;
+	}
 
 	return 0;
 }

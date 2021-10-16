@@ -38,7 +38,7 @@ static void print_addrinfo(struct addrinfo *ai, std::string msg)
     addr = &((struct sockaddr_in *)ai->ai_addr)->sin_addr;
 
     inet_ntop(ai->ai_family, addr, s, 80);
-    std::cout << msg << "  " << s << std::endl;
+    std::cout << msg << " " << s << std::endl;
 }
 
 static int ctrl_init_client(struct ctx_connection *ct)
@@ -154,7 +154,7 @@ static int init_fabric_client(struct ctx_connection *ct)
     if (ret)
         return ret;
 
-    DEBUG("Fabric Initialized\n");
+    printf("Fabric Initialized\n");
 
     return 0;
 }
@@ -174,7 +174,7 @@ static int run_dgram_client(struct ctx_connection *ct)
 
 void start_client()
 {
-    DEBUG("Starting client\n");
+    printf("Starting client\n");
 
     struct ctx_connection ct = {};
 
