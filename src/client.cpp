@@ -26,17 +26,18 @@ static int fabric_getaddrinfo(char *name, uint16_t port, struct addrinfo **resul
         ret = -EXIT_FAILURE;
         return ret;
     }
-    ret = EXIT_SUCCESS;
+
+    return ret;
 }
 
 static void print_addrinfo(struct addrinfo *ai, std::string msg)
 {
-	char s[80] = {0};
-	void *addr;
+    char s[80] = {0};
+    void *addr;
 
-	addr = &((struct sockaddr_in *)ai->ai_addr)->sin_addr;
+    addr = &((struct sockaddr_in *)ai->ai_addr)->sin_addr;
 
-	inet_ntop(ai->ai_family, addr, s, 80);
+    inet_ntop(ai->ai_family, addr, s, 80);
     std::cout << msg << "  " << s << std::endl;
 }
 
@@ -116,16 +117,49 @@ static int init_fabric_client(struct ctx_connection *ct)
 
     DEBUG("Initializing fabric\n");
 
-    DEBUG("Connection-less endpoint: initializing address vector\n");
+    ret = recv_name(ct);
+    if (ret < 0)
+        return ret;
 
     DEBUG("CLIENT: getinfo\n");
     ret = fabric_getinfo(ct, ct->hints, &(ct->fi));
+    if (ret)
+        return ret;
+
+    DEBUG("CLIENT: open fabric resources\n");
+    ret = open_fabric_res(ct);
+    if (ret)
+        return ret;
+
+    DEBUG("CLIENT: allocate active resource\n");
+    ret = alloc_active_res(ct, ct->fi);
+    if (ret)
+        return ret;
+
+    DEBUG("CLIENT: initialize endpoint\n");
+    ret = init_ep(ct);
+    if (ret)
+        return ret;
+
+    ret = send_name(ct, &ct->ep->fid);
+
+    ret = av_insert(ct->av, ct->rem_name, 1, &(ct->remote_fi_addr), 0,
+                    NULL);
+    if (ret)
+        return ret;
+    if (ct->fi->domain_attr->caps & FI_LOCAL_COMM)
+        ret = av_insert(ct->av, ct->local_name, 1,
+                        &(ct->local_fi_addr), 0, NULL);
 
     if (ret)
         return ret;
+
+    DEBUG("Fabric Initialized\n");
+
+    return 0;
 }
 
-static int run_ping_dgram_client(struct ctx_connection *ct)
+static int run_dgram_client(struct ctx_connection *ct)
 {
     int ret;
 
@@ -134,6 +168,8 @@ static int run_ping_dgram_client(struct ctx_connection *ct)
     ret = init_fabric_client(ct);
     if (ret)
         return ret;
+
+    return ret;
 }
 
 void start_client()
@@ -146,11 +182,7 @@ void start_client()
     ct.dst_port = FLAGS_dst_port;
 
     ct.hints = fi_allocinfo();
-    ct.hints->fabric_attr->prov_name = const_cast<char *>(FLAGS_provider.c_str());
-    ct.hints->ep_attr->type = FI_EP_DGRAM;
-    ct.hints->caps = FI_MSG;
-    ct.hints->mode = FI_CONTEXT | FI_CONTEXT2 | FI_MSG_PREFIX;
-    ct.hints->domain_attr->mr_mode = FI_MR_LOCAL;
+    generate_hints(&(ct.hints));
 
-    run_ping_dgram_client(&ct);
+    run_dgram_client(&ct);
 }

@@ -18,6 +18,10 @@ void print_fi_info()
     // hints->domain_attr->mode = ~0;
     // hints->domain_attr->mr_mode = ~(FI_MR_BASIC | FI_MR_SCALABLE);
 
+    hints->mode = FI_MSG_PREFIX;
+    hints->domain_attr->mode = ~0;
+    hints->domain_attr->mr_mode = FI_MR_LOCAL | FI_MR_VIRT_ADDR | FI_MR_ALLOCATED | FI_MR_PROV_KEY;
+
     ret = fi_getinfo(FI_VERSION(FI_MAJOR_VERSION, FI_MINOR_VERSION),
                      NULL, NULL, flags, hints, &info);
 

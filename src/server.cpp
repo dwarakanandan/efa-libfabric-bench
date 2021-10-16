@@ -78,16 +78,52 @@ static int init_fabric_server(struct ctx_connection *ct)
 
     DEBUG("Initializing fabric\n");
 
-    DEBUG("Connection-less endpoint: initializing address vector\n");
-
     DEBUG("SERVER: getinfo\n");
     ret = fabric_getinfo(ct, ct->hints, &(ct->fi));
-
     if (ret)
         return ret;
+
+    DEBUG("SERVER: open fabric resources\n");
+    ret = open_fabric_res(ct);
+    if (ret)
+        return ret;
+
+    DEBUG("SERVER: allocate active resource\n");
+    ret = alloc_active_res(ct, ct->fi);
+    if (ret)
+        return ret;
+
+    DEBUG("SERVER: initialize endpoint\n");
+    ret = init_ep(ct);
+    if (ret)
+        return ret;
+
+    ret = send_name(ct, &ct->ep->fid);
+    if (ret < 0)
+        return ret;
+
+    ret = recv_name(ct);
+    if (ret < 0)
+        return ret;
+
+    if (ct->fi->domain_attr->caps & FI_LOCAL_COMM)
+    {
+        ret = av_insert(ct->av, ct->local_name, 1,
+                        &(ct->local_fi_addr), 0, NULL);
+        if (ret)
+            return ret;
+    }
+    ret = av_insert(ct->av, ct->rem_name, 1, &(ct->remote_fi_addr), 0,
+                    NULL);
+    if (ret)
+        return ret;
+
+    DEBUG("Fabric Initialized\n");
+
+    return ret;
 }
 
-static int run_ping_dgram_server(struct ctx_connection *ct)
+static int run_dgram_server(struct ctx_connection *ct)
 {
     int ret;
 
@@ -96,6 +132,8 @@ static int run_ping_dgram_server(struct ctx_connection *ct)
     ret = init_fabric_server(ct);
     if (ret)
         return ret;
+
+    return ret;
 }
 
 void start_server()
@@ -107,11 +145,7 @@ void start_server()
     ct.src_port = FLAGS_src_port;
 
     ct.hints = fi_allocinfo();
-    ct.hints->fabric_attr->prov_name = const_cast<char *>(FLAGS_provider.c_str());
-    ct.hints->ep_attr->type = FI_EP_DGRAM;
-    ct.hints->caps = FI_MSG;
-    ct.hints->mode = FI_CONTEXT | FI_CONTEXT2 | FI_MSG_PREFIX;
-    ct.hints->domain_attr->mr_mode = FI_MR_LOCAL;
+    generate_hints(&(ct.hints));
 
-    run_ping_dgram_server(&ct);
+    run_dgram_server(&ct);
 }
