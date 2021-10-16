@@ -32,14 +32,14 @@ int main(int argc, char *argv[])
 	}
 
 	if (FLAGS_mode == "server")
-    {
-        start_server();
-    }
+	{
+		start_server();
+	}
 
-    if (FLAGS_mode == "client")
-    {
-        start_client();
-    }
+	if (FLAGS_mode == "client")
+	{
+		start_client();
+	}
 
 	return 0;
 }
