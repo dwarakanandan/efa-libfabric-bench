@@ -18,6 +18,8 @@ make
 
 ## Sample usage:
 
+Sample launch configuration can be found in `server.conf` and `client.conf`.
+
 **Fabric Info**
 ```shell
 ./benchmark --fiinfo
