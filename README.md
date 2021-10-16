@@ -18,12 +18,17 @@ make
 
 ## Sample usage:
 
-**Server**
+**Fabric Info**
+```shell
+./benchmark --fiinfo
+```
+
+**Server mode**
 ```shell
 ./benchmark --flagfile=../server.conf
 ```
 
-**Client**
+**Client mode**
 ```shell
 ./benchmark --flagfile=../client.conf
 ```
