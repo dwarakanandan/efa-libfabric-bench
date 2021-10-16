@@ -72,8 +72,25 @@ int fabric_getinfo(struct ctx_connection *ct, struct fi_info *hints, struct fi_i
         (*info)->rx_attr->caps &= ~FI_DIRECTED_RECV;
     }
 
+    print_short_info(*info);
+
+    return 0;
+}
+
+void print_long_info(struct fi_info *info)
+{
     struct fi_info *cur;
-    for (cur = *info; cur; cur = cur->next)
+    for (cur = info; cur; cur = cur->next)
+    {
+        printf("\n\n---\n");
+        printf("%s", fi_tostr(cur, FI_TYPE_INFO));
+    }
+}
+
+void print_short_info(struct fi_info *info)
+{
+    struct fi_info *cur;
+    for (cur = info; cur; cur = cur->next)
     {
         printf("provider: %s\n", cur->fabric_attr->prov_name);
         printf("    fabric: %s\n", cur->fabric_attr->name),
@@ -83,6 +100,4 @@ int fabric_getinfo(struct ctx_connection *ct, struct fi_info *hints, struct fi_i
         printf("    type: %s\n", fi_tostr(&cur->ep_attr->type, FI_TYPE_EP_TYPE));
         printf("    protocol: %s\n", fi_tostr(&cur->ep_attr->protocol, FI_TYPE_PROTOCOL));
     }
-
-    return 0;
 }

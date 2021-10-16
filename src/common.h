@@ -102,3 +102,7 @@ struct ctx_connection
 };
 
 int fabric_getinfo(struct ctx_connection *ct, struct fi_info *hints, struct fi_info **info);
+
+void print_long_info(struct fi_info *info);
+
+void print_short_info(struct fi_info *info);

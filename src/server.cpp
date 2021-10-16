@@ -107,7 +107,7 @@ void start_server()
     ct.src_port = FLAGS_src_port;
 
     ct.hints = fi_allocinfo();
-    ct.hints->fabric_attr->prov_name = const_cast<char*>(FLAGS_provider.c_str());
+    ct.hints->fabric_attr->prov_name = const_cast<char *>(FLAGS_provider.c_str());
     ct.hints->ep_attr->type = FI_EP_DGRAM;
     ct.hints->caps = FI_MSG;
     ct.hints->mode = FI_CONTEXT | FI_CONTEXT2 | FI_MSG_PREFIX;
