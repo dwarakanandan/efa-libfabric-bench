@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cmd_line.h"
 #include "includes.h"
 
 #define PP_CTRL_BUF_LEN 64
@@ -78,3 +79,15 @@ int pp_alloc_msgs(struct ctx_connection *ct);
 int pp_ctrl_send(struct ctx_connection *ct, char *buf, size_t size);
 
 int pp_ctrl_recv(struct ctx_connection *ct, char *buf, size_t size);
+
+int open_fabric_res(struct ctx_connection *ct);
+
+int alloc_active_res(struct ctx_connection *ct, struct fi_info *fi);
+
+int init_ep(struct ctx_connection *ct);
+
+int send_name(struct ctx_connection *ct, struct fid *endpoint);
+
+int recv_name(struct ctx_connection *ct);
+
+int av_insert(struct fid_av *av, void *addr, size_t count, fi_addr_t *fi_addr, uint64_t flags, void *context);
