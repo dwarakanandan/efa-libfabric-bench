@@ -1,7 +1,7 @@
 #pragma once
 
-#include "cmd_line.h"
-#include "includes.h"
+#include "../cmd_line.h"
+#include "../includes.h"
 
 #define PP_CTRL_BUF_LEN 64
 #define PP_SIZE_MAX_POWER_TWO 22
@@ -72,13 +72,27 @@ static const uint64_t TAG = 1234;
         seq++;                                                 \
     } while (0)
 
+#define INTEG_SEED 7
+static const char integ_alphabet[] =
+	"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+/* Size does not include trailing new line */
+static const int integ_alphabet_length =
+	(sizeof(integ_alphabet) / sizeof(*integ_alphabet)) - 1;
+
+
+void DEBUG(std::string str);
+
 ssize_t pp_post_rx(struct ctx_connection *ct, struct fid_ep *ep, size_t size, void *ctx);
+
+int pp_get_rx_comp(struct ctx_connection *ct, uint64_t total);
 
 int pp_alloc_msgs(struct ctx_connection *ct);
 
 int pp_ctrl_send(struct ctx_connection *ct, char *buf, size_t size);
 
 int pp_ctrl_recv(struct ctx_connection *ct, char *buf, size_t size);
+
+int pp_ctrl_recv_str(struct ctx_connection *ct, char *buf, size_t size);
 
 int open_fabric_res(struct ctx_connection *ct);
 
@@ -91,3 +105,11 @@ int send_name(struct ctx_connection *ct, struct fid *endpoint);
 int recv_name(struct ctx_connection *ct);
 
 int av_insert(struct fid_av *av, void *addr, size_t count, fi_addr_t *fi_addr, uint64_t flags, void *context);
+
+uint64_t pp_gettime_us(void);
+
+ssize_t pp_rx(struct ctx_connection *ct, struct fid_ep *ep, size_t size);
+
+ssize_t pp_inject(struct ctx_connection *ct, struct fid_ep *ep, size_t size);
+
+ssize_t pp_tx(struct ctx_connection *ct, struct fid_ep *ep, size_t size);

@@ -1,5 +1,30 @@
 #include "fi_info.h"
 
+void print_long_info(struct fi_info *info)
+{
+    struct fi_info *cur;
+    for (cur = info; cur; cur = cur->next)
+    {
+        printf("\n\n---\n");
+        printf("%s", fi_tostr(cur, FI_TYPE_INFO));
+    }
+}
+
+void print_short_info(struct fi_info *info)
+{
+    struct fi_info *cur;
+    for (cur = info; cur; cur = cur->next)
+    {
+        printf("provider: %s\n", cur->fabric_attr->prov_name);
+        printf("    fabric: %s\n", cur->fabric_attr->name),
+            printf("    domain: %s\n", cur->domain_attr->name),
+            printf("    version: %d.%d\n", FI_MAJOR(cur->fabric_attr->prov_version),
+                   FI_MINOR(cur->fabric_attr->prov_version));
+        printf("    type: %s\n", fi_tostr(&cur->ep_attr->type, FI_TYPE_EP_TYPE));
+        printf("    protocol: %s\n", fi_tostr(&cur->ep_attr->protocol, FI_TYPE_PROTOCOL));
+    }
+}
+
 void print_fi_info()
 {
     int ret;

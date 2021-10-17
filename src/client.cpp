@@ -154,18 +154,91 @@ static int init_fabric_client(struct ctx_connection *ct)
     if (ret)
         return ret;
 
-    printf("Fabric Initialized\n");
+    printf("Fabric Initialized\n\n");
 
     return 0;
 }
 
-static int run_dgram_client(struct ctx_connection *ct)
+static int ctrl_sync_client(struct ctx_connection *ct)
 {
     int ret;
+
+    snprintf(ct->ctrl_buf, sizeof(MSG_SYNC_Q), "%s",
+             MSG_SYNC_Q);
+
+    DEBUG("CLIENT: syncing\n");
+    ret = pp_ctrl_send(ct, ct->ctrl_buf, sizeof(MSG_SYNC_Q));
+
+    if (ret < 0)
+        return ret;
+    if (ret < sizeof(MSG_SYNC_Q))
+    {
+        printf("CLIENT: bad length of sent data (len=%d/%zu)",
+               ret, sizeof(MSG_SYNC_Q));
+        return -EBADMSG;
+    }
+    DEBUG("CLIENT: syncing now\n");
+
+    ret = pp_ctrl_recv_str(ct, ct->ctrl_buf, sizeof(MSG_SYNC_A));
+
+    if (ret < 0)
+        return ret;
+    if (strcmp(ct->ctrl_buf, MSG_SYNC_A))
+    {
+        printf("CLIENT: sync error while acking A: <%s> "
+               "(len=%zu)\n",
+               ct->ctrl_buf, strlen(ct->ctrl_buf));
+        return -EBADMSG;
+    }
+    DEBUG("CLIENT: synced\n");
+
+    return 0;
+}
+
+static int init_data_transfer_client(struct ctx_connection *ct)
+{
+    int ret, i;
+
+    banner_fabric_info(ct);
+
+    ret = ctrl_sync_client(ct);
+    if (ret)
+        return ret;
+
+    DEBUG("CLIENT: Starting data transfer\n");
+    chrono_start(ct);
+
+    for (i = 0; i < ct->iterations; i++)
+    {
+        if (ct->transfer_size < ct->fi->tx_attr->inject_size)
+            ret = pp_inject(ct, ct->ep, ct->transfer_size);
+        else
+            ret = pp_tx(ct, ct->ep, ct->transfer_size);
+        if (ret)
+            return ret;
+
+        ret = pp_rx(ct, ct->ep, ct->transfer_size);
+        if (ret)
+            return ret;
+    }
+
+    chrono_stop(ct);
+    DEBUG("CLIENT: Completed data transfer\n");
+
+    return ret;
+}
+
+static int run_dgram_client(struct ctx_connection *ct)
+{
+    int ret, i;
 
     DEBUG("Selected endpoint: DGRAM\n");
 
     ret = init_fabric_client(ct);
+    if (ret)
+        return ret;
+
+    ret = init_data_transfer_client(ct);
     if (ret)
         return ret;
 
@@ -174,12 +247,14 @@ static int run_dgram_client(struct ctx_connection *ct)
 
 void start_client()
 {
-    printf("Starting client\n");
+    printf("Starting client...\n\n");
 
     struct ctx_connection ct = {};
 
     ct.dst_addr = const_cast<char *>(FLAGS_dst_addr.c_str());
     ct.dst_port = FLAGS_dst_port;
+    ct.iterations = FLAGS_iterations;
+    ct.transfer_size = FLAGS_payload_size;
 
     ct.hints = fi_allocinfo();
     generate_hints(&(ct.hints));

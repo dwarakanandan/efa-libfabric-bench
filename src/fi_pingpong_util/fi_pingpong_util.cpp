@@ -80,7 +80,7 @@ int pp_alloc_msgs(struct ctx_connection *ct)
 	return 0;
 }
 
-static uint64_t pp_gettime_us(void)
+uint64_t pp_gettime_us(void)
 {
 	struct timeval now;
 
@@ -156,24 +156,6 @@ int pp_get_cq_comp(struct fid_cq *cq, uint64_t *cur, uint64_t total, int timeout
 	return 0;
 }
 
-int pp_get_rx_comp(struct ctx_connection *ct, uint64_t total)
-{
-	int ret = FI_SUCCESS;
-
-	if (ct->rxcq)
-	{
-		ret = pp_get_cq_comp(ct->rxcq, &(ct->rx_cq_cntr), total,
-							 ct->timeout_sec);
-	}
-	else
-	{
-		printf(
-			"Trying to get a RX completion when no RX CQ was opened");
-		ret = -FI_EOTHER;
-	}
-	return ret;
-}
-
 ssize_t pp_post_rx(struct ctx_connection *ct, struct fid_ep *ep, size_t size, void *ctx)
 {
 	if (!(ct->fi->caps & FI_TAGGED))
@@ -227,6 +209,15 @@ int pp_ctrl_recv(struct ctx_connection *ct, char *buf, size_t size)
 		return err;
 	}
 
+	return ret;
+}
+
+int pp_ctrl_recv_str(struct ctx_connection *ct, char *buf, size_t size)
+{
+	int ret;
+
+	ret = pp_ctrl_recv(ct, buf, size);
+	buf[size - 1] = '\0';
 	return ret;
 }
 
@@ -477,4 +468,167 @@ int av_insert(struct fid_av *av, void *addr, size_t count, fi_addr_t *fi_addr, u
 	DEBUG("Connection-less endpoint: new address inserted in vector\n");
 
 	return 0;
+}
+
+int pp_get_rx_comp(struct ctx_connection *ct, uint64_t total)
+{
+	int ret = FI_SUCCESS;
+
+	if (ct->rxcq)
+	{
+		ret = pp_get_cq_comp(ct->rxcq, &(ct->rx_cq_cntr), total, ct->timeout_sec);
+	}
+	else
+	{
+		printf("Trying to get a RX completion when no RX CQ was opened");
+		ret = -FI_EOTHER;
+	}
+	return ret;
+}
+
+static int pp_check_buf(void *buf, int size)
+{
+	char *recv_data;
+	char c;
+	static unsigned int iter;
+	int msg_index;
+	int i;
+
+	// DEBUG("Verifying buffer content\n");
+
+	msg_index = ((iter++) * INTEG_SEED) % integ_alphabet_length;
+	recv_data = (char *)buf;
+
+	for (i = 0; i < size; i++)
+	{
+		c = integ_alphabet[msg_index++];
+		if (msg_index >= integ_alphabet_length)
+			msg_index = 0;
+		if (c != recv_data[i])
+		{
+			printf("index=%d msg_index=%d expected=%d got=%d\n",
+				   i, msg_index, c, recv_data[i]);
+			break;
+		}
+	}
+	if (i != size)
+	{
+		DEBUG("Finished veryfing buffer: content is corrupted\n");
+		printf("Error at iteration=%d size=%d byte=%d\n", iter, size,
+			   i);
+		return 1;
+	}
+
+	// DEBUG("Buffer verified\n");
+
+	return 0;
+}
+
+ssize_t pp_rx(struct ctx_connection *ct, struct fid_ep *ep, size_t size)
+{
+	ssize_t ret;
+
+	ret = pp_get_rx_comp(ct, ct->rx_seq);
+	if (ret)
+		return ret;
+
+	// Verify data for now, disable during benchmarks
+	if (true)
+	{
+		ret = pp_check_buf((char *)ct->rx_buf + ct->rx_prefix_size, size);
+		if (ret)
+			return ret;
+	}
+
+	ret = pp_post_rx(ct, ct->ep, MAX(ct->rx_size, PP_MAX_CTRL_MSG) + ct->rx_prefix_size, ct->rx_ctx_ptr);
+	if (!ret)
+		ct->cnt_ack_msg++;
+
+	return ret;
+}
+
+static void pp_fill_buf(void *buf, int size)
+{
+	char *msg_buf;
+	int msg_index;
+	static unsigned int iter;
+	int i;
+
+	msg_index = ((iter++) * INTEG_SEED) % integ_alphabet_length;
+	msg_buf = (char *)buf;
+	for (i = 0; i < size; i++)
+	{
+		// printf("index=%d msg_index=%d\n", i, msg_index);
+		msg_buf[i] = integ_alphabet[msg_index++];
+		if (msg_index >= integ_alphabet_length)
+			msg_index = 0;
+	}
+}
+static int pp_get_tx_comp(struct ctx_connection *ct, uint64_t total)
+{
+	int ret;
+
+	if (ct->txcq)
+	{
+		ret = pp_get_cq_comp(ct->txcq, &(ct->tx_cq_cntr), total, -1);
+	}
+	else
+	{
+		printf("Trying to get a TX completion when no TX CQ was opened");
+		ret = -FI_EOTHER;
+	}
+	return ret;
+}
+
+static ssize_t pp_post_inject(struct ctx_connection *ct, struct fid_ep *ep, size_t size)
+{
+	if (!(ct->fi->caps & FI_TAGGED))
+		PP_POST(fi_inject, pp_get_tx_comp, ct->tx_seq, "inject", ep,
+				ct->tx_buf, size, ct->remote_fi_addr);
+	else
+		PP_POST(fi_tinject, pp_get_tx_comp, ct->tx_seq, "tinject", ep,
+				ct->tx_buf, size, ct->remote_fi_addr, TAG);
+	ct->tx_cq_cntr++;
+	return 0;
+}
+
+ssize_t pp_inject(struct ctx_connection *ct, struct fid_ep *ep, size_t size)
+{
+	ssize_t ret;
+
+	pp_fill_buf((char *)ct->tx_buf + ct->tx_prefix_size, size);
+
+	ret = pp_post_inject(ct, ep, size + ct->tx_prefix_size);
+	if (ret)
+		return ret;
+
+	return ret;
+}
+
+static ssize_t pp_post_tx(struct ctx_connection *ct, struct fid_ep *ep, size_t size, void *ctx)
+{
+	if (!(ct->fi->caps & FI_TAGGED))
+		PP_POST(fi_send, pp_get_tx_comp, ct->tx_seq, "transmit", ep,
+				ct->tx_buf, size, fi_mr_desc(ct->mr),
+				ct->remote_fi_addr, ctx);
+	else
+		PP_POST(fi_tsend, pp_get_tx_comp, ct->tx_seq, "t-transmit", ep,
+				ct->tx_buf, size, fi_mr_desc(ct->mr),
+				ct->remote_fi_addr, TAG, ctx);
+	return 0;
+}
+
+ssize_t pp_tx(struct ctx_connection *ct, struct fid_ep *ep, size_t size)
+{
+	ssize_t ret;
+
+	pp_fill_buf((char *)ct->tx_buf + ct->tx_prefix_size, size);
+
+	ret = pp_post_tx(ct, ep, size + ct->tx_prefix_size, ct->tx_ctx_ptr);
+	if (ret)
+		return ret;
+
+	ret = pp_get_tx_comp(ct, ct->tx_seq);
+
+	return ret;
 }

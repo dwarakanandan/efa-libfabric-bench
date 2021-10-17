@@ -29,6 +29,10 @@
 
 #define SOCKET int
 
+#define CTRL_BUF_LEN 64
+#define MSG_SYNC_Q "q"
+#define MSG_SYNC_A "a"
+
 struct ctx_connection
 {
     struct fi_info *fi, *hints;
@@ -65,4 +69,13 @@ struct ctx_connection
     struct fi_info *fi_pep;
 
     fi_addr_t local_fi_addr, remote_fi_addr;
+
+    char ctrl_buf[CTRL_BUF_LEN + 1];
+
+    uint64_t start, end;
+
+    int iterations;
+	int transfer_size;
+
+    long cnt_ack_msg;
 };
