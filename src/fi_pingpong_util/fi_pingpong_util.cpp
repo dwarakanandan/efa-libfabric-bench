@@ -533,7 +533,7 @@ ssize_t pp_rx(struct ctx_connection *ct, struct fid_ep *ep, size_t size)
 		return ret;
 
 	// Verify data for now, disable during benchmarks
-	if (true)
+	if (false)
 	{
 		ret = pp_check_buf((char *)ct->rx_buf + ct->rx_prefix_size, size);
 		if (ret)
