@@ -187,6 +187,9 @@ static int init_data_transfer_server(struct ctx_connection *ct)
     chrono_stop(ct);
     DEBUG("SERVER: Completed data transfer\n");
 
+	show_perf(NULL, ct->transfer_size, ct->iterations,
+		  ct->cnt_ack_msg, ct->start, ct->end, 2);
+
     return ret;
 }
 

@@ -632,3 +632,50 @@ ssize_t pp_tx(struct ctx_connection *ct, struct fid_ep *ep, size_t size)
 
 	return ret;
 }
+
+char *size_str(char *str, uint64_t size)
+{
+	uint64_t base, fraction = 0;
+	char mag;
+
+	memset(str, '\0', PP_STR_LEN);
+
+	if (size >= (1 << 30)) {
+		base = 1 << 30;
+		mag = 'g';
+	} else if (size >= (1 << 20)) {
+		base = 1 << 20;
+		mag = 'm';
+	} else if (size >= (1 << 10)) {
+		base = 1 << 10;
+		mag = 'k';
+	} else {
+		base = 1;
+		mag = '\0';
+	}
+
+	if (size / base < 10)
+		fraction = (size % base) * 10 / base;
+
+	if (fraction)
+		snprintf(str, PP_STR_LEN, "%" PRIu64 ".%" PRIu64 "%c",
+			 size / base, fraction, mag);
+	else
+		snprintf(str, PP_STR_LEN, "%" PRIu64 "%c", size / base, mag);
+
+	return str;
+}
+
+char *cnt_str(char *str, size_t size, uint64_t cnt)
+{
+	if (cnt >= 1000000000)
+		snprintf(str, size, "%" PRIu64 "b", cnt / 1000000000);
+	else if (cnt >= 1000000)
+		snprintf(str, size, "%" PRIu64 "m", cnt / 1000000);
+	else if (cnt >= 1000)
+		snprintf(str, size, "%" PRIu64 "k", cnt / 1000);
+	else
+		snprintf(str, size, "%" PRIu64, cnt);
+
+	return str;
+}

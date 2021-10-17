@@ -11,6 +11,7 @@
 #define PP_CTRL_BUF_LEN 64
 #define PP_MR_KEY 0xC0DE
 #define PP_MAX_ADDRLEN 1024
+#define PP_STR_LEN 32
 
 static const uint64_t TAG = 1234;
 
@@ -113,3 +114,7 @@ ssize_t pp_rx(struct ctx_connection *ct, struct fid_ep *ep, size_t size);
 ssize_t pp_inject(struct ctx_connection *ct, struct fid_ep *ep, size_t size);
 
 ssize_t pp_tx(struct ctx_connection *ct, struct fid_ep *ep, size_t size);
+
+char *size_str(char *str, uint64_t size);
+
+char *cnt_str(char *str, size_t size, uint64_t cnt);
