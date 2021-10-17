@@ -32,6 +32,8 @@
 #define CTRL_BUF_LEN 64
 #define MSG_SYNC_Q "q"
 #define MSG_SYNC_A "a"
+#define MSG_CHECK_CNT_OK "cnt ok"
+#define MSG_LEN_CNT 10
 
 struct ctx_connection
 {

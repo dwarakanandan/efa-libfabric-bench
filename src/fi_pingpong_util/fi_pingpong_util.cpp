@@ -181,7 +181,7 @@ int pp_ctrl_send(struct ctx_connection *ct, char *buf, size_t size)
 	if (ret == 0)
 	{
 		err = -ECONNABORTED;
-		printf("ctrl/read: no data or remote connection closed");
+		printf("ctrl/read: no data or remote connection closed\n");
 		return err;
 	}
 
@@ -205,7 +205,7 @@ int pp_ctrl_recv(struct ctx_connection *ct, char *buf, size_t size)
 	if (ret == 0)
 	{
 		err = -ECONNABORTED;
-		printf("ctrl/read: no data or remote connection closed");
+		printf("ctrl/read: no data or remote connection closed\n");
 		return err;
 	}
 
@@ -640,16 +640,23 @@ char *size_str(char *str, uint64_t size)
 
 	memset(str, '\0', PP_STR_LEN);
 
-	if (size >= (1 << 30)) {
+	if (size >= (1 << 30))
+	{
 		base = 1 << 30;
 		mag = 'g';
-	} else if (size >= (1 << 20)) {
+	}
+	else if (size >= (1 << 20))
+	{
 		base = 1 << 20;
 		mag = 'm';
-	} else if (size >= (1 << 10)) {
+	}
+	else if (size >= (1 << 10))
+	{
 		base = 1 << 10;
 		mag = 'k';
-	} else {
+	}
+	else
+	{
 		base = 1;
 		mag = '\0';
 	}
@@ -659,7 +666,7 @@ char *size_str(char *str, uint64_t size)
 
 	if (fraction)
 		snprintf(str, PP_STR_LEN, "%" PRIu64 ".%" PRIu64 "%c",
-			 size / base, fraction, mag);
+				 size / base, fraction, mag);
 	else
 		snprintf(str, PP_STR_LEN, "%" PRIu64 "%c", size / base, mag);
 
@@ -678,4 +685,32 @@ char *cnt_str(char *str, size_t size, uint64_t cnt)
 		snprintf(str, size, "%" PRIu64, cnt);
 
 	return str;
+}
+
+long parse_ulong(char *str, long max)
+{
+	long ret;
+	char *end;
+
+	errno = 0;
+	ret = strtol(str, &end, 10);
+	if (*end != '\0' || errno != 0)
+	{
+		if (errno == 0)
+			ret = -EINVAL;
+		else
+			ret = -errno;
+		fprintf(stderr, "Error parsing \"%s\": %s\n", str,
+				strerror(-ret));
+		return ret;
+	}
+
+	if ((ret < 0) || (max > 0 && ret > max))
+	{
+		ret = -ERANGE;
+		fprintf(stderr, "Error parsing \"%s\": %s\n", str,
+				strerror(-ret));
+		return ret;
+	}
+	return ret;
 }

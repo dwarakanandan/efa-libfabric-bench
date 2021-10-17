@@ -118,3 +118,5 @@ ssize_t pp_tx(struct ctx_connection *ct, struct fid_ep *ep, size_t size);
 char *size_str(char *str, uint64_t size);
 
 char *cnt_str(char *str, size_t size, uint64_t cnt);
+
+long parse_ulong(char *str, long max);

@@ -156,6 +156,44 @@ static int ctrl_sync_server(struct ctx_connection *ct)
     return 0;
 }
 
+static int ctrl_txrx_msg_count_server(struct ctx_connection *ct)
+{
+    int ret;
+
+    DEBUG("Exchanging ack count\n");
+
+    memset(&ct->ctrl_buf, '\0', MSG_LEN_CNT + 1);
+
+    DEBUG("SERVER: receiving count\n");
+    ret = pp_ctrl_recv(ct, ct->ctrl_buf, MSG_LEN_CNT);
+    if (ret < 0)
+        return ret;
+    if (ret < MSG_LEN_CNT)
+    {
+        printf("SERVER: bad length of received data (len=%d/%d)", ret, MSG_LEN_CNT);
+        return -EBADMSG;
+    }
+    ct->cnt_ack_msg = parse_ulong(ct->ctrl_buf, -1);
+    if (ct->cnt_ack_msg < 0)
+        return ret;
+
+    if (FLAGS_debug)
+        printf("SERVER: received count = <%ld> (len=%zu)\n", ct->cnt_ack_msg, strlen(ct->ctrl_buf));
+
+    snprintf(ct->ctrl_buf, sizeof(MSG_CHECK_CNT_OK), "%s", MSG_CHECK_CNT_OK);
+    ret = pp_ctrl_send(ct, ct->ctrl_buf, sizeof(MSG_CHECK_CNT_OK));
+    if (ret < 0)
+        return ret;
+    if (ret < sizeof(MSG_CHECK_CNT_OK))
+    {
+        printf("CLIENT: bad length of received data (len=%d/%zu)", ret, sizeof(MSG_CHECK_CNT_OK));
+        return -EBADMSG;
+    }
+    DEBUG("SERVER: acked count to client\n");
+
+    return 0;
+}
+
 static int init_data_transfer_server(struct ctx_connection *ct)
 {
     int ret, i;
@@ -187,8 +225,12 @@ static int init_data_transfer_server(struct ctx_connection *ct)
     chrono_stop(ct);
     DEBUG("SERVER: Completed data transfer\n");
 
-	show_perf(NULL, ct->transfer_size, ct->iterations,
-		  ct->cnt_ack_msg, ct->start, ct->end, 2);
+    ret = ctrl_txrx_msg_count_server(ct);
+    if (ret)
+        return ret;
+
+    show_perf(NULL, ct->transfer_size, ct->iterations,
+              ct->cnt_ack_msg, ct->start, ct->end, 2);
 
     return ret;
 }
