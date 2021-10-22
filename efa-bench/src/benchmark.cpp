@@ -29,8 +29,7 @@ int main(int argc, char *argv[])
 
 	if (FLAGS_fabinfo)
 	{
-		FabricInfo fabInfo = FabricInfo();
-		fabInfo.loadFabricInfo(FLAGS_provider);
+		FabricInfo fabInfo = FabricInfo(FLAGS_provider);
 		fabInfo.printFabricInfoShort();
 		return 0;
 	}

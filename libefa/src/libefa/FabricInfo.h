@@ -8,7 +8,10 @@ namespace libefa
         struct fi_info *hints, *info;
 
     public:
-        void loadFabricInfo(std::string providerName);
+        /** 
+        * @param provider : Name of the fabric provider. Eg: sockets, efa
+        */
+        FabricInfo(std::string provider);
 
         void printFabricInfoShort();
 

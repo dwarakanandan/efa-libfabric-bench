@@ -1,12 +1,12 @@
 #include "FabricInfo.h"
 
-void libefa::FabricInfo::loadFabricInfo(std::string providerName)
+libefa::FabricInfo::FabricInfo(std::string provider)
 {
     int ret;
     uint64_t flags = 0;
 
     hints = fi_allocinfo();
-    hints->fabric_attr->prov_name = const_cast<char *>(providerName.c_str());
+    hints->fabric_attr->prov_name = const_cast<char *>(provider.c_str());
     hints->ep_attr->type = FI_EP_DGRAM;
 
     // hints->caps = FI_MSG;
