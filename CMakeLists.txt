@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 project(efa-libfabric-bench)
 
 SET (LIBFABRIC_INCLUDE_DIR "/opt/amazon/efa/include/")
+SET (LIBFABRIC_LINK_DIR "/opt/amazon/efa/lib64/")
 
 add_custom_target(deploy ALL)
 

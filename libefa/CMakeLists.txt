@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.10)
 
 project(libefa)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Wall -O3")
-
 SET (PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/src")
 
 include_directories(${LIBFABRIC_INCLUDE_DIR})
