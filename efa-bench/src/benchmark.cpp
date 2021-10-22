@@ -1,13 +1,13 @@
 #include <iostream>
 
-#include "common.h"
-#include "server.h"
-#include "client.h"
-#include "fi_info.h"
+#include <libefa/FabricInfo.h>
+#include "libefa/server.h"
+#include "libefa/client.h"
 
 #include "cmd_line.h"
 
 using namespace std;
+using namespace libefa;
 
 void init_command_line(int argc, char *argv[])
 {
@@ -27,9 +27,11 @@ int main(int argc, char *argv[])
 {
 	init_command_line(argc, argv);
 
-	if (FLAGS_fiinfo)
+	if (FLAGS_fabinfo)
 	{
-		print_fi_info();
+		FabricInfo fabInfo = FabricInfo();
+		fabInfo.loadFabricInfo(FLAGS_provider);
+		fabInfo.printFabricInfoShort();
 		return 0;
 	}
 

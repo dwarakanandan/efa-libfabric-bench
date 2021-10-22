@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(libefa)
 
-SET (PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/src")
+SET (PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/src/libefa")
 
 include_directories(${LIBFABRIC_INCLUDE_DIR})
 

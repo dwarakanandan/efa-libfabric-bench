@@ -1,6 +1,6 @@
 #include "cmd_line.h"
 
-DEFINE_bool(fiinfo, false, "Show provider info");
+DEFINE_bool(fabinfo, false, "Show provider info");
 DEFINE_bool(debug, false, "Print debug logs");
 DEFINE_string(mode, "server", "Mode of operation Eg: server,client");
 DEFINE_uint32(src_port, 47500, "Source port");
