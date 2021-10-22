@@ -1,9 +1,11 @@
 #include <iostream>
 
-#include "cmd_line.h"
-#include "fi_info.h"
+#include "common.h"
 #include "server.h"
 #include "client.h"
+#include "fi_info.h"
+
+#include "cmd_line.h"
 
 using namespace std;
 

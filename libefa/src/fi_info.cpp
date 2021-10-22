@@ -32,7 +32,8 @@ void print_fi_info()
 
     struct fi_info *hints, *info;
     hints = fi_allocinfo();
-    hints->fabric_attr->prov_name = const_cast<char *>(FLAGS_provider.c_str());
+    // hints->fabric_attr->prov_name = const_cast<char *>(FLAGS_provider.c_str());
+    hints->fabric_attr->prov_name = const_cast<char *>("sockets");
     hints->ep_attr->type = FI_EP_DGRAM;
 
     // hints->caps = FI_MSG;

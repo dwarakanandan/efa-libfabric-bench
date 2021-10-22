@@ -177,7 +177,7 @@ static int ctrl_txrx_msg_count_server(struct ctx_connection *ct)
     if (ct->cnt_ack_msg < 0)
         return ret;
 
-    if (FLAGS_debug)
+    // if (FLAGS_debug)
         printf("SERVER: received count = <%ld> (len=%zu)\n", ct->cnt_ack_msg, strlen(ct->ctrl_buf));
 
     snprintf(ct->ctrl_buf, sizeof(MSG_CHECK_CNT_OK), "%s", MSG_CHECK_CNT_OK);
@@ -258,9 +258,9 @@ void start_server()
 
     struct ctx_connection ct = {};
 
-    ct.src_port = FLAGS_src_port;
-    ct.iterations = FLAGS_iterations;
-    ct.transfer_size = FLAGS_payload_size;
+    // ct.src_port = FLAGS_src_port;
+    // ct.iterations = FLAGS_iterations;
+    // ct.transfer_size = FLAGS_payload_size;
 
     ct.hints = fi_allocinfo();
     generate_hints(&(ct.hints));

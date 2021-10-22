@@ -1,5 +1,4 @@
 #include "includes.h"
-#include "cmd_line.h"
 #include "./fi_pingpong_util/fi_pingpong_util.h"
 
 int fabric_getinfo(struct ctx_connection *ct, struct fi_info *hints, struct fi_info **info);

@@ -4,7 +4,7 @@ using namespace std;
 
 void generate_hints(struct fi_info **info)
 {
-	(*info)->fabric_attr->prov_name = const_cast<char *>(FLAGS_provider.c_str());
+	//(*info)->fabric_attr->prov_name = const_cast<char *>(FLAGS_provider.c_str());
 	(*info)->ep_attr->type = FI_EP_DGRAM;
 	(*info)->mode = FI_MSG_PREFIX;
 	(*info)->domain_attr->mode = ~0;

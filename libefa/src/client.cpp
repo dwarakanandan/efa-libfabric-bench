@@ -202,7 +202,7 @@ static int ctrl_txrx_msg_count_client(struct ctx_connection *ct)
     memset(&ct->ctrl_buf, '\0', MSG_LEN_CNT + 1);
     snprintf(ct->ctrl_buf, MSG_LEN_CNT + 1, "%ld", ct->cnt_ack_msg);
 
-    if (FLAGS_debug)
+    // if (FLAGS_debug)
         printf("CLIENT: sending count = <%s> (len=%zu)\n", ct->ctrl_buf, strlen(ct->ctrl_buf));
 
     ret = pp_ctrl_send(ct, ct->ctrl_buf, MSG_LEN_CNT);
@@ -300,10 +300,10 @@ void start_client()
 
     struct ctx_connection ct = {};
 
-    ct.dst_addr = const_cast<char *>(FLAGS_dst_addr.c_str());
-    ct.dst_port = FLAGS_dst_port;
-    ct.iterations = FLAGS_iterations;
-    ct.transfer_size = FLAGS_payload_size;
+    // ct.dst_addr = const_cast<char *>(FLAGS_dst_addr.c_str());
+    // ct.dst_port = FLAGS_dst_port;
+    // ct.iterations = FLAGS_iterations;
+    // ct.transfer_size = FLAGS_payload_size;
 
     ct.hints = fi_allocinfo();
     generate_hints(&(ct.hints));

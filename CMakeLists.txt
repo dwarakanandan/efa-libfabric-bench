@@ -1,25 +1,16 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(Benchmark)
+project(efa-libfabric-bench)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Wall -O3")
+add_custom_target(deploy ALL)
 
-SET (PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/src")
-
-include_directories("/opt/amazon/efa/include/")
-link_directories("/opt/amazon/efa/lib64/")
-
-file(GLOB benchmark_SRC CONFIGURE_DEPENDS
-${PROJECT_SOURCE_DIR}/*.h
-${PROJECT_SOURCE_DIR}/*.cpp
-${PROJECT_SOURCE_DIR}/fi_pingpong_util/*.h
-${PROJECT_SOURCE_DIR}/fi_pingpong_util/*.cpp
+add_custom_command(TARGET deploy POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/efa-bench/client.conf ${CMAKE_BINARY_DIR}/client.conf
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/efa-bench/server.conf ${CMAKE_BINARY_DIR}/server.conf
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/efa-bench/benchmark ${CMAKE_BINARY_DIR}/benchmark
 )
 
-add_executable(benchmark ${benchmark_SRC})
+add_subdirectory(libefa)
+add_subdirectory(efa-bench)
 
-TARGET_LINK_LIBRARIES( benchmark
-pthread
-fabric
-gflags
-)
+add_dependencies(deploy benchmark)

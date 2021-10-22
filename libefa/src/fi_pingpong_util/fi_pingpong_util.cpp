@@ -4,7 +4,7 @@ using namespace std;
 
 void DEBUG(std::string str)
 {
-	if (FLAGS_debug)
+	if (true)
 	{
 		std::cout << str << std::endl;
 	}
