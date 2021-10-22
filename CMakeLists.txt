@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 
 project(efa-libfabric-bench)
 
+SET (LIBFABRIC_INCLUDE_DIR "/opt/amazon/efa/include/")
+
 add_custom_target(deploy ALL)
 
 add_custom_command(TARGET deploy POST_BUILD
