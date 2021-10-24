@@ -28,10 +28,10 @@ Sample launch configuration can be found in `server.conf` and `client.conf`.
 
 **Server mode**
 ```shell
-./benchmark --flagfile=../server.conf
+./benchmark --flagfile=server.conf
 ```
 
 **Client mode**
 ```shell
-./benchmark --flagfile=../client.conf
+./benchmark --flagfile=client.conf
 ```
