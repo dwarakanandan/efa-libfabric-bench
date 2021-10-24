@@ -1,12 +1,16 @@
+#pragma once
+
 #include "includes.h"
+#include "FabricInfo.h"
+#include "FabricUtil.h"
 
 namespace libefa
 {
     class ConnectionContext
     {
-
     public:
-        struct fi_info *fi, *hints;
+        FabricInfo fi;
+
         void *tx_ctx_ptr, *rx_ctx_ptr;
         struct fi_context tx_ctx[2], rx_ctx[2];
 
@@ -45,9 +49,11 @@ namespace libefa
 
         uint64_t start, end;
 
-        int iterations;
-        int transfer_size;
-
         long cnt_ack_msg;
+
+        void startTimekeeper();
+
+        void stopTimekeeper();
+
     };
 }

@@ -1,20 +1,35 @@
+#pragma once
+
 #include "includes.h"
-#include "Util.h"
 
 namespace libefa
 {
     class FabricInfo
     {
-        struct fi_info *hints, *info;
-
     public:
+        struct fi_info *info;
+        struct fi_info *hints;
+
+        FabricInfo()
+        {
+            hints = fi_allocinfo();
+        }
+
         /** 
         * @param provider : Name of the fabric provider. Eg: sockets, efa
         */
-        FabricInfo(std::string provider);
+        int initFabricInfo(std::string provider);
+
+        /** 
+        * @param provider : Name of the fabric provider. Eg: sockets, efa
+        * @param hints : Hints used to filter fabric and endpoint properties
+        */
+        int initFabricInfo(std::string provider, struct fi_info *hints);
 
         void printFabricInfoShort();
 
         void printFabricInfoLong();
+
+        void printFabricInfoBanner();
     };
 }

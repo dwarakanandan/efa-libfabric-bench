@@ -35,49 +35,56 @@
 #define MSG_CHECK_CNT_OK "cnt ok"
 #define MSG_LEN_CNT 10
 
-struct ctx_connection
+#define PP_CTRL_BUF_LEN 64
+#define PP_SIZE_MAX_POWER_TWO 22
+#define PP_MAX_DATA_MSG \
+    ((1 << PP_SIZE_MAX_POWER_TWO) + (1 << (PP_SIZE_MAX_POWER_TWO - 1)))
+#define PP_MAX_CTRL_MSG 64
+#define PP_CTRL_BUF_LEN 64
+#define PP_MR_KEY 0xC0DE
+#define PP_MAX_ADDRLEN 1024
+#define PP_STR_LEN 32
+
+static const uint64_t TAG = 1234;
+
+void DEBUG(std::string str);
+
+namespace libefa
 {
-    struct fi_info *fi, *hints;
-    void *tx_ctx_ptr, *rx_ctx_ptr;
-    struct fi_context tx_ctx[2], rx_ctx[2];
+    extern bool ENABLE_DEBUG;
+    extern bool ENABLE_RXTX_VERIFICATION;
+}
 
-    uint16_t src_port;
-    uint16_t dst_port;
-    char *dst_addr;
-    SOCKET ctrl_connfd;
+#define PRINTERR(call, retv)                                        \
+    fprintf(stderr, "%s(): %s:%-4d, ret=%d (%s)\n", call, __FILE__, \
+            __LINE__, (int)retv, fi_strerror((int)-retv))
 
-    struct fid_fabric *fabric;
-    struct fid_domain *domain;
-    struct fid_eq *eq;
-    struct fi_eq_attr eq_attr;
+#define MAX(a, b)               \
+    (                           \
+        {                       \
+            typeof(a) _a = (a); \
+            typeof(b) _b = (b); \
+            _a > _b ? _a : _b;  \
+        })
 
-    size_t rx_prefix_size, tx_prefix_size;
-    struct fi_cq_attr cq_attr;
-    struct fid_cq *txcq, *rxcq;
-    struct fi_av_attr av_attr;
-    struct fid_ep *ep;
-    struct fid_av *av;
+#define EP_BIND(ep, fd, flags)                           \
+    do                                                   \
+    {                                                    \
+        int ret;                                         \
+        if ((fd))                                        \
+        {                                                \
+            ret = fi_ep_bind((ep), &(fd)->fid, (flags)); \
+            if (ret)                                     \
+            {                                            \
+                PRINTERR("fi_ep_bind", ret);             \
+                return ret;                              \
+            }                                            \
+        }                                                \
+    } while (0)
 
-    size_t buf_size, tx_size, rx_size;
-    void *buf, *tx_buf, *rx_buf;
-    uint64_t remote_cq_data;
-    struct fid_mr *mr;
-    struct fid_mr no_mr;
-
-    int timeout_sec;
-    uint64_t tx_seq, rx_seq, tx_cq_cntr, rx_cq_cntr;
-
-    char *local_name, *rem_name;
-    struct fi_info *fi_pep;
-
-    fi_addr_t local_fi_addr, remote_fi_addr;
-
-    char ctrl_buf[CTRL_BUF_LEN + 1];
-
-    uint64_t start, end;
-
-    int iterations;
-	int transfer_size;
-
-    long cnt_ack_msg;
-};
+#define INTEG_SEED 7
+static const char integ_alphabet[] =
+    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+/* Size does not include trailing new line */
+static const int integ_alphabet_length =
+    (sizeof(integ_alphabet) / sizeof(*integ_alphabet)) - 1;

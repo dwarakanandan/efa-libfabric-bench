@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 
 project(efa-benchmark)
 
+SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Wall -O3")
+
 SET (PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/src")
 
 include_directories(${CMAKE_SOURCE_DIR}/libefa/src/)
