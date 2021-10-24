@@ -1,5 +1,6 @@
 # efa-libfabric-bench
-Benchmarking tool for AWS EC2's Elastic Fabric Adapter(EFA) network fabric using libfabric
+- `libefa` A wrapper library over `libfabric` for the Elastic Fabric Adapter (EFA) fabric provider
+- Benchmarking tool for EFA using `libfabric` and `libefa`
 
 ## Build:
 Clone the repository, and make sure all the prerequisites are installed.
