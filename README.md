@@ -23,7 +23,7 @@ Sample launch configuration can be found in `server.conf` and `client.conf`.
 
 **Fabric Info**
 ```shell
-./benchmark --fiinfo
+./benchmark --fabinfo
 ```
 
 **Server mode**
