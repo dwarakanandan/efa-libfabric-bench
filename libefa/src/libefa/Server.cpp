@@ -1,8 +1,9 @@
 #include "Server.h"
 
-libefa::Server::Server(std::string provider, uint16_t sourcePort)
+libefa::Server::Server(std::string provider, std::string endpoint, uint16_t sourcePort)
 {
     this->provider = provider;
+    this->endpoint = endpoint;
     this->sourcePort = sourcePort;
 
     ctx = ConnectionContext();
@@ -87,7 +88,7 @@ int libefa::Server::initFabric()
     DEBUG("Initializing fabric\n");
 
     DEBUG("SERVER: getinfo\n");
-    ret = ctx.fi.initFabricInfo(provider);
+    ret = ctx.fi.initFabricInfo(provider, endpoint);
     if (ret)
         return ret;
 
@@ -164,11 +165,18 @@ int libefa::Server::ctrlSync()
     return 0;
 }
 
-int libefa::Server::startDgramServer()
+int libefa::Server::startNode()
 {
     int ret;
 
-    DEBUG("Selected endpoint: DGRAM\n");
+    if (endpoint == "rdm")
+    {
+        DEBUG("SERVER: Selected endpoint: RDM\n");
+    }
+    else
+    {
+        DEBUG("SERVER: Selected endpoint: DGRAM\n");
+    }
 
     ret = initFabric();
     if (ret)

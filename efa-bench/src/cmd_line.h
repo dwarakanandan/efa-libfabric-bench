@@ -11,6 +11,7 @@ DECLARE_string(mode);
 DECLARE_uint32(src_port);
 DECLARE_uint32(dst_port);
 DECLARE_string(provider);
+DECLARE_string(endpoint);
 DECLARE_string(dst_addr);
 DECLARE_uint32(iterations);
 DECLARE_uint32(payload_size);

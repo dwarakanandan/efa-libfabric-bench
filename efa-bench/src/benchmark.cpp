@@ -27,8 +27,8 @@ void init_command_line(int argc, char *argv[])
 void startServer()
 {
 	int ret;
-	Server server = Server(FLAGS_provider, FLAGS_src_port);
-	ret = server.startDgramServer();
+	Server server = Server(FLAGS_provider, FLAGS_endpoint, FLAGS_src_port);
+	ret = server.startNode();
 	if (ret)
 		return;
 
@@ -57,8 +57,8 @@ void startServer()
 void startClient()
 {
 	int ret;
-	Client client = Client(FLAGS_provider, FLAGS_dst_addr, FLAGS_dst_port);
-	client.startDgramClient();
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, FLAGS_dst_addr, FLAGS_dst_port);
+	client.startNode();
 	if (ret)
 		return;
 
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 	if (FLAGS_fabinfo)
 	{
 		FabricInfo fabInfo = FabricInfo();
-		fabInfo.initFabricInfo(FLAGS_provider);
+		fabInfo.initFabricInfo(FLAGS_provider, "dgram");
 		fabInfo.printFabricInfoShort();
 		return 0;
 	}

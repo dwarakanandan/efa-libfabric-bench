@@ -17,8 +17,9 @@ namespace libefa
 
         /** 
         * @param provider : Name of the fabric provider. Eg: sockets, efa
+        * @param endpoint : Endpoint type. Eg: dgram, rdm
         */
-        int initFabricInfo(std::string provider);
+        int initFabricInfo(std::string provider, std::string endpoint);
 
         /** 
         * @param provider : Name of the fabric provider. Eg: sockets, efa

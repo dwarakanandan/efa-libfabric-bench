@@ -1,12 +1,12 @@
 #include "FabricInfo.h"
 
-int libefa::FabricInfo::initFabricInfo(std::string provider)
+int libefa::FabricInfo::initFabricInfo(std::string provider, std::string endpoint)
 {
     int ret;
     uint64_t flags = 0;
 
     hints->fabric_attr->prov_name = const_cast<char *>(provider.c_str());
-    hints->ep_attr->type = FI_EP_DGRAM;
+    hints->ep_attr->type = (endpoint == "rdm")? FI_EP_RDM : FI_EP_DGRAM;
     hints->mode = FI_MSG_PREFIX;
     hints->domain_attr->mode = ~0;
     hints->domain_attr->mr_mode = FI_MR_LOCAL | FI_MR_VIRT_ADDR | FI_MR_ALLOCATED | FI_MR_PROV_KEY;

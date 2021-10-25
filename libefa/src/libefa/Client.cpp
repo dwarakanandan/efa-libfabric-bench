@@ -1,8 +1,9 @@
 #include "Client.h"
 
-libefa::Client::Client(std::string provider, std::string destinationAddress, uint16_t destinationPort)
+libefa::Client::Client(std::string provider, std::string endpoint, std::string destinationAddress, uint16_t destinationPort)
 {
     this->provider = provider;
+    this->endpoint = endpoint;
     this->destinationAddress = destinationAddress;
     this->destinationPort = destinationPort;
 
@@ -121,7 +122,7 @@ int libefa::Client::initFabric()
         return ret;
 
     DEBUG("CLIENT: getinfo\n");
-    ret = ctx.fi.initFabricInfo(provider);
+    ret = ctx.fi.initFabricInfo(provider, endpoint);
     if (ret)
         return ret;
 
@@ -194,11 +195,18 @@ int libefa::Client::ctrlSync()
     return 0;
 }
 
-int libefa::Client::startDgramClient()
+int libefa::Client::startNode()
 {
     int ret;
 
-    DEBUG("Selected endpoint: DGRAM\n");
+    if (endpoint == "rdm")
+    {
+        DEBUG("CLIENT: Selected endpoint: RDM\n");
+    }
+    else
+    {
+        DEBUG("CLIENT: Selected endpoint: DGRAM\n");
+    }
 
     ret = initFabric();
     if (ret)

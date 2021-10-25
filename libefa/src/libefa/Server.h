@@ -1,26 +1,23 @@
-#include "includes.h"
+#include "Node.h"
 #include "FabricUtil.h"
-#include "ConnectionContext.h"
 
 namespace libefa
 {
-    class Server
+    class Server : public Node
     {
-        ConnectionContext ctx;
-        std::string provider;
         uint16_t sourcePort;
 
-        int initFabric();
+        virtual int initFabric();
 
-        int ctrlInit();
+        virtual int ctrlInit();
 
-        int ctrlSync();
+        virtual int ctrlSync();
 
     public:
-        Server(std::string provider, uint16_t port);
+        Server(std::string provider, std::string endpoint, uint16_t port);
 
-        ConnectionContext getConnectionContext();
+        virtual ConnectionContext getConnectionContext();
 
-        int startDgramServer();
+        virtual int startNode();
     };
 }
