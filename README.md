@@ -19,7 +19,7 @@ make
 
 ## Sample usage:
 
-Sample launch configuration can be found in `server.conf` and `client.conf`.
+Sample launch configuration can be found in `efa-bench/server.conf` and `efa-bench/client.conf`.
 
 **Fabric Info**
 ```shell
