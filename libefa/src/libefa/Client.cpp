@@ -195,7 +195,7 @@ int libefa::Client::ctrlSync()
     return 0;
 }
 
-int libefa::Client::startNode()
+int libefa::Client::init()
 {
     int ret;
 

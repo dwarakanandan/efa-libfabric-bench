@@ -28,7 +28,7 @@ void startServer()
 {
 	int ret;
 	Server server = Server(FLAGS_provider, FLAGS_endpoint, FLAGS_src_port);
-	ret = server.startNode();
+	ret = server.init();
 	if (ret)
 		return;
 
@@ -58,7 +58,7 @@ void startClient()
 {
 	int ret;
 	Client client = Client(FLAGS_provider, FLAGS_endpoint, FLAGS_dst_addr, FLAGS_dst_port);
-	client.startNode();
+	client.init();
 	if (ret)
 		return;
 

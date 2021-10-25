@@ -21,6 +21,6 @@ namespace libefa
 
         virtual ConnectionContext getConnectionContext();
 
-        virtual int startNode();
+        virtual int init();
     };
 }

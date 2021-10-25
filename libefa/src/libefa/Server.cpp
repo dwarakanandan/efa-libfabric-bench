@@ -165,7 +165,7 @@ int libefa::Server::ctrlSync()
     return 0;
 }
 
-int libefa::Server::startNode()
+int libefa::Server::init()
 {
     int ret;
 
