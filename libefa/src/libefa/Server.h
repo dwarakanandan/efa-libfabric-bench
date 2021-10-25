@@ -5,8 +5,6 @@ namespace libefa
 {
     class Server : public Node
     {
-        uint16_t sourcePort;
-
         virtual int initFabric();
 
         virtual int ctrlInit();

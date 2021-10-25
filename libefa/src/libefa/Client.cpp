@@ -1,15 +1,15 @@
 #include "Client.h"
 
-libefa::Client::Client(std::string provider, std::string endpoint, std::string destinationAddress, uint16_t destinationPort)
+libefa::Client::Client(std::string provider, std::string endpoint, std::string destinationAddress, uint16_t port)
 {
     this->provider = provider;
     this->endpoint = endpoint;
     this->destinationAddress = destinationAddress;
-    this->destinationPort = destinationPort;
+    this->port = port;
 
     ctx = ConnectionContext();
     ctx.dst_addr = const_cast<char *>(this->destinationAddress.c_str());
-    ctx.dst_port = destinationPort;
+    ctx.dst_port = port;
 }
 
 int libefa::Client::fabricGetaddrinfo(struct addrinfo **results)

@@ -6,7 +6,6 @@ namespace libefa
     class Client : public Node
     {
         std::string destinationAddress;
-        uint16_t destinationPort;
 
         virtual int initFabric();
 
@@ -17,7 +16,7 @@ namespace libefa
         int fabricGetaddrinfo(struct addrinfo **results);
 
     public:
-        Client(std::string provider, std::string endpoint, std::string destinationAddress, uint16_t destinationPort);
+        Client(std::string provider, std::string endpoint, std::string destinationAddress, uint16_t port);
 
         virtual ConnectionContext getConnectionContext();
 

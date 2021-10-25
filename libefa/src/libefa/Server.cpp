@@ -1,13 +1,13 @@
 #include "Server.h"
 
-libefa::Server::Server(std::string provider, std::string endpoint, uint16_t sourcePort)
+libefa::Server::Server(std::string provider, std::string endpoint, uint16_t port)
 {
     this->provider = provider;
     this->endpoint = endpoint;
-    this->sourcePort = sourcePort;
+    this->port = port;
 
     ctx = ConnectionContext();
-    ctx.src_port = this->sourcePort;
+    ctx.src_port = this->port;
 }
 
 int libefa::Server::ctrlInit()
@@ -34,7 +34,7 @@ int libefa::Server::ctrlInit()
     struct sockaddr_in ctrl_addr = {0};
 
     ctrl_addr.sin_family = AF_INET;
-    ctrl_addr.sin_port = htons(sourcePort);
+    ctrl_addr.sin_port = htons(port);
     ctrl_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
     ret = bind(listenfd, (struct sockaddr *)&ctrl_addr,

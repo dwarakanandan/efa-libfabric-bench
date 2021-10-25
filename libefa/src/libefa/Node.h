@@ -14,6 +14,8 @@ namespace libefa
 
         std::string endpoint;
 
+        uint16_t port;
+
         virtual int initFabric() = 0;
 
         virtual int ctrlInit() = 0;
