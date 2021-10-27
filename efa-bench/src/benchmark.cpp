@@ -58,7 +58,7 @@ void startClient()
 {
 	int ret;
 	Client client = Client(FLAGS_provider, FLAGS_endpoint, FLAGS_dst_addr, FLAGS_dst_port);
-	client.init();
+	ret = client.init();
 	if (ret)
 		return;
 
