@@ -55,34 +55,3 @@ namespace libefa
         static ssize_t tx(ConnectionContext *ctx, struct fid_ep *ep, size_t size);
     };
 }
-
-#define POST(post_fn, comp_fn, seq, op_str, ...)               \
-    do                                                         \
-    {                                                          \
-        int timeout_sec_save;                                  \
-        int ret, rc;                                           \
-                                                               \
-        while (1)                                              \
-        {                                                      \
-            ret = post_fn(__VA_ARGS__);                        \
-            if (!ret)                                          \
-                break;                                         \
-                                                               \
-            if (ret != -FI_EAGAIN)                             \
-            {                                                  \
-                PRINTERR(op_str, ret);                         \
-                return ret;                                    \
-            }                                                  \
-                                                               \
-            timeout_sec_save = ctx->timeout_sec;               \
-            ctx->timeout_sec = 0;                              \
-            rc = comp_fn(ctx, seq);                            \
-            ctx->timeout_sec = timeout_sec_save;               \
-            if (rc && rc != -FI_EAGAIN)                        \
-            {                                                  \
-                printf("Failed to get " op_str " completion"); \
-                return rc;                                     \
-            }                                                  \
-        }                                                      \
-        seq++;                                                 \
-    } while (0)

@@ -216,11 +216,69 @@ int libefa::FabricUtil::getRxCompletion(ConnectionContext *ctx, uint64_t total)
 ssize_t libefa::FabricUtil::postRx(ConnectionContext *ctx, struct fid_ep *ep, size_t size, void *ctxptr)
 {
 	if (!(ctx->fi.info->caps & FI_TAGGED))
-		POST(fi_recv, FabricUtil::getRxCompletion, ctx->rx_seq, "receive", ep,
-			 ctx->rx_buf, size, fi_mr_desc(ctx->mr), 0, ctxptr);
+	{
+		do
+		{
+			int timeout_sec_save;
+			int ret, rc;
+
+			while (1)
+			{
+				ret = fi_recv(ep, ctx->rx_buf, size, fi_mr_desc(ctx->mr), 0, ctxptr);
+				if (!ret)
+					break;
+
+				if (ret != -FI_EAGAIN)
+				{
+					PRINTERR("receive", ret);
+					return ret;
+				}
+
+				timeout_sec_save = ctx->timeout_sec;
+				ctx->timeout_sec = 0;
+				rc = FabricUtil::getRxCompletion(ctx, ctx->rx_seq);
+				ctx->timeout_sec = timeout_sec_save;
+				if (rc && rc != -FI_EAGAIN)
+				{
+					printf("Failed to get receive completion");
+					return rc;
+				}
+			}
+			ctx->rx_seq++;
+		} while (0);
+	}
 	else
-		POST(fi_trecv, FabricUtil::getRxCompletion, ctx->rx_seq, "t-receive", ep,
-			 ctx->rx_buf, size, fi_mr_desc(ctx->mr), 0, TAG, 0, ctxptr);
+	{
+		do
+		{
+			int timeout_sec_save;
+			int ret, rc;
+
+			while (1)
+			{
+				ret = fi_trecv(ep, ctx->rx_buf, size, fi_mr_desc(ctx->mr), 0, TAG, 0, ctxptr);
+				if (!ret)
+					break;
+
+				if (ret != -FI_EAGAIN)
+				{
+					PRINTERR("t-receive", ret);
+					return ret;
+				}
+
+				timeout_sec_save = ctx->timeout_sec;
+				ctx->timeout_sec = 0;
+				rc = FabricUtil::getRxCompletion(ctx, ctx->rx_seq);
+				ctx->timeout_sec = timeout_sec_save;
+				if (rc && rc != -FI_EAGAIN)
+				{
+					printf("Failed to get t-receive completion");
+					return rc;
+				}
+			}
+			ctx->rx_seq++;
+		} while (0);
+	}
 	return 0;
 }
 
@@ -540,13 +598,69 @@ int libefa::FabricUtil::getTxCompletion(ConnectionContext *ctx, uint64_t total)
 ssize_t libefa::FabricUtil::postTx(ConnectionContext *ctx, struct fid_ep *ep, size_t size, void *ctxptr)
 {
 	if (!(ctx->fi.info->caps & FI_TAGGED))
-		POST(fi_send, getTxCompletion, ctx->tx_seq, "transmit", ep,
-			 ctx->tx_buf, size, fi_mr_desc(ctx->mr),
-			 ctx->remote_fi_addr, ctxptr);
+	{
+		do
+		{
+			int timeout_sec_save;
+			int ret, rc;
+
+			while (1)
+			{
+				ret = fi_send(ep, ctx->tx_buf, size, fi_mr_desc(ctx->mr), ctx->remote_fi_addr, ctxptr);
+				if (!ret)
+					break;
+
+				if (ret != -FI_EAGAIN)
+				{
+					PRINTERR("transmit", ret);
+					return ret;
+				}
+
+				timeout_sec_save = ctx->timeout_sec;
+				ctx->timeout_sec = 0;
+				rc = FabricUtil::getTxCompletion(ctx, ctx->tx_seq);
+				ctx->timeout_sec = timeout_sec_save;
+				if (rc && rc != -FI_EAGAIN)
+				{
+					printf("Failed to get transmit completion");
+					return rc;
+				}
+			}
+			ctx->tx_seq++;
+		} while (0);
+	}
 	else
-		POST(fi_tsend, getTxCompletion, ctx->tx_seq, "t-transmit", ep,
-			 ctx->tx_buf, size, fi_mr_desc(ctx->mr),
-			 ctx->remote_fi_addr, TAG, ctxptr);
+	{
+		do
+		{
+			int timeout_sec_save;
+			int ret, rc;
+
+			while (1)
+			{
+				ret = fi_tsend(ep, ctx->tx_buf, size, fi_mr_desc(ctx->mr), ctx->remote_fi_addr, TAG, ctxptr);
+				if (!ret)
+					break;
+
+				if (ret != -FI_EAGAIN)
+				{
+					PRINTERR("t-transmit", ret);
+					return ret;
+				}
+
+				timeout_sec_save = ctx->timeout_sec;
+				ctx->timeout_sec = 0;
+				rc = FabricUtil::getTxCompletion(ctx, ctx->tx_seq);
+				ctx->timeout_sec = timeout_sec_save;
+				if (rc && rc != -FI_EAGAIN)
+				{
+					printf("Failed to get t-transmit completion");
+					return rc;
+				}
+			}
+			ctx->tx_seq++;
+		} while (0);
+	}
 	return 0;
 }
 
