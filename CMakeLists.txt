@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 
 project(efa-libfabric-bench)
 
+SET (CMAKE_BUILD_TYPE Debug)
+
 SET (LIBFABRIC_INCLUDE_DIR "/opt/amazon/efa/include/")
 SET (LIBFABRIC_LINK_DIR "/opt/amazon/efa/lib64/")
 
