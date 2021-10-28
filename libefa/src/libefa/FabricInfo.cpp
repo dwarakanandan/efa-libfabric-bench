@@ -7,17 +7,12 @@ int libefa::FabricInfo::initFabricInfo(std::string provider, std::string endpoin
 
     hints->fabric_attr->prov_name = const_cast<char *>(provider.c_str());
     hints->ep_attr->type = (endpoint == "rdm")? FI_EP_RDM : FI_EP_DGRAM;
-    hints->mode = FI_MSG_PREFIX;
+    // DGRAM endpoint expects FI_MSG_PREFIX mode to be specified
+    hints->mode = FI_MSG_PREFIX | FI_CONTEXT;
+    // RDM endpoint expects FI_MSG capablity to be specified
+    hints->caps = FI_MSG;
     hints->domain_attr->mode = ~0;
     hints->domain_attr->mr_mode = FI_MR_LOCAL | FI_MR_VIRT_ADDR | FI_MR_ALLOCATED | FI_MR_PROV_KEY;
-
-    // hints->caps = FI_MSG;
-    // hints->mode = FI_CONTEXT | FI_CONTEXT2 | FI_MSG_PREFIX;
-    // hints->domain_attr->mr_mode = FI_MR_LOCAL;
-
-    // hints->mode = ~0;
-    // hints->domain_attr->mode = ~0;
-    // hints->domain_attr->mr_mode = ~(FI_MR_BASIC | FI_MR_SCALABLE);
 
     ret = fi_getinfo(FI_VERSION(FI_MAJOR_VERSION, FI_MINOR_VERSION),
                      NULL, NULL, flags, hints, &info);
@@ -31,12 +26,12 @@ int libefa::FabricInfo::initFabricInfo(std::string provider, std::string endpoin
     return EXIT_SUCCESS;
 }
 
-int libefa::FabricInfo::initFabricInfo(std::string p, struct fi_info *h)
+int libefa::FabricInfo::initFabricInfo(std::string provider, struct fi_info *h)
 {
     int ret;
     uint64_t flags = 0;
 
-    hints->fabric_attr->prov_name = const_cast<char *>(p.c_str());
+    hints->fabric_attr->prov_name = const_cast<char *>(provider.c_str());
     hints->ep_attr->type = h->ep_attr->type;
     hints->mode = h->mode;
     hints->domain_attr->mode = h->domain_attr->mode;

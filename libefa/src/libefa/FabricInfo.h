@@ -15,7 +15,8 @@ namespace libefa
             hints = fi_allocinfo();
         }
 
-        /** 
+        /**
+        * This init function has predefined modes and capablities for the EFA fabric adapter
         * @param provider : Name of the fabric provider. Eg: sockets, efa
         * @param endpoint : Endpoint type. Eg: dgram, rdm
         */

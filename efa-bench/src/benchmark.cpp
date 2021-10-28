@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 	if (FLAGS_fabinfo)
 	{
 		FabricInfo fabInfo = FabricInfo();
-		fabInfo.initFabricInfo(FLAGS_provider, "dgram");
+		fabInfo.initFabricInfo(FLAGS_provider, FLAGS_endpoint);
 		fabInfo.printFabricInfoShort();
 		return 0;
 	}
