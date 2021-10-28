@@ -59,7 +59,8 @@ int libefa::FabricUtil::allocMessages(ConnectionContext *ctx)
 	int ret;
 	long alignment = 1;
 
-	ctx->tx_size = PP_MAX_DATA_MSG;
+	// ctx->tx_size = PP_MAX_DATA_MSG;
+	ctx->tx_size = 8192;
 	if (ctx->tx_size > ctx->fi.info->ep_attr->max_msg_size)
 		ctx->tx_size = ctx->fi.info->ep_attr->max_msg_size;
 	ctx->rx_size = ctx->tx_size;
