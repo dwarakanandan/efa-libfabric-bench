@@ -15,18 +15,6 @@ namespace libefa
 
         static uint64_t initCqData(struct fi_info *info);
 
-        static int getCqCompletion(struct fid_cq *cq, uint64_t *cur, uint64_t total, int timeout_sec);
-
-        static ssize_t postRx(ConnectionContext *ctx, struct fid_ep *ep, size_t size, void *ctxptr);
-
-        static int getRxCompletion(ConnectionContext *ctx, uint64_t total);
-
-        static ssize_t postTx(ConnectionContext *ctx, struct fid_ep *ep, size_t size, void *ctxptr);
-
-        static int getTxCompletion(ConnectionContext *ctx, uint64_t total);
-
-        static void fillBuffer(void *buf, int size);
-
     public:
         static uint64_t getTimeMicroSeconds();
 
@@ -53,5 +41,17 @@ namespace libefa
         static ssize_t rx(ConnectionContext *ctx, struct fid_ep *ep, size_t size);
 
         static ssize_t tx(ConnectionContext *ctx, struct fid_ep *ep, size_t size);
+
+        static void fillBuffer(void *buf, int size);
+
+        static int getCqCompletion(struct fid_cq *cq, uint64_t *cur, uint64_t total, int timeout_sec);
+
+        static ssize_t postRx(ConnectionContext *ctx, struct fid_ep *ep, size_t size, void *ctxptr);
+
+        static int getRxCompletion(ConnectionContext *ctx, uint64_t total);
+
+        static ssize_t postTx(ConnectionContext *ctx, struct fid_ep *ep, size_t size, void *ctxptr);
+
+        static int getTxCompletion(ConnectionContext *ctx, uint64_t total);
     };
 }

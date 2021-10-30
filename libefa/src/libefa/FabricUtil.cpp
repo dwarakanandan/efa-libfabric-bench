@@ -543,7 +543,7 @@ int libefa::FabricUtil::getCqCompletion(struct fid_cq *cq, uint64_t *cur, uint64
 
 	do
 	{
-		ret = fi_cq_read(cq, &comp, 1);
+		ret = fi_cq_read(cq, &comp, 3);
 		if (ret > 0)
 		{
 			if (timeout_sec >= 0)
