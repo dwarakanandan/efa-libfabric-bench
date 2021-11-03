@@ -170,7 +170,7 @@ void startServer3()
 	std::cin.ignore();
 
 	printf("SERVER: Starting data transfer\n\n");
-	FabricUtil::tx(&serverCtx, serverCtx.ep, 64000);
+	FabricUtil::tx(&serverCtx, serverCtx.ep, FLAGS_payload);
 	printf("SERVER: Completed data transfer\n\n");
 }
 
@@ -187,7 +187,7 @@ void startClient3()
 	clientCtx.timeout_sec = -1;
 
 	printf("CLIENT: Receiving data transfer\n\n");
-	FabricUtil::rx(&clientCtx, clientCtx.ep, 64000);
+	FabricUtil::rx(&clientCtx, clientCtx.ep, FLAGS_payload);
 	printf("CLIENT: Completed Receiving data transfer\n\n");
 }
 
