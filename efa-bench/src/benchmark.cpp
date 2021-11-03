@@ -176,12 +176,12 @@ int main(int argc, char *argv[])
 
 	if (FLAGS_mode == "server")
 	{
-		startServer2();
+		startServer();
 	}
 
 	if (FLAGS_mode == "client")
 	{
-		startClient2();
+		startClient();
 	}
 
 	return 0;
