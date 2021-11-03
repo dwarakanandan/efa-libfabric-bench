@@ -14,6 +14,9 @@ int libefa::FabricInfo::initFabricInfo(std::string provider, std::string endpoin
     hints->domain_attr->mode = ~0;
     hints->domain_attr->mr_mode = FI_MR_LOCAL | FI_MR_VIRT_ADDR | FI_MR_ALLOCATED | FI_MR_PROV_KEY;
 
+    hints->tx_attr->msg_order = FI_ORDER_SAS;
+    hints->rx_attr->msg_order = FI_ORDER_SAS;
+
     ret = fi_getinfo(FI_VERSION(FI_MAJOR_VERSION, FI_MINOR_VERSION),
                      NULL, NULL, flags, hints, &info);
 
