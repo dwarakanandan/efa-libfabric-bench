@@ -1,5 +1,4 @@
 #include <iostream>
-
 #include <libefa/FabricInfo.h>
 #include <libefa/Server.h>
 #include <libefa/Client.h>
@@ -157,6 +156,41 @@ void startClient2()
 	printf("CLIENT: Completed Receiving data transfer\n\n");
 }
 
+void startServer3()
+{
+	int ret;
+	Server server = Server(FLAGS_provider, FLAGS_endpoint, FLAGS_src_port);
+	ret = server.init();
+	if (ret)
+		return;
+
+	ConnectionContext serverCtx = server.getConnectionContext();
+
+	std::cout << "Press any key to transmit..." << std::endl;
+	std::cin.ignore();
+
+	printf("SERVER: Starting data transfer\n\n");
+	FabricUtil::tx(&serverCtx, serverCtx.ep, 64000);
+	printf("SERVER: Completed data transfer\n\n");
+}
+
+void startClient3()
+{
+	int ret;
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, FLAGS_dst_addr, FLAGS_dst_port);
+	ret = client.init();
+	if (ret)
+		return;
+
+	ConnectionContext clientCtx = client.getConnectionContext();
+
+	clientCtx.timeout_sec = -1;
+
+	printf("CLIENT: Receiving data transfer\n\n");
+	FabricUtil::rx(&clientCtx, clientCtx.ep, 64000);
+	printf("CLIENT: Completed Receiving data transfer\n\n");
+}
+
 int main(int argc, char *argv[])
 {
 	initCommandLine(argc, argv);
@@ -176,12 +210,12 @@ int main(int argc, char *argv[])
 
 	if (FLAGS_mode == "server")
 	{
-		startServer();
+		startServer3();
 	}
 
 	if (FLAGS_mode == "client")
 	{
-		startClient();
+		startClient3();
 	}
 
 	return 0;
