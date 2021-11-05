@@ -35,11 +35,10 @@
 #define MSG_CHECK_CNT_OK "cnt ok"
 #define MSG_LEN_CNT 10
 
-#define PP_CTRL_BUF_LEN 64
-#define PP_SIZE_MAX_POWER_TWO 22
-#define PP_MAX_DATA_MSG \
-    ((1 << PP_SIZE_MAX_POWER_TWO) + (1 << (PP_SIZE_MAX_POWER_TWO - 1)))
-#define PP_MAX_CTRL_MSG 64
+#define MAX_DATA_MSG_DGRAM 8192  // 8 KBytes
+#define MAX_DATA_MSG_RDM 4194304 // 4 MBytes
+#define MAX_CTRL_MSG 64
+
 #define PP_CTRL_BUF_LEN 64
 #define PP_MR_KEY 0xC0DE
 #define PP_MAX_ADDRLEN 1024

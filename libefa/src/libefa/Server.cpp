@@ -91,30 +91,6 @@ int libefa::Server::initFabric()
     ret = ctx.fi.initFabricInfo(provider, endpoint);
     if (ret)
         return ret;
-    
-    if ((ctx.fi.info->tx_attr->mode & FI_CONTEXT2) != 0) {
-		ctx.tx_ctx_ptr = &(ctx.tx_ctx[0]);
-	} else if ((ctx.fi.info->tx_attr->mode & FI_CONTEXT) != 0) {
-		ctx.tx_ctx_ptr = &(ctx.tx_ctx[1]);
-	} else if ((ctx.fi.info->mode & FI_CONTEXT2) != 0) {
-		ctx.tx_ctx_ptr = &(ctx.tx_ctx[0]);
-	} else if ((ctx.fi.info->mode & FI_CONTEXT) != 0) {
-		ctx.tx_ctx_ptr = &(ctx.tx_ctx[1]);
-	} else {
-		ctx.tx_ctx_ptr = NULL;
-	}
-
-    if ((ctx.fi.info->rx_attr->mode & FI_CONTEXT2) != 0) {
-		ctx.rx_ctx_ptr = &(ctx.rx_ctx[0]);
-	} else if ((ctx.fi.info->rx_attr->mode & FI_CONTEXT) != 0) {
-		ctx.rx_ctx_ptr = &(ctx.rx_ctx[1]);
-	} else if ((ctx.fi.info->mode & FI_CONTEXT2) != 0) {
-		ctx.rx_ctx_ptr = &(ctx.rx_ctx[0]);
-	} else if ((ctx.fi.info->mode & FI_CONTEXT) != 0) {
-		ctx.rx_ctx_ptr = &(ctx.rx_ctx[1]);
-	} else {
-		ctx.rx_ctx_ptr = NULL;
-	}
 
     DEBUG("SERVER: open fabric resources\n");
     ret = FabricUtil::openFabricRes(&ctx);

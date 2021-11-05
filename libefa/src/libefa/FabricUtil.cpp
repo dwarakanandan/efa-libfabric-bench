@@ -59,13 +59,12 @@ int libefa::FabricUtil::allocMessages(ConnectionContext *ctx)
 	int ret;
 	long alignment = 1;
 
-	// ctx->tx_size = PP_MAX_DATA_MSG;
-	ctx->tx_size = 8192;
+	ctx->tx_size = (ctx->fi.hints->ep_attr->type == FI_EP_RDM) ? MAX_DATA_MSG_RDM : MAX_DATA_MSG_DGRAM;
 	if (ctx->tx_size > ctx->fi.info->ep_attr->max_msg_size)
 		ctx->tx_size = ctx->fi.info->ep_attr->max_msg_size;
 	ctx->rx_size = ctx->tx_size;
-	ctx->buf_size = MAX(ctx->tx_size, PP_MAX_CTRL_MSG) +
-					MAX(ctx->rx_size, PP_MAX_CTRL_MSG) +
+	ctx->buf_size = MAX(ctx->tx_size, MAX_CTRL_MSG) +
+					MAX(ctx->rx_size, MAX_CTRL_MSG) +
 					ctx->tx_prefix_size + ctx->rx_prefix_size;
 
 	alignment = 4096;
@@ -86,7 +85,7 @@ int libefa::FabricUtil::allocMessages(ConnectionContext *ctx)
 	memset(ctx->buf, 0, ctx->buf_size);
 	ctx->rx_buf = ctx->buf;
 	ctx->tx_buf = (char *)ctx->buf +
-				  MAX(ctx->rx_size, PP_MAX_CTRL_MSG) +
+				  MAX(ctx->rx_size, MAX_CTRL_MSG) +
 				  ctx->tx_prefix_size;
 	ctx->tx_buf = (void *)(((uintptr_t)ctx->tx_buf + alignment - 1) &
 						   ~(alignment - 1));
@@ -189,7 +188,7 @@ int libefa::FabricUtil::initEndpoint(ConnectionContext *ctx)
 		return ret;
 	}
 
-	ret = FabricUtil::postRx(ctx, ctx->ep, MAX(ctx->rx_size, PP_MAX_CTRL_MSG) + ctx->rx_prefix_size, ctx->rx_ctx_ptr);
+	ret = FabricUtil::postRx(ctx, ctx->ep, MAX(ctx->rx_size, MAX_CTRL_MSG) + ctx->rx_prefix_size, ctx->rx_ctx_ptr);
 	if (ret)
 		return ret;
 
@@ -487,7 +486,7 @@ ssize_t libefa::FabricUtil::rx(ConnectionContext *ctx, struct fid_ep *ep, size_t
 	if (ret)
 		return ret;
 
-	ret = postRx(ctx, ctx->ep, MAX(ctx->rx_size, PP_MAX_CTRL_MSG) + ctx->rx_prefix_size, ctx->rx_ctx_ptr);
+	ret = postRx(ctx, ctx->ep, MAX(ctx->rx_size, MAX_CTRL_MSG) + ctx->rx_prefix_size, ctx->rx_ctx_ptr);
 	if (!ret)
 		ctx->cnt_ack_msg++;
 
