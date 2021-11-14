@@ -170,8 +170,27 @@ void startServer3()
 	std::cin.ignore();
 
 	printf("SERVER: Starting data transfer\n\n");
-	FabricUtil::tx(&serverCtx, serverCtx.ep, FLAGS_payload);
+	// FabricUtil::tx(&serverCtx, serverCtx.ep, FLAGS_payload);
+
+	FabricUtil::fillBuffer((char *)serverCtx.tx_buf + serverCtx.tx_prefix_size, FLAGS_payload);
+
+	serverCtx.startTimekeeper();
+	for (int i = 1; i <= FLAGS_iterations; i++)
+	{
+		ret = fi_tsend(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
+					   fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, TAG, NULL);
+		while (ret == -FI_EAGAIN)
+		{
+			// printf("fi_tsend retry iteration %d\n", i);
+			ret = fi_tsend(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
+						   fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, TAG, NULL);
+		}
+	}
+	serverCtx.stopTimekeeper();
+	sleep(1);
 	printf("SERVER: Completed data transfer\n\n");
+	PerformancePrinter::print(NULL, FLAGS_payload, FLAGS_iterations,
+							  serverCtx.cnt_ack_msg, serverCtx.start, serverCtx.end, 1);
 }
 
 void startClient3()
@@ -187,7 +206,10 @@ void startClient3()
 	clientCtx.timeout_sec = -1;
 
 	printf("CLIENT: Receiving data transfer\n\n");
-	FabricUtil::rx(&clientCtx, clientCtx.ep, FLAGS_payload);
+	for (int i = 1; i <= FLAGS_iterations; i++)
+	{
+		FabricUtil::rx(&clientCtx, clientCtx.ep, FLAGS_payload);
+	}
 	printf("CLIENT: Completed Receiving data transfer\n\n");
 }
 
