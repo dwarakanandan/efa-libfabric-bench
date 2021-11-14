@@ -186,11 +186,18 @@ void startServer3()
 						   fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, TAG, NULL);
 		}
 	}
+
+	ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), FLAGS_iterations, -1);
+	if (ret)
+	{
+		printf("SERVER: getCqCompletion failed\n\n");
+		return;
+	}
+
 	serverCtx.stopTimekeeper();
-	sleep(1);
 	printf("SERVER: Completed data transfer\n\n");
 	PerformancePrinter::print(NULL, FLAGS_payload, FLAGS_iterations,
-							  serverCtx.cnt_ack_msg, serverCtx.start, serverCtx.end, 1);
+							  serverCtx.tx_cq_cntr, serverCtx.start, serverCtx.end, 1);
 }
 
 void startClient3()
