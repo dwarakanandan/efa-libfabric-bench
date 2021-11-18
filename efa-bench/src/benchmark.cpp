@@ -156,6 +156,28 @@ void startClient2()
 	printf("CLIENT: Completed Receiving data transfer\n\n");
 }
 
+int sendBatch(ConnectionContext serverCtx)
+{
+	int ret = 0;
+	for (int i = 1; i <= FLAGS_batch; i++)
+	{
+		ret = fi_tsend(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
+					   fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, TAG, NULL);
+		while (ret == -FI_EAGAIN)
+		{
+			printf("fi_tsend retry iteration %d\n", i);
+			ret = fi_tsend(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
+						   fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, TAG, NULL);
+		}
+		if (ret)
+		{
+			printf("SERVER: fi_tsend failed\n\n");
+			return ret;
+		}
+	}
+	return ret;
+}
+
 void startServer3()
 {
 	int ret;
@@ -170,24 +192,34 @@ void startServer3()
 	std::cin.ignore();
 
 	printf("SERVER: Starting data transfer\n\n");
-	// FabricUtil::tx(&serverCtx, serverCtx.ep, FLAGS_payload);
 
 	FabricUtil::fillBuffer((char *)serverCtx.tx_buf + serverCtx.tx_prefix_size, FLAGS_payload);
 
 	serverCtx.startTimekeeper();
-	for (int i = 1; i <= FLAGS_iterations; i++)
+	for (int i = 1; i <= (FLAGS_iterations / FLAGS_batch); i++)
 	{
-		ret = fi_tsend(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
-					   fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, TAG, NULL);
-		while (ret == -FI_EAGAIN)
+		// Only during the first batch queue up "batch" number of packets
+		if (i == 1)
 		{
-			// printf("fi_tsend retry iteration %d\n", i);
-			ret = fi_tsend(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
-						   fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, TAG, NULL);
+			sendBatch(serverCtx);
 		}
+
+		// For every except the last send "batch" number of packets (This includes the first batch too)
+		if (i < (FLAGS_iterations / FLAGS_batch))
+		{
+			sendBatch(serverCtx);
+		}
+
+		// Wait for "batch" number of completions
+		ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), serverCtx.tx_cq_cntr + FLAGS_batch, -1);
+		if (ret)
+		{
+			printf("SERVER: getCqCompletion failed\n\n");
+			return;
+		}
+		printf("Got completions: %lu\n", serverCtx.tx_cq_cntr);
 	}
 
-	ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), FLAGS_iterations, -1);
 	if (ret)
 	{
 		printf("SERVER: getCqCompletion failed\n\n");
