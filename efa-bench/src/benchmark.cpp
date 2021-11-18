@@ -156,7 +156,7 @@ void startClient2()
 	printf("CLIENT: Completed Receiving data transfer\n\n");
 }
 
-int sendBatch(ConnectionContext serverCtx)
+int sendBatch(ConnectionContext serverCtx, int batchCount)
 {
 	int ret = 0;
 	for (int i = 1; i <= FLAGS_batch; i++)
@@ -165,7 +165,7 @@ int sendBatch(ConnectionContext serverCtx)
 					   fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, TAG, NULL);
 		while (ret == -FI_EAGAIN)
 		{
-			printf("fi_tsend retry iteration %d\n", i);
+			printf("fi_tsend retry batch: %d iteration %d\n", batchCount, i);
 			ret = fi_tsend(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
 						   fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, TAG, NULL);
 		}
@@ -201,13 +201,13 @@ void startServer3()
 		// Only during the first batch queue up "batch" number of packets
 		if (i == 1)
 		{
-			sendBatch(serverCtx);
+			sendBatch(serverCtx, i);
 		}
 
 		// For every except the last send "batch" number of packets (This includes the first batch too)
 		if (i < (FLAGS_iterations / FLAGS_batch))
 		{
-			sendBatch(serverCtx);
+			sendBatch(serverCtx, i);
 		}
 
 		// Wait for "batch" number of completions
@@ -217,7 +217,7 @@ void startServer3()
 			printf("SERVER: getCqCompletion failed\n\n");
 			return;
 		}
-		printf("Got completions: %lu\n", serverCtx.tx_cq_cntr);
+		// printf("Got completions: %lu\n", serverCtx.tx_cq_cntr);
 	}
 
 	if (ret)
