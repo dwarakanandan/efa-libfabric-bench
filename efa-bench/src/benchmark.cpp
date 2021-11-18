@@ -196,34 +196,44 @@ void startServer3()
 	FabricUtil::fillBuffer((char *)serverCtx.tx_buf + serverCtx.tx_prefix_size, FLAGS_payload);
 
 	serverCtx.startTimekeeper();
-	for (int i = 1; i <= (FLAGS_iterations / FLAGS_batch); i++)
+	int numCqObtained = 0;
+	int cqTryCount = FLAGS_batch;
+
+	for (int i = 1; i <= FLAGS_iterations; i++)
 	{
-		// Only during the first batch queue up "batch" number of packets
-		if (i == 1)
+		ret = fi_tsend(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
+					   fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, TAG, NULL);
+		while (ret == -FI_EAGAIN)
 		{
-			sendBatch(serverCtx, i);
-		}
+			if (numCqObtained < i)
+			{
+				ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), serverCtx.tx_cq_cntr + cqTryCount, -1);
+				if (ret)
+				{
+					printf("SERVER: getCqCompletion failed\n\n");
+					exit(1);
+				}
+				numCqObtained += cqTryCount;
+			}
 
-		// For every except the last send "batch" number of packets (This includes the first batch too)
-		if (i < (FLAGS_iterations / FLAGS_batch))
-		{
-			sendBatch(serverCtx, i);
+			printf("fi_tsend retry iteration %d\n", i);
+			ret = fi_tsend(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
+						   fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, TAG, NULL);
 		}
-
-		// Wait for "batch" number of completions
-		ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), serverCtx.tx_cq_cntr + FLAGS_batch, -1);
 		if (ret)
 		{
-			printf("SERVER: getCqCompletion failed\n\n");
-			return;
+			printf("SERVER: fi_tsend failed\n\n");
+			exit(1);
 		}
-		// printf("Got completions: %lu\n", serverCtx.tx_cq_cntr);
 	}
 
+	printf("CQ Already obtained %d\n\n", numCqObtained);
+	ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr),
+									  serverCtx.tx_cq_cntr + (FLAGS_iterations - numCqObtained), -1);
 	if (ret)
 	{
 		printf("SERVER: getCqCompletion failed\n\n");
-		return;
+		exit(1);
 	}
 
 	serverCtx.stopTimekeeper();
