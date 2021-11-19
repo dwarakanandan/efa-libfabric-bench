@@ -222,14 +222,8 @@ void startServer3()
 						   fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, TAG, NULL);
 			numTxRetries++;
 		}
-		if (ret)
-		{
-			printf("SERVER: fi_tsend failed\n\n");
-			exit(1);
-		}
 		if ((i - numCqObtained) > FLAGS_batch)
 		{
-
 			ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), serverCtx.tx_cq_cntr + cqTry, -1);
 			if (ret)
 			{
