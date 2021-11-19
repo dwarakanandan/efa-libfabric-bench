@@ -196,8 +196,9 @@ void startServer3()
 	FabricUtil::fillBuffer((char *)serverCtx.tx_buf + serverCtx.tx_prefix_size, FLAGS_payload);
 
 	serverCtx.startTimekeeper();
+	int numTxRetries = 0;
 	int numCqObtained = 0;
-	int cqTryCount = FLAGS_batch;
+	int cqTry = FLAGS_batch * 0.8;
 
 	for (int i = 1; i <= FLAGS_iterations; i++)
 	{
@@ -207,26 +208,39 @@ void startServer3()
 		{
 			if (numCqObtained < i)
 			{
-				ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), serverCtx.tx_cq_cntr + cqTryCount, -1);
+				ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), serverCtx.tx_cq_cntr + 1, -1);
 				if (ret)
 				{
 					printf("SERVER: getCqCompletion failed\n\n");
 					exit(1);
 				}
-				numCqObtained += cqTryCount;
+				numCqObtained++;
 			}
 
-			printf("fi_tsend retry iteration %d\n", i);
+			// printf("fi_tsend retry iteration %d\n", i);
 			ret = fi_tsend(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
 						   fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, TAG, NULL);
+			numTxRetries++;
 		}
 		if (ret)
 		{
 			printf("SERVER: fi_tsend failed\n\n");
 			exit(1);
 		}
+		if ((i - numCqObtained) > FLAGS_batch)
+		{
+
+			ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), serverCtx.tx_cq_cntr + cqTry, -1);
+			if (ret)
+			{
+				printf("SERVER: getCqCompletion failed\n\n");
+				exit(1);
+			}
+			numCqObtained += cqTry;
+		}
 	}
 
+	printf("Num TX Retries %d\n\n", numTxRetries);
 	printf("CQ Already obtained %d\n\n", numCqObtained);
 	ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr),
 									  serverCtx.tx_cq_cntr + (FLAGS_iterations - numCqObtained), -1);
