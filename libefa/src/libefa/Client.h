@@ -16,7 +16,7 @@ namespace libefa
         int fabricGetaddrinfo(struct addrinfo **results);
 
     public:
-        Client(std::string provider, std::string endpoint, std::string destinationAddress, uint16_t port);
+        Client(std::string provider, std::string endpoint, bool isTagged, std::string destinationAddress, uint16_t port);
 
         virtual ConnectionContext getConnectionContext();
 

@@ -12,7 +12,7 @@ namespace libefa
         virtual int ctrlSync();
 
     public:
-        Server(std::string provider, std::string endpoint, uint16_t port);
+        Server(std::string provider, std::string endpoint, bool isTagged, uint16_t port);
 
         virtual ConnectionContext getConnectionContext();
 

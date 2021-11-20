@@ -1,6 +1,6 @@
 #include "FabricInfo.h"
 
-int libefa::FabricInfo::initFabricInfo(std::string provider, std::string endpoint)
+int libefa::FabricInfo::initFabricInfo(std::string provider, std::string endpoint, bool isTagged)
 {
     int ret;
     uint64_t flags = 0;
@@ -12,10 +12,17 @@ int libefa::FabricInfo::initFabricInfo(std::string provider, std::string endpoin
     hints->mode = FI_MSG_PREFIX;
 
     // DGRAM only supports FI_MSG, only if we are running RDM, set caps to support Tagged packets
-    hints->caps = (hints->ep_attr->type == FI_EP_RDM) ? FI_TAGGED : FI_MSG;
+    if ((hints->ep_attr->type == FI_EP_RDM) && isTagged)
+    {
+        hints->caps = FI_TAGGED;
+    }
+    else
+    {
+        hints->caps = FI_MSG;
+    }
 
-    // hints->domain_attr->mode = ~0;
-    // hints->domain_attr->mr_mode = FI_MR_LOCAL | FI_MR_VIRT_ADDR | FI_MR_ALLOCATED | FI_MR_PROV_KEY;
+    hints->domain_attr->mode = ~0;
+    hints->domain_attr->mr_mode = FI_MR_LOCAL | FI_MR_VIRT_ADDR | FI_MR_ALLOCATED | FI_MR_PROV_KEY;
     // hints->domain_attr->resource_mgmt = FI_RM_ENABLED;
     // hints->domain_attr->threading = FI_THREAD_DOMAIN;
     // hints->tx_attr->msg_order = FI_ORDER_SAS;
@@ -28,6 +35,15 @@ int libefa::FabricInfo::initFabricInfo(std::string provider, std::string endpoin
     {
         PRINTERR("fi_getinfo", ret);
         return ret;
+    }
+
+    if (info->caps & FI_TAGGED)
+    {
+        DEBUG("Tagged message transfer\n");
+    }
+    else
+    {
+        DEBUG("Untagged message transfer\n");
     }
 
     return EXIT_SUCCESS;

@@ -1,9 +1,10 @@
 #include "Client.h"
 
-libefa::Client::Client(std::string provider, std::string endpoint, std::string destinationAddress, uint16_t port)
+libefa::Client::Client(std::string provider, std::string endpoint, bool isTagged, std::string destinationAddress, uint16_t port)
 {
     this->provider = provider;
     this->endpoint = endpoint;
+    this->isTagged = isTagged;
     this->destinationAddress = destinationAddress;
     this->port = port;
 
@@ -122,7 +123,7 @@ int libefa::Client::initFabric()
         return ret;
 
     DEBUG("CLIENT: getinfo\n");
-    ret = ctx.fi.initFabricInfo(provider, endpoint);
+    ret = ctx.fi.initFabricInfo(provider, endpoint, isTagged);
     if (ret)
         return ret;
 

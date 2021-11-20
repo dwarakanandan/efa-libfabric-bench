@@ -6,7 +6,7 @@ using namespace libefa;
 void startPingPongServer()
 {
 	int ret;
-	Server server = Server(FLAGS_provider, FLAGS_endpoint, FLAGS_src_port);
+	Server server = Server(FLAGS_provider, FLAGS_endpoint, FLAGS_tagged, FLAGS_src_port);
 	ret = server.init();
 	if (ret)
 		return;
@@ -36,7 +36,7 @@ void startPingPongServer()
 void startPingPongInjectServer()
 {
 	int ret;
-	Server server = Server(FLAGS_provider, FLAGS_endpoint, FLAGS_src_port);
+	Server server = Server(FLAGS_provider, FLAGS_endpoint, FLAGS_tagged, FLAGS_src_port);
 	ret = server.init();
 	if (ret)
 		return;
@@ -66,7 +66,7 @@ void startPingPongInjectServer()
 void startTaggedBatchServer()
 {
 	int ret;
-	Server server = Server(FLAGS_provider, FLAGS_endpoint, FLAGS_src_port);
+	Server server = Server(FLAGS_provider, FLAGS_endpoint, FLAGS_tagged, FLAGS_src_port);
 	ret = server.init();
 	if (ret)
 		return;

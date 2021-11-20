@@ -14,6 +14,8 @@ namespace libefa
 
         std::string endpoint;
 
+        bool isTagged;
+
         uint16_t port;
 
         virtual int initFabric() = 0;

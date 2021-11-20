@@ -1,9 +1,10 @@
 #include "Server.h"
 
-libefa::Server::Server(std::string provider, std::string endpoint, uint16_t port)
+libefa::Server::Server(std::string provider, std::string endpoint, bool isTagged, uint16_t port)
 {
     this->provider = provider;
     this->endpoint = endpoint;
+    this->isTagged = isTagged;
     this->port = port;
 
     ctx = ConnectionContext();
@@ -88,7 +89,7 @@ int libefa::Server::initFabric()
     DEBUG("Initializing fabric\n");
 
     DEBUG("SERVER: getinfo\n");
-    ret = ctx.fi.initFabricInfo(provider, endpoint);
+    ret = ctx.fi.initFabricInfo(provider, endpoint, isTagged);
     if (ret)
         return ret;
 

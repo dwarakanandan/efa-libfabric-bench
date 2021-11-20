@@ -6,7 +6,7 @@ using namespace libefa;
 void startPingPongClient()
 {
 	int ret;
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, FLAGS_dst_addr, FLAGS_dst_port);
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, FLAGS_tagged, FLAGS_dst_addr, FLAGS_dst_port);
 	ret = client.init();
 	if (ret)
 		return;
@@ -36,7 +36,7 @@ void startPingPongClient()
 void startPingPongInjectClient()
 {
 	int ret;
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, FLAGS_dst_addr, FLAGS_dst_port);
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, FLAGS_tagged, FLAGS_dst_addr, FLAGS_dst_port);
 	ret = client.init();
 	if (ret)
 		return;
@@ -66,7 +66,7 @@ void startPingPongInjectClient()
 void startTaggedBatchClient()
 {
 	int ret;
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, FLAGS_dst_addr, FLAGS_dst_port);
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, FLAGS_tagged, FLAGS_dst_addr, FLAGS_dst_port);
 	ret = client.init();
 	if (ret)
 		return;
