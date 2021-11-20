@@ -46,7 +46,11 @@
 
 static const uint64_t TAG = 1234;
 
-void DEBUG(std::string str);
+#define DEBUG(format, args...)  \
+	if (libefa::ENABLE_DEBUG)   \
+	{                           \
+		printf(format, ##args); \
+	}
 
 namespace libefa
 {

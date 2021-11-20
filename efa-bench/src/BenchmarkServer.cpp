@@ -1,0 +1,182 @@
+#include "BenchmarkServer.h"
+
+using namespace std;
+using namespace libefa;
+
+void startPingPongServer()
+{
+	int ret;
+	Server server = Server(FLAGS_provider, FLAGS_endpoint, FLAGS_src_port);
+	ret = server.init();
+	if (ret)
+		return;
+
+	ConnectionContext serverCtx = server.getConnectionContext();
+
+	printf("SERVER: Starting data transfer\n\n");
+	serverCtx.startTimekeeper();
+
+	for (int i = 0; i < FLAGS_iterations; i++)
+	{
+		ret = FabricUtil::rx(&serverCtx, serverCtx.ep, FLAGS_payload);
+		if (ret)
+			return;
+		ret = FabricUtil::tx(&serverCtx, serverCtx.ep, FLAGS_payload);
+		if (ret)
+			return;
+	}
+
+	serverCtx.stopTimekeeper();
+	printf("SERVER: Completed data transfer\n\n");
+
+	PerformancePrinter::print(NULL, FLAGS_payload, FLAGS_iterations,
+							  serverCtx.cnt_ack_msg, serverCtx.start, serverCtx.end, 2);
+}
+
+void startTaggedBatchSendServer()
+{
+	int ret;
+	Server server = Server(FLAGS_provider, FLAGS_endpoint, FLAGS_src_port);
+	ret = server.init();
+	if (ret)
+		return;
+
+	ConnectionContext serverCtx = server.getConnectionContext();
+
+	// std::cout << "Press any key to transmit..." << std::endl;
+	// std::cin.ignore();
+
+	DEBUG("SERVER: Starting data transfer\n\n");
+
+	FabricUtil::fillBuffer((char *)serverCtx.tx_buf + serverCtx.tx_prefix_size, FLAGS_payload);
+
+	serverCtx.startTimekeeper();
+	int numTxRetries = 0;
+	int numCqObtained = 0;
+	int cqTry = FLAGS_batch * FLAGS_cq_try;
+
+	for (int i = 1; i <= FLAGS_iterations; i++)
+	{
+		ret = fi_tsend(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
+					   fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, TAG, NULL);
+		while (ret == -FI_EAGAIN)
+		{
+			if (numCqObtained < i)
+			{
+				ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), serverCtx.tx_cq_cntr + 1, -1);
+				if (ret)
+				{
+					printf("SERVER: getCqCompletion failed\n\n");
+					exit(1);
+				}
+				numCqObtained++;
+			}
+
+			// printf("fi_tsend retry iteration %d\n", i);
+			ret = fi_tsend(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
+						   fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, TAG, NULL);
+			numTxRetries++;
+		}
+		if ((i - numCqObtained) > FLAGS_batch)
+		{
+			ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), serverCtx.tx_cq_cntr + cqTry, -1);
+			if (ret)
+			{
+				printf("SERVER: getCqCompletion failed\n\n");
+				exit(1);
+			}
+			numCqObtained += cqTry;
+		}
+	}
+
+	DEBUG("Num TX Retries %d\n\n", numTxRetries);
+	DEBUG("CQ Already obtained %d\n\n", numCqObtained);
+	ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr),
+									  serverCtx.tx_cq_cntr + (FLAGS_iterations - numCqObtained), -1);
+	if (ret)
+	{
+		printf("SERVER: getCqCompletion failed\n\n");
+		exit(1);
+	}
+
+	serverCtx.stopTimekeeper();
+	DEBUG("SERVER: Completed data transfer\n\n");
+	PerformancePrinter::print(NULL, FLAGS_payload, FLAGS_iterations,
+							  serverCtx.tx_cq_cntr, serverCtx.start, serverCtx.end, 1);
+}
+
+void startTaggedBatchInjectServer()
+{
+	int ret;
+	Server server = Server(FLAGS_provider, FLAGS_endpoint, FLAGS_src_port);
+	ret = server.init();
+	if (ret)
+		return;
+
+	ConnectionContext serverCtx = server.getConnectionContext();
+
+	// std::cout << "Press any key to transmit..." << std::endl;
+	// std::cin.ignore();
+
+	DEBUG("SERVER: Starting data transfer\n\n");
+
+	FabricUtil::fillBuffer((char *)serverCtx.tx_buf + serverCtx.tx_prefix_size, FLAGS_payload);
+
+	serverCtx.startTimekeeper();
+	int numTxRetries = 0;
+	int numCqObtained = 0;
+	int cqTry = FLAGS_batch * FLAGS_cq_try;
+
+	for (int i = 1; i <= FLAGS_iterations; i++)
+	{
+		ret = fi_tinject(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
+						 serverCtx.remote_fi_addr, TAG);
+		while (ret == -FI_EAGAIN)
+		{
+			// if (numCqObtained < i)
+			// {
+			// 	ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), serverCtx.tx_cq_cntr + 1, -1);
+			// 	if (ret)
+			// 	{
+			// 		printf("SERVER: getCqCompletion failed\n\n");
+			// 		exit(1);
+			// 	}
+			// 	numCqObtained++;
+			// }
+
+			// printf("fi_tinject retry iteration %d\n", i);
+			ret = fi_tinject(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
+							 serverCtx.remote_fi_addr, TAG);
+			numTxRetries++;
+		}
+		// if ((i - numCqObtained) > FLAGS_batch)
+		// {
+		// 	ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), serverCtx.tx_cq_cntr + cqTry, -1);
+		// 	if (ret)
+		// 	{
+		// 		printf("SERVER: getCqCompletion failed\n\n");
+		// 		exit(1);
+		// 	}
+		// 	numCqObtained += cqTry;
+		// }
+	}
+
+	DEBUG("Num TX Retries %d\n\n", numTxRetries);
+	// DEBUG("CQ Already obtained %d\n\n", numCqObtained);
+	// ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr),
+	// 								  serverCtx.tx_cq_cntr + (FLAGS_iterations - numCqObtained), -1);
+	// if (ret)
+	// {
+	// 	printf("SERVER: getCqCompletion failed\n\n");
+	// 	exit(1);
+	// }
+
+	ret = FabricUtil::rx(&serverCtx, serverCtx.ep, FLAGS_payload);
+	if (ret)
+		return;
+
+	serverCtx.stopTimekeeper();
+	DEBUG("SERVER: Completed data transfer\n\n");
+	PerformancePrinter::print(NULL, FLAGS_payload, FLAGS_iterations,
+							  serverCtx.tx_cq_cntr, serverCtx.start, serverCtx.end, 1);
+}

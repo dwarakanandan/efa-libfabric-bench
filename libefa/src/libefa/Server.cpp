@@ -52,7 +52,7 @@ int libefa::Server::ctrlInit()
         return -1;
     }
 
-    printf("SERVER: waiting for connection\n");
+    DEBUG("SERVER: waiting for connection\n");
 
     ctx.ctrl_connfd = accept(listenfd, NULL, NULL);
     if (ctx.ctrl_connfd == -1)
@@ -125,9 +125,10 @@ int libefa::Server::initFabric()
     if (ret)
         return ret;
 
-    printf("*** Fabric Initialized ***\n\n");
+    DEBUG("*** Fabric Initialized ***\n\n");
 
-    ctx.fi.printFabricInfoBanner();
+    if (libefa::ENABLE_DEBUG)
+        ctx.fi.printFabricInfoBanner();
 
     return ret;
 }

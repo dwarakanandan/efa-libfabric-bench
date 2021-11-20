@@ -33,7 +33,7 @@ int libefa::Client::fabricGetaddrinfo(struct addrinfo **results)
     if (ret != 0)
     {
         err_msg = gai_strerror(ret);
-        DEBUG(err_msg);
+        std::cout << err_msg << std::endl;
         ret = -EXIT_FAILURE;
         return ret;
     }
@@ -154,7 +154,8 @@ int libefa::Client::initFabric()
 
     printf("*** Fabric Initialized ***\n\n");
 
-    ctx.fi.printFabricInfoBanner();
+    if (libefa::ENABLE_DEBUG)
+        ctx.fi.printFabricInfoBanner();
 
     return 0;
 }
