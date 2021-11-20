@@ -2,6 +2,6 @@
 
 void startPingPongServer();
 
-void startTaggedBatchSendServer();
+void startPingPongInjectServer();
 
-void startTaggedBatchInjectServer();
+void startTaggedBatchServer();

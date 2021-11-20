@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
 		payloadIterationMap.insert(std::make_pair(64, 1000000));
 		payloadIterationMap.insert(std::make_pair(512, 1000000));
 		payloadIterationMap.insert(std::make_pair(1024, 1000000));
-		// payloadIterationMap.insert(std::make_pair(4096, 1000000));
-		// payloadIterationMap.insert(std::make_pair(8192, 500000));
+		payloadIterationMap.insert(std::make_pair(4096, 1000000));
+		payloadIterationMap.insert(std::make_pair(8192, 500000));
 
 		for (auto const &x : payloadIterationMap)
 		{
@@ -38,26 +38,12 @@ int main(int argc, char *argv[])
 			FLAGS_iterations = x.second;
 			if (FLAGS_mode == "server")
 			{
-				if (FLAGS_inject)
-				{
-					startTaggedBatchInjectServer();
-				}
-				else
-				{
-					startTaggedBatchSendServer();
-				}
+				startTaggedBatchServer();
 			}
 
 			if (FLAGS_mode == "client")
 			{
-				if (FLAGS_inject)
-				{
-					startTaggedInjectReceiveClient();
-				}
-				else
-				{
-					startTaggedSendReceiveClient();
-				}
+				startTaggedBatchClient();
 			}
 		}
 		return 0;
@@ -65,26 +51,12 @@ int main(int argc, char *argv[])
 
 	if (FLAGS_mode == "server")
 	{
-		if (FLAGS_inject)
-		{
-			startTaggedBatchInjectServer();
-		}
-		else
-		{
-			startTaggedBatchSendServer();
-		}
+		startPingPongInjectServer();
 	}
 
 	if (FLAGS_mode == "client")
 	{
-		if (FLAGS_inject)
-		{
-			startTaggedInjectReceiveClient();
-		}
-		else
-		{
-			startTaggedSendReceiveClient();
-		}
+		startPingPongInjectClient();
 	}
 
 	return 0;

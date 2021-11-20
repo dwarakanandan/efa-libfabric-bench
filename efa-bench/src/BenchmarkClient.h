@@ -2,6 +2,6 @@
 
 void startPingPongClient();
 
-void startTaggedSendReceiveClient();
+void startPingPongInjectClient();
 
-void startTaggedInjectReceiveClient();
+void startTaggedBatchClient();

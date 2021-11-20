@@ -13,7 +13,7 @@ void startPingPongClient()
 
 	ConnectionContext clientCtx = client.getConnectionContext();
 
-	printf("CLIENT: Starting data transfer\n\n");
+	DEBUG("CLIENT: Starting data transfer\n\n");
 	clientCtx.startTimekeeper();
 
 	for (int i = 0; i < FLAGS_iterations; i++)
@@ -27,13 +27,13 @@ void startPingPongClient()
 	}
 
 	clientCtx.stopTimekeeper();
-	printf("CLIENT: Completed data transfer\n\n");
+	DEBUG("CLIENT: Completed data transfer\n\n");
 
 	PerformancePrinter::print(NULL, FLAGS_payload, FLAGS_iterations,
 							  clientCtx.cnt_ack_msg, clientCtx.start, clientCtx.end, 2);
 }
 
-void startTaggedSendReceiveClient()
+void startPingPongInjectClient()
 {
 	int ret;
 	Client client = Client(FLAGS_provider, FLAGS_endpoint, FLAGS_dst_addr, FLAGS_dst_port);
@@ -43,17 +43,27 @@ void startTaggedSendReceiveClient()
 
 	ConnectionContext clientCtx = client.getConnectionContext();
 
-	clientCtx.timeout_sec = -1;
+	DEBUG("CLIENT: Starting data transfer\n\n");
+	clientCtx.startTimekeeper();
 
-	DEBUG("CLIENT: Receiving data transfer\n\n");
-	for (int i = 1; i <= FLAGS_iterations; i++)
+	for (int i = 0; i < FLAGS_iterations; i++)
 	{
-		FabricUtil::rx(&clientCtx, clientCtx.ep, FLAGS_payload);
+		ret = FabricUtil::inject(&clientCtx, clientCtx.ep, FLAGS_payload);
+		if (ret)
+			return;
+		ret = FabricUtil::rx(&clientCtx, clientCtx.ep, FLAGS_payload);
+		if (ret)
+			return;
 	}
-	DEBUG("CLIENT: Completed Receiving data transfer\n\n");
+
+	clientCtx.stopTimekeeper();
+	DEBUG("CLIENT: Completed data transfer\n\n");
+
+	PerformancePrinter::print(NULL, FLAGS_payload, FLAGS_iterations,
+							  clientCtx.cnt_ack_msg, clientCtx.start, clientCtx.end, 2);
 }
 
-void startTaggedInjectReceiveClient()
+void startTaggedBatchClient()
 {
 	int ret;
 	Client client = Client(FLAGS_provider, FLAGS_endpoint, FLAGS_dst_addr, FLAGS_dst_port);
@@ -71,8 +81,4 @@ void startTaggedInjectReceiveClient()
 		FabricUtil::rx(&clientCtx, clientCtx.ep, FLAGS_payload);
 	}
 	DEBUG("CLIENT: Completed Receiving data transfer\n\n");
-
-	ret = FabricUtil::tx(&clientCtx, clientCtx.ep, FLAGS_payload);
-	if (ret)
-		return;
 }

@@ -52,6 +52,10 @@ namespace libefa
 
         static ssize_t postTx(ConnectionContext *ctx, struct fid_ep *ep, size_t size, void *ctxptr);
 
+        static ssize_t postInject(ConnectionContext *ctx, struct fid_ep *ep, size_t size, void *ctxptr);
+
+        static ssize_t inject(ConnectionContext *ctx, struct fid_ep *ep, size_t size);
+
         static int getTxCompletion(ConnectionContext *ctx, uint64_t total);
     };
 }

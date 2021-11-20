@@ -664,6 +664,75 @@ ssize_t libefa::FabricUtil::postTx(ConnectionContext *ctx, struct fid_ep *ep, si
 	return 0;
 }
 
+ssize_t libefa::FabricUtil::postInject(ConnectionContext *ctx, struct fid_ep *ep, size_t size, void *ctxptr)
+{
+	if (!(ctx->fi.info->caps & FI_TAGGED))
+	{
+		do
+		{
+			int timeout_sec_save;
+			int ret, rc;
+
+			while (1)
+			{
+				ret = fi_inject(ep, ctx->tx_buf, size, ctx->remote_fi_addr);
+				if (!ret)
+					break;
+
+				if (ret != -FI_EAGAIN)
+				{
+					PRINTERR("transmit", ret);
+					return ret;
+				}
+
+				timeout_sec_save = ctx->timeout_sec;
+				ctx->timeout_sec = 0;
+				rc = FabricUtil::getTxCompletion(ctx, ctx->tx_seq);
+				ctx->timeout_sec = timeout_sec_save;
+				if (rc && rc != -FI_EAGAIN)
+				{
+					printf("Failed to get transmit completion");
+					return rc;
+				}
+			}
+			ctx->tx_seq++;
+		} while (0);
+	}
+	else
+	{
+		do
+		{
+			int timeout_sec_save;
+			int ret, rc;
+
+			while (1)
+			{
+				ret = fi_tinject(ep, ctx->tx_buf, size, ctx->remote_fi_addr, TAG);
+				if (!ret)
+					break;
+
+				if (ret != -FI_EAGAIN)
+				{
+					PRINTERR("t-transmit", ret);
+					return ret;
+				}
+
+				timeout_sec_save = ctx->timeout_sec;
+				ctx->timeout_sec = 0;
+				rc = FabricUtil::getTxCompletion(ctx, ctx->tx_seq);
+				ctx->timeout_sec = timeout_sec_save;
+				if (rc && rc != -FI_EAGAIN)
+				{
+					printf("Failed to get t-transmit completion");
+					return rc;
+				}
+			}
+			ctx->tx_seq++;
+		} while (0);
+	}
+	return 0;
+}
+
 ssize_t libefa::FabricUtil::tx(ConnectionContext *ctx, struct fid_ep *ep, size_t size)
 {
 	ssize_t ret;
@@ -675,6 +744,17 @@ ssize_t libefa::FabricUtil::tx(ConnectionContext *ctx, struct fid_ep *ep, size_t
 		return ret;
 
 	ret = getTxCompletion(ctx, ctx->tx_seq);
+
+	return ret;
+}
+
+ssize_t libefa::FabricUtil::inject(ConnectionContext *ctx, struct fid_ep *ep, size_t size)
+{
+	ssize_t ret;
+
+	fillBuffer((char *)ctx->tx_buf + ctx->tx_prefix_size, size);
+
+	ret = postInject(ctx, ep, size + ctx->tx_prefix_size, ctx->tx_ctx_ptr);
 
 	return ret;
 }
