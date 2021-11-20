@@ -38,12 +38,26 @@ int main(int argc, char *argv[])
 			FLAGS_iterations = x.second;
 			if (FLAGS_mode == "server")
 			{
-				startTaggedBatchServer();
+				if (FLAGS_inject)
+				{
+					startPingPongInjectServer();
+				}
+				else
+				{
+					startPingPongServer();
+				}
 			}
 
 			if (FLAGS_mode == "client")
 			{
-				startTaggedBatchClient();
+				if (FLAGS_inject)
+				{
+					startPingPongInjectClient();
+				}
+				else
+				{
+					startPingPongClient();
+				}
 			}
 		}
 		return 0;
