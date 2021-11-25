@@ -150,7 +150,7 @@ void startLatencyTestServer()
 	FabricUtil::fillBuffer((char *)serverCtx.tx_buf + serverCtx.tx_prefix_size, FLAGS_payload);
 
 	serverCtx.startTimekeeper();
-	if (FLAGS_endpoint.compare("RDM") == 0)
+	if (FLAGS_endpoint.compare("rdm") == 0)
 	{
 		for (int i = 1; i <= FLAGS_iterations; i++)
 		{
