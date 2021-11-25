@@ -15,15 +15,17 @@ enum T
 {
     SERVER,
     CLIENT,
-    BANDWIDTH,
+    PING_PONG,
     INJECT,
     LATENCY,
+    BATCH,
 };
 
 static std::map<T, const char *> BENCHMARK_TYPE = {
-    {BANDWIDTH, "bandwidth"},
+    {PING_PONG, "pingpong"},
     {INJECT, "inject"},
     {LATENCY, "latency"},
+    {BATCH, "batch"},
 };
 
 static std::map<T, const char *> NODE_TYPE = {

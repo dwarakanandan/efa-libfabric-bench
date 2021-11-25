@@ -14,6 +14,8 @@ void startNode()
 			startLatencyTestServer();
 		else if (is_benchmark(FLAGS_benchmark_type, T::INJECT))
 			startPingPongInjectServer();
+		else if (is_benchmark(FLAGS_benchmark_type, T::BATCH))
+			startTaggedBatchServer();
 		else
 			startPingPongServer();
 	}
@@ -24,6 +26,8 @@ void startNode()
 			startLatencyTestClient();
 		else if (is_benchmark(FLAGS_benchmark_type, T::INJECT))
 			startPingPongInjectClient();
+		else if (is_benchmark(FLAGS_benchmark_type, T::BATCH))
+			startTaggedBatchClient();
 		else
 			startPingPongClient();
 	}
