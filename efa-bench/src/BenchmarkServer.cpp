@@ -150,27 +150,29 @@ void startLatencyTestServer()
 	FabricUtil::fillBuffer((char *)serverCtx.tx_buf + serverCtx.tx_prefix_size, FLAGS_payload);
 
 	serverCtx.startTimekeeper();
-
-	for (int i = 1; i <= FLAGS_iterations; i++)
+	if (FLAGS_tagged)
 	{
-		ret = fi_tsend(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
-					   fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, TAG, NULL);
-		if (ret)
+		for (int i = 1; i <= FLAGS_iterations; i++)
 		{
-			printf("SERVER: fi_tsend failed\n\n");
-			exit(1);
-		}
-
-		ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), serverCtx.tx_cq_cntr + 1, -1);
-		if (ret)
-		{
-			printf("SERVER: getCqCompletion failed\n\n");
-			exit(1);
+			fi_tsend(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
+					 fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, TAG, NULL);
+			FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), serverCtx.tx_cq_cntr + 1, -1);
 		}
 	}
-
+	else
+	{
+		for (int i = 1; i <= FLAGS_iterations; i++)
+		{
+			fi_send(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
+					fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, NULL);
+			FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), serverCtx.tx_cq_cntr + 1, -1);
+		}
+	}
 	serverCtx.stopTimekeeper();
 	DEBUG("SERVER: Completed data transfer\n\n");
+
+	printf("SERVER: CQ Count: %lu\n\n", serverCtx.tx_cq_cntr);
+
 	PerformancePrinter::print(NULL, FLAGS_payload, FLAGS_iterations,
 							  serverCtx.tx_cq_cntr, serverCtx.start, serverCtx.end, 1);
 }
