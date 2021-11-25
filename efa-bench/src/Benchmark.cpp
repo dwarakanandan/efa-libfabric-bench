@@ -53,13 +53,13 @@ int main(int argc, char *argv[])
 	if (FLAGS_run_all)
 	{
 		std::map<int, int> payloadIterationMap;
-		payloadIterationMap.insert(std::make_pair(1, 200000));
-		payloadIterationMap.insert(std::make_pair(8, 200000));
-		payloadIterationMap.insert(std::make_pair(64, 200000));
-		payloadIterationMap.insert(std::make_pair(512, 200000));
-		payloadIterationMap.insert(std::make_pair(1024, 100000));
-		payloadIterationMap.insert(std::make_pair(4096, 100000));
-		payloadIterationMap.insert(std::make_pair(8192, 50000));
+		payloadIterationMap.insert(std::make_pair(1, 2000000));
+		payloadIterationMap.insert(std::make_pair(8, 2000000));
+		payloadIterationMap.insert(std::make_pair(64, 2000000));
+		payloadIterationMap.insert(std::make_pair(512, 2000000));
+		payloadIterationMap.insert(std::make_pair(1024, 1000000));
+		payloadIterationMap.insert(std::make_pair(4096, 1000000));
+		payloadIterationMap.insert(std::make_pair(8192, 500000));
 
 		for (auto const &x : payloadIterationMap)
 		{
