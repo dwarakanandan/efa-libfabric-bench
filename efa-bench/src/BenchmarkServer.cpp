@@ -150,7 +150,7 @@ void startLatencyTestServer()
 	FabricUtil::fillBuffer((char *)serverCtx.tx_buf + serverCtx.tx_prefix_size, FLAGS_payload);
 
 	serverCtx.startTimekeeper();
-	if (FLAGS_tagged)
+	if (FLAGS_endpoint.compare("RDM") == 0)
 	{
 		for (int i = 1; i <= FLAGS_iterations; i++)
 		{
@@ -165,9 +165,10 @@ void startLatencyTestServer()
 		{
 			fi_send(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
 					fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, NULL);
-			FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), serverCtx.tx_cq_cntr + 1, -1);
 		}
 	}
+
+	FabricUtil::rx(&serverCtx, serverCtx.ep, FLAGS_payload);
 	serverCtx.stopTimekeeper();
 	DEBUG("SERVER: Completed data transfer\n\n");
 

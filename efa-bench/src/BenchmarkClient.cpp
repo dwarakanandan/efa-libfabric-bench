@@ -88,5 +88,21 @@ void startTaggedBatchClient() {
 }
 
 void startLatencyTestClient() {
-	defaultClient();
+		int ret;
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, FLAGS_tagged, FLAGS_dst_addr, FLAGS_dst_port);
+	ret = client.init();
+	if (ret)
+		return;
+
+	ConnectionContext clientCtx = client.getConnectionContext();
+
+	clientCtx.timeout_sec = -1;
+
+	DEBUG("CLIENT: Receiving data transfer\n\n");
+	for (int i = 1; i <= FLAGS_iterations; i++)
+	{
+		FabricUtil::rx(&clientCtx, clientCtx.ep, FLAGS_payload);
+	}
+	FabricUtil::tx(&clientCtx, clientCtx.ep, FLAGS_payload);
+	DEBUG("CLIENT: Completed Receiving data transfer\n\n");
 }
