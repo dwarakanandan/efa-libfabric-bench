@@ -5,3 +5,5 @@ void startPingPongClient();
 void startPingPongInjectClient();
 
 void startTaggedBatchClient();
+
+void startLatencyTestClient();

@@ -63,7 +63,7 @@ void startPingPongInjectClient()
 							  clientCtx.cnt_ack_msg, clientCtx.start, clientCtx.end, 2);
 }
 
-void startTaggedBatchClient()
+void defaultClient()
 {
 	int ret;
 	Client client = Client(FLAGS_provider, FLAGS_endpoint, FLAGS_tagged, FLAGS_dst_addr, FLAGS_dst_port);
@@ -81,4 +81,12 @@ void startTaggedBatchClient()
 		FabricUtil::rx(&clientCtx, clientCtx.ep, FLAGS_payload);
 	}
 	DEBUG("CLIENT: Completed Receiving data transfer\n\n");
+}
+
+void startTaggedBatchClient() {
+	defaultClient();
+}
+
+void startLatencyTestClient() {
+	defaultClient();
 }

@@ -1,8 +1,33 @@
+#include "Common.h"
 #include "BenchmarkClient.h"
 #include "BenchmarkServer.h"
 
 using namespace std;
 using namespace libefa;
+using namespace common;
+
+void startNode()
+{
+	if (is_node(FLAGS_mode, T::SERVER))
+	{
+		if (is_benchmark(FLAGS_benchmark_type, T::LATENCY))
+			startLatencyTestServer();
+		else if (is_benchmark(FLAGS_benchmark_type, T::INJECT))
+			startPingPongInjectServer();
+		else
+			startPingPongServer();
+	}
+
+	if (is_node(FLAGS_mode, T::CLIENT))
+	{
+		if (is_benchmark(FLAGS_benchmark_type, T::LATENCY))
+			startLatencyTestClient();
+		else if (is_benchmark(FLAGS_benchmark_type, T::INJECT))
+			startPingPongInjectClient();
+		else
+			startPingPongClient();
+	}
+}
 
 int main(int argc, char *argv[])
 {
@@ -36,42 +61,12 @@ int main(int argc, char *argv[])
 		{
 			FLAGS_payload = x.first;
 			FLAGS_iterations = x.second;
-			if (FLAGS_mode == "server")
-			{
-				if (FLAGS_inject)
-				{
-					startPingPongInjectServer();
-				}
-				else
-				{
-					startPingPongServer();
-				}
-			}
-
-			if (FLAGS_mode == "client")
-			{
-				if (FLAGS_inject)
-				{
-					startPingPongInjectClient();
-				}
-				else
-				{
-					startPingPongClient();
-				}
-			}
+			startNode();
 		}
 		return 0;
 	}
 
-	if (FLAGS_mode == "server")
-	{
-		startPingPongInjectServer();
-	}
-
-	if (FLAGS_mode == "client")
-	{
-		startPingPongInjectClient();
-	}
+	startNode();
 
 	return 0;
 }

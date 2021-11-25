@@ -134,3 +134,38 @@ void startTaggedBatchServer()
 	PerformancePrinter::print(NULL, FLAGS_payload, FLAGS_iterations,
 							  serverCtx.tx_cq_cntr, serverCtx.start, serverCtx.end, 1);
 }
+
+void startLatencyTestServer()
+{
+	int ret;
+	Server server = Server(FLAGS_provider, FLAGS_endpoint, FLAGS_tagged, FLAGS_src_port);
+	ret = server.init();
+	if (ret)
+		return;
+
+	ConnectionContext serverCtx = server.getConnectionContext();
+
+	DEBUG("SERVER: Starting data transfer\n\n");
+
+	FabricUtil::fillBuffer((char *)serverCtx.tx_buf + serverCtx.tx_prefix_size, FLAGS_payload);
+
+	serverCtx.startTimekeeper();
+
+	for (int i = 1; i <= FLAGS_iterations; i++)
+	{
+		ret = fi_tsend(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
+					   fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, TAG, NULL);
+		if (ret)
+		{
+			printf("SERVER: fi_tsend failed\n\n");
+			exit(1);
+		}
+
+		ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), serverCtx.tx_cq_cntr + 1, -1);
+		if (ret)
+		{
+			printf("SERVER: getCqCompletion failed\n\n");
+			exit(1);
+		}
+	}
+}
