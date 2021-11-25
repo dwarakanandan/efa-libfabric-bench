@@ -168,4 +168,9 @@ void startLatencyTestServer()
 			exit(1);
 		}
 	}
+
+	serverCtx.stopTimekeeper();
+	DEBUG("SERVER: Completed data transfer\n\n");
+	PerformancePrinter::print(NULL, FLAGS_payload, FLAGS_iterations,
+							  serverCtx.tx_cq_cntr, serverCtx.start, serverCtx.end, 1);
 }
