@@ -5,7 +5,7 @@ namespace libefa
 {
     class Server : public Node
     {
-        virtual int initFabric();
+        virtual int initFabric(fi_info* hints);
 
         virtual int ctrlInit();
 
@@ -16,6 +16,6 @@ namespace libefa
 
         virtual ConnectionContext getConnectionContext();
 
-        virtual int init();
+        virtual int init(fi_info* hints);
     };
 }

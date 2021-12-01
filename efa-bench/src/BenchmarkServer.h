@@ -7,3 +7,5 @@ void startPingPongInjectServer();
 void startTaggedBatchServer();
 
 void startLatencyTestServer();
+
+void startCapsTestServer();

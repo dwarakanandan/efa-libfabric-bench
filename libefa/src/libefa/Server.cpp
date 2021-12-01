@@ -78,7 +78,7 @@ int libefa::Server::ctrlInit()
     return ret;
 }
 
-int libefa::Server::initFabric()
+int libefa::Server::initFabric(fi_info *hints)
 {
     int ret;
     ret = ctrlInit();
@@ -89,7 +89,14 @@ int libefa::Server::initFabric()
     DEBUG("Initializing fabric\n");
 
     DEBUG("SERVER: getinfo\n");
-    ret = ctx.fi.initFabricInfo(provider, endpoint, isTagged);
+    if (hints != NULL)
+    {
+        ret = ctx.fi.initFabricInfo(provider, hints);
+    }
+    else
+    {
+        ret = ctx.fi.initFabricInfo(provider, endpoint, isTagged);
+    }
     if (ret)
         return ret;
 
@@ -167,7 +174,7 @@ int libefa::Server::ctrlSync()
     return 0;
 }
 
-int libefa::Server::init()
+int libefa::Server::init(fi_info *hints)
 {
     int ret;
 
@@ -180,7 +187,7 @@ int libefa::Server::init()
         DEBUG("SERVER: Selected endpoint: DGRAM\n");
     }
 
-    ret = initFabric();
+    ret = initFabric(hints);
     if (ret)
         return ret;
 

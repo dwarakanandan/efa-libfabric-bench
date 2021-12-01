@@ -16,6 +16,8 @@ void startNode()
 			startPingPongInjectServer();
 		else if (is_benchmark(FLAGS_benchmark_type, T::BATCH))
 			startTaggedBatchServer();
+		else if (is_benchmark(FLAGS_benchmark_type, T::CAPS))
+			startCapsTestServer();
 		else
 			startPingPongServer();
 	}
@@ -28,6 +30,8 @@ void startNode()
 			startPingPongInjectClient();
 		else if (is_benchmark(FLAGS_benchmark_type, T::BATCH))
 			startTaggedBatchClient();
+		else if (is_benchmark(FLAGS_benchmark_type, T::CAPS))
+			startCapsTestClient();
 		else
 			startPingPongClient();
 	}

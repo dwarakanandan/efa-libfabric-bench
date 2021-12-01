@@ -19,6 +19,7 @@ enum T
     INJECT,
     LATENCY,
     BATCH,
+    CAPS,
 };
 
 static std::map<T, const char *> BENCHMARK_TYPE = {
@@ -26,6 +27,7 @@ static std::map<T, const char *> BENCHMARK_TYPE = {
     {INJECT, "inject"},
     {LATENCY, "latency"},
     {BATCH, "batch"},
+    {CAPS, "caps"},
 };
 
 static std::map<T, const char *> NODE_TYPE = {

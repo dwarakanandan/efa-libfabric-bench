@@ -54,11 +54,7 @@ int libefa::FabricInfo::initFabricInfo(std::string provider, struct fi_info *h)
     int ret;
     uint64_t flags = 0;
 
-    hints->fabric_attr->prov_name = const_cast<char *>(provider.c_str());
-    hints->ep_attr->type = h->ep_attr->type;
-    hints->mode = h->mode;
-    hints->domain_attr->mode = h->domain_attr->mode;
-    hints->domain_attr->mr_mode = h->domain_attr->mr_mode;
+    hints = h;
 
     ret = fi_getinfo(FI_VERSION(FI_MAJOR_VERSION, FI_MINOR_VERSION),
                      NULL, NULL, flags, hints, &info);

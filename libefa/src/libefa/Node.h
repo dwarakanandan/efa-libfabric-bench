@@ -18,7 +18,7 @@ namespace libefa
 
         uint16_t port;
 
-        virtual int initFabric() = 0;
+        virtual int initFabric(fi_info* hints) = 0;
 
         virtual int ctrlInit() = 0;
 
@@ -27,7 +27,7 @@ namespace libefa
     public:
         virtual ConnectionContext getConnectionContext() = 0;
 
-        virtual int init() = 0;
+        virtual int init(fi_info* hints) = 0;
 
         virtual ~Node() {};
     };
