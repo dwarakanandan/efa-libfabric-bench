@@ -51,6 +51,8 @@ namespace libefa
 
         long cnt_ack_msg;
 
+        struct fi_rma_iov *remote_rma_iov;
+
         void startTimekeeper();
 
         void stopTimekeeper();

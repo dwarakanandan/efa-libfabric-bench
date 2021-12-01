@@ -20,6 +20,7 @@ enum T
     LATENCY,
     BATCH,
     CAPS,
+    RMA,
 };
 
 static std::map<T, const char *> BENCHMARK_TYPE = {
@@ -28,6 +29,7 @@ static std::map<T, const char *> BENCHMARK_TYPE = {
     {LATENCY, "latency"},
     {BATCH, "batch"},
     {CAPS, "caps"},
+    {RMA, "rma"},
 };
 
 static std::map<T, const char *> NODE_TYPE = {

@@ -131,3 +131,25 @@ void startCapsTestClient()
 	PerformancePrinter::print(NULL, FLAGS_payload, FLAGS_iterations,
 							  clientCtx.cnt_ack_msg, clientCtx.start, clientCtx.end, 2);
 }
+
+void startRmaClient()
+{
+	int ret;
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, FLAGS_tagged, FLAGS_dst_addr, FLAGS_dst_port);
+	fi_info *hints = fi_allocinfo();
+
+	hints->fabric_attr->prov_name = const_cast<char *>(FLAGS_provider.c_str());
+	hints->ep_attr->type = FI_EP_RDM;
+	hints->mode = FI_MSG_PREFIX;
+	hints->caps = FI_MSG | FI_RMA;
+	hints->domain_attr->mode = ~0;
+	hints->domain_attr->mr_mode = FI_MR_LOCAL | FI_MR_VIRT_ADDR | FI_MR_ALLOCATED | FI_MR_PROV_KEY;
+
+	ret = client.init(hints);
+	if (ret)
+		return;
+
+	ret = client.exchangeRmaIov();
+	if (ret)
+		return;
+}

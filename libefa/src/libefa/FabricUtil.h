@@ -57,5 +57,9 @@ namespace libefa
         static ssize_t inject(ConnectionContext *ctx, struct fid_ep *ep, size_t size);
 
         static int getTxCompletion(ConnectionContext *ctx, uint64_t total);
+
+        static int ctrlReceiveRmaIov(ConnectionContext *ctx);
+
+        static int ctrlSendRmaIov(ConnectionContext *ctx);
     };
 }

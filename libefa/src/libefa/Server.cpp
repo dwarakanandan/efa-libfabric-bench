@@ -200,3 +200,18 @@ libefa::ConnectionContext libefa::Server::getConnectionContext()
 {
     return this->ctx;
 }
+
+int libefa::Server::exchangeRmaIov()
+{
+    int ret;
+    FabricUtil::ctrlSendRmaIov(&ctx);
+    if (ret < 0)
+        return ret;
+    
+    FabricUtil::ctrlReceiveRmaIov(&ctx);
+    if (ret < 0)
+        return ret;
+
+    DEBUG("SERVER: RMA IOv exchange done\n");
+    return 0;
+}

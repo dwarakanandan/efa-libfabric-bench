@@ -26,6 +26,7 @@
 #include <rdma/fi_eq.h>
 #include <rdma/fi_errno.h>
 #include <rdma/fi_tagged.h>
+#include <rdma/fi_rma.h>
 
 #define SOCKET int
 

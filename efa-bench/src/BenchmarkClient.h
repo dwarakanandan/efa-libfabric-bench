@@ -9,3 +9,5 @@ void startTaggedBatchClient();
 void startLatencyTestClient();
 
 void startCapsTestClient();
+
+void startRmaClient();

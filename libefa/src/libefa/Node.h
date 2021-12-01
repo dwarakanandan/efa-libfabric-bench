@@ -29,6 +29,8 @@ namespace libefa
 
         virtual int init(fi_info* hints) = 0;
 
+        virtual int exchangeRmaIov() = 0;
+
         virtual ~Node() {};
     };
 }

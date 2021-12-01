@@ -18,6 +18,8 @@ void startNode()
 			startTaggedBatchServer();
 		else if (is_benchmark(FLAGS_benchmark_type, T::CAPS))
 			startCapsTestServer();
+		else if (is_benchmark(FLAGS_benchmark_type, T::RMA))
+			startRmaServer();
 		else
 			startPingPongServer();
 	}
@@ -32,6 +34,8 @@ void startNode()
 			startTaggedBatchClient();
 		else if (is_benchmark(FLAGS_benchmark_type, T::CAPS))
 			startCapsTestClient();
+		else if (is_benchmark(FLAGS_benchmark_type, T::RMA))
+			startRmaClient();
 		else
 			startPingPongClient();
 	}

@@ -9,3 +9,5 @@ void startTaggedBatchServer();
 void startLatencyTestServer();
 
 void startCapsTestServer();
+
+void startRmaServer();

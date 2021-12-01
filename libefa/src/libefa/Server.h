@@ -17,5 +17,7 @@ namespace libefa
         virtual ConnectionContext getConnectionContext();
 
         virtual int init(fi_info* hints);
+
+        virtual int exchangeRmaIov();
     };
 }

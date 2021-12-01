@@ -108,7 +108,7 @@ int libefa::Client::ctrlInit()
     return ret;
 }
 
-int libefa::Client::initFabric(fi_info* hints)
+int libefa::Client::initFabric(fi_info *hints)
 {
     int ret;
     ret = ctrlInit();
@@ -204,7 +204,7 @@ int libefa::Client::ctrlSync()
     return 0;
 }
 
-int libefa::Client::init(fi_info* hints)
+int libefa::Client::init(fi_info *hints)
 {
     int ret;
 
@@ -229,4 +229,19 @@ int libefa::Client::init(fi_info* hints)
 libefa::ConnectionContext libefa::Client::getConnectionContext()
 {
     return this->ctx;
+}
+
+int libefa::Client::exchangeRmaIov()
+{
+    int ret;
+    FabricUtil::ctrlReceiveRmaIov(&ctx);
+    if (ret < 0)
+        return ret;
+
+    FabricUtil::ctrlSendRmaIov(&ctx);
+    if (ret < 0)
+        return ret;
+
+    DEBUG("CLIENT: RMA IOv exchange done\n");
+    return 0;
 }
