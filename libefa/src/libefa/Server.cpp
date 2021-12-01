@@ -207,7 +207,7 @@ int libefa::Server::exchangeRmaIov()
     FabricUtil::ctrlSendRmaIov(&ctx);
     if (ret < 0)
         return ret;
-    
+
     FabricUtil::ctrlReceiveRmaIov(&ctx);
     if (ret < 0)
         return ret;

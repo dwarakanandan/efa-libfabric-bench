@@ -93,7 +93,7 @@ int libefa::FabricUtil::allocMessages(ConnectionContext *ctx)
 	ctx->remote_cq_data = initCqData(ctx->fi.info);
 
 	// if (ctx->fi.info->domain_attr->mr_mode & FI_MR_LOCAL)
-	if(true)
+	if (true)
 	{
 		ret = fi_mr_reg(ctx->domain, ctx->buf, ctx->buf_size,
 						FI_SEND | FI_RECV | FI_READ | FI_WRITE, 0, PP_MR_KEY, 0, &(ctx->mr),
@@ -523,11 +523,12 @@ int libefa::FabricUtil::cqReadError(struct fid_cq *cq)
 	}
 	else
 	{
-		printf("cq_readerr: %s",
+		printf("cq_readerr: %s\n",
 			   fi_cq_strerror(cq, cq_err.prov_errno, cq_err.err_data,
 							  NULL, 0));
 		ret = -cq_err.err;
 	}
+
 	return ret;
 }
 
@@ -762,33 +763,33 @@ ssize_t libefa::FabricUtil::inject(ConnectionContext *ctx, struct fid_ep *ep, si
 int libefa::FabricUtil::ctrlSendRmaIov(ConnectionContext *ctx)
 {
 	int ret;
-    uint64_t addr = (uintptr_t)ctx->rx_buf + ctx->rx_prefix_size;
-    std::string addr_str = std::to_string(addr);
-    std::string addr_str_length_str = std::to_string(addr_str.length() + 1);
+	uint64_t addr = (uintptr_t)ctx->rx_buf + ctx->rx_prefix_size;
+	std::string addr_str = std::to_string(addr);
+	std::string addr_str_length_str = std::to_string(addr_str.length() + 1);
 
-    snprintf(ctx->ctrl_buf, 3, "%s", addr_str_length_str.c_str());
-    ret = FabricUtil::ctrlSend(ctx, ctx->ctrl_buf, 3);
-    if (ret < 0)
-        return ret;
+	snprintf(ctx->ctrl_buf, 3, "%s", addr_str_length_str.c_str());
+	ret = FabricUtil::ctrlSend(ctx, ctx->ctrl_buf, 3);
+	if (ret < 0)
+		return ret;
 
-    snprintf(ctx->ctrl_buf, addr_str.length() + 1, "%s", addr_str.c_str());
-    ret = FabricUtil::ctrlSend(ctx, ctx->ctrl_buf, addr_str.length() + 1);
-    if (ret < 0)
-        return ret;
+	snprintf(ctx->ctrl_buf, addr_str.length() + 1, "%s", addr_str.c_str());
+	ret = FabricUtil::ctrlSend(ctx, ctx->ctrl_buf, addr_str.length() + 1);
+	if (ret < 0)
+		return ret;
 
-    uint64_t key = fi_mr_key(ctx->mr);
-    std::string key_str = std::to_string(key);
-    std::string key_str_length_str = std::to_string(key_str.length() + 1);
+	uint64_t key = fi_mr_key(ctx->mr);
+	std::string key_str = std::to_string(key);
+	std::string key_str_length_str = std::to_string(key_str.length() + 1);
 
-    snprintf(ctx->ctrl_buf, 3, "%s", key_str_length_str.c_str());
-    ret = FabricUtil::ctrlSend(ctx, ctx->ctrl_buf, 3);
-    if (ret < 0)
-        return ret;
+	snprintf(ctx->ctrl_buf, 3, "%s", key_str_length_str.c_str());
+	ret = FabricUtil::ctrlSend(ctx, ctx->ctrl_buf, 3);
+	if (ret < 0)
+		return ret;
 
-    snprintf(ctx->ctrl_buf, key_str.length() + 1, "%s", key_str.c_str());
-    ret = FabricUtil::ctrlSend(ctx, ctx->ctrl_buf, key_str.length() + 1);
-    if (ret < 0)
-        return ret;
+	snprintf(ctx->ctrl_buf, key_str.length() + 1, "%s", key_str.c_str());
+	ret = FabricUtil::ctrlSend(ctx, ctx->ctrl_buf, key_str.length() + 1);
+	if (ret < 0)
+		return ret;
 
 	return 0;
 }
@@ -796,29 +797,29 @@ int libefa::FabricUtil::ctrlSendRmaIov(ConnectionContext *ctx)
 int libefa::FabricUtil::ctrlReceiveRmaIov(ConnectionContext *ctx)
 {
 	struct fi_rma_iov rma_iov;
-    int ret;
+	int ret;
 
-    ret = ctrlReceive(ctx, ctx->ctrl_buf, 3);
-    if (ret < 0)
-        return ret;
+	ret = ctrlReceive(ctx, ctx->ctrl_buf, 3);
+	if (ret < 0)
+		return ret;
 
-    int addr_length = std::stoi(ctx->ctrl_buf);
-    ret = FabricUtil::ctrlReceive(ctx, ctx->ctrl_buf, addr_length);
-    if (ret < 0)
-        return ret;
+	int addr_length = std::stoi(ctx->ctrl_buf);
+	ret = FabricUtil::ctrlReceive(ctx, ctx->ctrl_buf, addr_length);
+	if (ret < 0)
+		return ret;
 
-    rma_iov.addr = std::stoul(ctx->ctrl_buf);
+	rma_iov.addr = std::stoul(ctx->ctrl_buf);
 
-    ret = FabricUtil::ctrlReceive(ctx, ctx->ctrl_buf, 3);
-    if (ret < 0)
-        return ret;
+	ret = FabricUtil::ctrlReceive(ctx, ctx->ctrl_buf, 3);
+	if (ret < 0)
+		return ret;
 
-    int key_length = std::stoi(ctx->ctrl_buf);
-    ret = FabricUtil::ctrlReceive(ctx, ctx->ctrl_buf, key_length);
-    if (ret < 0)
-        return ret;
+	int key_length = std::stoi(ctx->ctrl_buf);
+	ret = FabricUtil::ctrlReceive(ctx, ctx->ctrl_buf, key_length);
+	if (ret < 0)
+		return ret;
 
-    rma_iov.key = std::stoul(ctx->ctrl_buf);
+	rma_iov.key = std::stoul(ctx->ctrl_buf);
 
 	ctx->remote_rma_iov = &rma_iov;
 

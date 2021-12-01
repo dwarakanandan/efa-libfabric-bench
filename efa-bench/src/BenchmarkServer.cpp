@@ -204,10 +204,6 @@ void startCapsTestServer()
 							  serverCtx.cnt_ack_msg, serverCtx.start, serverCtx.end, 2);
 }
 
-int exchangeKeys()
-{
-}
-
 void startRmaServer()
 {
 	int ret;
@@ -228,4 +224,22 @@ void startRmaServer()
 	ret = server.exchangeRmaIov();
 	if (ret)
 		return;
+
+	ConnectionContext serverCtx = server.getConnectionContext();
+
+	DEBUG("SERVER: Starting RMA transfer\n\n");
+
+	FabricUtil::fillBuffer((char *)serverCtx.tx_buf + serverCtx.tx_prefix_size, FLAGS_payload);
+
+	ret = fi_write(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size, fi_mr_desc(serverCtx.mr),
+				   serverCtx.remote_fi_addr, serverCtx.remote_rma_iov->addr + 16, serverCtx.remote_rma_iov->key,
+				   NULL);
+	if (ret)
+		return;
+
+	FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), serverCtx.tx_cq_cntr + 1, -1);
+	if (ret)
+		return;
+
+	DEBUG("SERVER: Completed RMA transfer\n\n");
 }
