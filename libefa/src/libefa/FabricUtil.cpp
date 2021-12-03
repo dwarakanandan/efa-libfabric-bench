@@ -92,10 +92,9 @@ int libefa::FabricUtil::allocMessages(ConnectionContext *ctx)
 
 	ctx->remote_cq_data = initCqData(ctx->fi.info);
 
-	//if (ctx->fi.info->domain_attr->mr_mode & FI_MR_LOCAL)
+	// if (ctx->fi.info->domain_attr->mr_mode & FI_MR_LOCAL)
 	if (true)
 	{
-		// PP_MR_KEY not returned with fi_key
 		ret = fi_mr_reg(ctx->domain, ctx->buf, ctx->buf_size,
 						FI_SEND | FI_RECV | FI_READ | FI_WRITE | FI_REMOTE_WRITE | FI_REMOTE_READ, 0, PP_MR_KEY, 0, &(ctx->mr),
 						NULL);
@@ -765,9 +764,7 @@ int libefa::FabricUtil::ctrlSendRmaIov(ConnectionContext *ctx)
 {
 	int ret;
 	uint64_t addr = (uintptr_t)ctx->rx_buf + ctx->rx_prefix_size;
-	DEBUG("My addr: %lu\n", addr);
 	std::string addr_str = std::to_string(addr);
-	DEBUG("Sending addr: %s\n", addr_str.c_str());
 	std::string addr_str_length_str = std::to_string(addr_str.length() + 1);
 
 	snprintf(ctx->ctrl_buf, 3, "%s", addr_str_length_str.c_str());
@@ -781,9 +778,7 @@ int libefa::FabricUtil::ctrlSendRmaIov(ConnectionContext *ctx)
 		return ret;
 
 	uint64_t key = fi_mr_key(ctx->mr);
-	DEBUG("My key: %lu\n", key);
 	std::string key_str = std::to_string(key);
-	DEBUG("Sending key: %s\n", key_str.c_str());
 	std::string key_str_length_str = std::to_string(key_str.length() + 1);
 
 	snprintf(ctx->ctrl_buf, 3, "%s", key_str_length_str.c_str());
@@ -801,9 +796,8 @@ int libefa::FabricUtil::ctrlSendRmaIov(ConnectionContext *ctx)
 
 int libefa::FabricUtil::ctrlReceiveRmaIov(ConnectionContext *ctx)
 {
+	struct fi_rma_iov rma_iov;
 	int ret;
-
-	ctx->remote_rma_iov = (struct fi_rma_iov*) malloc(sizeof(struct fi_rma_iov));
 
 	ret = ctrlReceive(ctx, ctx->ctrl_buf, 3);
 	if (ret < 0)
@@ -814,9 +808,7 @@ int libefa::FabricUtil::ctrlReceiveRmaIov(ConnectionContext *ctx)
 	if (ret < 0)
 		return ret;
 
-	DEBUG("Received addr: %s\n", ctx->ctrl_buf);
-	ctx->remote_rma_iov->addr = std::stoul(ctx->ctrl_buf);
-	DEBUG("Got addr: %lu\n", ctx->remote_rma_iov->addr);
+	rma_iov.addr = std::stoul(ctx->ctrl_buf);
 
 	ret = FabricUtil::ctrlReceive(ctx, ctx->ctrl_buf, 3);
 	if (ret < 0)
@@ -827,9 +819,9 @@ int libefa::FabricUtil::ctrlReceiveRmaIov(ConnectionContext *ctx)
 	if (ret < 0)
 		return ret;
 
-	DEBUG("Received key: %s\n", ctx->ctrl_buf);
-	ctx->remote_rma_iov->key = std::stoul(ctx->ctrl_buf);
-	DEBUG("Got key: %lu\n", ctx->remote_rma_iov->key);
+	rma_iov.key = std::stoul(ctx->ctrl_buf);
+
+	ctx->remote_rma_iov = &rma_iov;
 
 	return 0;
 }
