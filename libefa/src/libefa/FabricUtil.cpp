@@ -97,7 +97,7 @@ int libefa::FabricUtil::allocMessages(ConnectionContext *ctx)
 	{
 		// PP_MR_KEY not returned with fi_key
 		ret = fi_mr_reg(ctx->domain, ctx->buf, ctx->buf_size,
-						FI_SEND | FI_RECV | FI_READ | FI_WRITE | FI_REMOTE_WRITE | FI_REMOTE_READ, 0, PP_MR_KEY, 0, &(ctx->mr),
+						FI_SEND | FI_RECV | FI_READ | FI_WRITE | FI_REMOTE_WRITE | FI_REMOTE_READ, 0, 0, 0, &(ctx->mr),
 						NULL);
 		if (ret)
 		{

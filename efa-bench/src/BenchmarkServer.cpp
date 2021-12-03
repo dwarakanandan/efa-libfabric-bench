@@ -235,7 +235,7 @@ void startRmaServer()
 	printf("Remote RMA key: %lX\n", serverCtx.remote_rma_iov->key);
 
 	ret = fi_write(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size, fi_mr_desc(serverCtx.mr),
-				   serverCtx.remote_fi_addr, serverCtx.remote_rma_iov->addr, PP_MR_KEY, NULL);
+				   serverCtx.remote_fi_addr, serverCtx.remote_rma_iov->addr, serverCtx.remote_rma_iov->key, NULL);
 	if (ret)
 		return;
 
