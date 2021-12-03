@@ -796,8 +796,8 @@ int libefa::FabricUtil::ctrlSendRmaIov(ConnectionContext *ctx)
 
 int libefa::FabricUtil::ctrlReceiveRmaIov(ConnectionContext *ctx)
 {
-	struct fi_rma_iov rma_iov;
 	int ret;
+	ctx->remote_rma_iov = (struct fi_rma_iov *) malloc(sizeof(struct fi_rma_iov));
 
 	ret = ctrlReceive(ctx, ctx->ctrl_buf, 3);
 	if (ret < 0)
@@ -808,7 +808,7 @@ int libefa::FabricUtil::ctrlReceiveRmaIov(ConnectionContext *ctx)
 	if (ret < 0)
 		return ret;
 
-	rma_iov.addr = std::stoul(ctx->ctrl_buf);
+	ctx->remote_rma_iov->addr = std::stoul(ctx->ctrl_buf);
 
 	ret = FabricUtil::ctrlReceive(ctx, ctx->ctrl_buf, 3);
 	if (ret < 0)
@@ -819,9 +819,7 @@ int libefa::FabricUtil::ctrlReceiveRmaIov(ConnectionContext *ctx)
 	if (ret < 0)
 		return ret;
 
-	rma_iov.key = std::stoul(ctx->ctrl_buf);
-
-	ctx->remote_rma_iov = &rma_iov;
+	ctx->remote_rma_iov->key = std::stoul(ctx->ctrl_buf);
 
 	return 0;
 }
