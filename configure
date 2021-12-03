@@ -1,13 +1,13 @@
 #!/bin/bash
 
-echo "\nPulling from git..."
+printf "\nPulling from git...\n"
 git pull
 
-echo "\nCleaning build DIR..."
+printf "\nCleaning build DIR...\n"
 rm -rf build
 mkdir build
 cd build
 
-echo "\nBuilding project..."
+printf "\nBuilding project...\n"
 cmake ..
 make
