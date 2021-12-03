@@ -95,6 +95,7 @@ int libefa::FabricUtil::allocMessages(ConnectionContext *ctx)
 	// if (ctx->fi.info->domain_attr->mr_mode & FI_MR_LOCAL)
 	if (true)
 	{
+		// PP_MR_KEY not returned with fi_key
 		ret = fi_mr_reg(ctx->domain, ctx->buf, ctx->buf_size,
 						FI_SEND | FI_RECV | FI_READ | FI_WRITE | FI_REMOTE_WRITE | FI_REMOTE_READ, 0, PP_MR_KEY, 0, &(ctx->mr),
 						NULL);
@@ -777,8 +778,10 @@ int libefa::FabricUtil::ctrlSendRmaIov(ConnectionContext *ctx)
 	if (ret < 0)
 		return ret;
 
-	uint64_t key = fi_mr_key(ctx->mr);
-	std::string key_str = std::to_string(key);
+	char key_buff[10] = "";
+	memset(key_buff, '\0', 10);
+	sprintf(key_buff, "%p", fi_mr_desc(ctx->mr));
+	std::string key_str(key_buff);
 	std::string key_str_length_str = std::to_string(key_str.length() + 1);
 
 	snprintf(ctx->ctrl_buf, 3, "%s", key_str_length_str.c_str());
