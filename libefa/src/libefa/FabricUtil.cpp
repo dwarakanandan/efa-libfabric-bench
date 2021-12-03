@@ -96,7 +96,7 @@ int libefa::FabricUtil::allocMessages(ConnectionContext *ctx)
 	if (true)
 	{
 		ret = fi_mr_reg(ctx->domain, ctx->buf, ctx->buf_size,
-						FI_SEND | FI_RECV | FI_READ | FI_WRITE, 0, PP_MR_KEY, 0, &(ctx->mr),
+						FI_SEND | FI_RECV | FI_READ | FI_WRITE | FI_REMOTE_WRITE | FI_REMOTE_READ, 0, PP_MR_KEY, 0, &(ctx->mr),
 						NULL);
 		if (ret)
 		{

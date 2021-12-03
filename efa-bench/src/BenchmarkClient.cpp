@@ -155,12 +155,11 @@ void startRmaClient()
 
 	ConnectionContext clientCtx = client.getConnectionContext();
 
-	DEBUG("CLIENT: Starting RMA transfer\n\n");
+	DEBUG("CLIENT: Waiting for RMA request\n\n");
 
-	clientCtx.timeout_sec = -1;
 	ret = FabricUtil::rx(&clientCtx, clientCtx.ep, FLAGS_payload);
 	if (ret)
 		return;
 
-	DEBUG("CLIENT: Completed RMA transfer\n\n");
+	DEBUG("CLIENT: Received RMA request\n\n");
 }

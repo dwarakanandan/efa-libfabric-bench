@@ -232,14 +232,17 @@ void startRmaServer()
 	FabricUtil::fillBuffer((char *)serverCtx.tx_buf + serverCtx.tx_prefix_size, FLAGS_payload);
 
 	ret = fi_write(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size, fi_mr_desc(serverCtx.mr),
-				   serverCtx.remote_fi_addr, serverCtx.remote_rma_iov->addr + 16, serverCtx.remote_rma_iov->key,
-				   NULL);
+				   serverCtx.remote_fi_addr, serverCtx.remote_rma_iov->addr, PP_MR_KEY, NULL);
 	if (ret)
 		return;
 
-	FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), serverCtx.tx_cq_cntr + 1, -1);
+	FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), 1, -1);
 	if (ret)
 		return;
 
 	DEBUG("SERVER: Completed RMA transfer\n\n");
+
+	ret = FabricUtil::tx(&serverCtx, serverCtx.ep, FLAGS_payload);
+	if (ret)
+		return;
 }
