@@ -1,0 +1,13 @@
+#!/bin/bash
+
+echo "\nPulling from git..."
+git pull
+
+echo "\nCleaning build DIR..."
+rm -rf build
+mkdir build
+cd build
+
+echo "\nBuilding project..."
+cmake ..
+make
