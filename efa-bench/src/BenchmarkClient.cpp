@@ -132,6 +132,16 @@ void startCapsTestClient()
 							  clientCtx.cnt_ack_msg, clientCtx.start, clientCtx.end, 2);
 }
 
+void printMemRegion(ConnectionContext *ctx)
+{
+	printf("\nRX_BUFFER: ");
+	for (int i = 0; i < 5; i++)
+	{
+		printf("[%c] ", *((char*)ctx->rx_buf + i));
+	}
+	printf("\n\n");
+}
+
 void startRmaClient()
 {
 	int ret;
@@ -155,11 +165,12 @@ void startRmaClient()
 
 	ConnectionContext clientCtx = client.getConnectionContext();
 
+	printMemRegion(&clientCtx);
+
 	DEBUG("CLIENT: Waiting for RMA request\n\n");
 
-	ret = FabricUtil::rx(&clientCtx, clientCtx.ep, FLAGS_payload);
-	if (ret)
-		return;
+	sleep(3);
+	printMemRegion(&clientCtx);
 
 	DEBUG("CLIENT: Received RMA request\n\n");
 }
