@@ -92,12 +92,30 @@ int libefa::FabricUtil::allocMessages(ConnectionContext *ctx)
 
 	ctx->remote_cq_data = initCqData(ctx->fi.info);
 
+
+	struct fi_mr_attr attr = {0};
+	struct iovec iov = {0};
+	uint64_t flags = 0;
+	uint8_t auth_key = 0xC0;
+
+	iov.iov_base = ctx->buf;
+	iov.iov_len = ctx->buf_size;
+	attr.mr_iov = &iov;
+	attr.iov_count = 1;
+	attr.access = FI_SEND | FI_RECV | FI_READ | FI_WRITE | FI_REMOTE_WRITE | FI_REMOTE_READ;
+	attr.offset = 0;
+	attr.requested_key = 0xC0DE;
+	attr.context = NULL;
+	attr.auth_key = &auth_key;
+	attr.auth_key_size = 1;
+
 	// if (ctx->fi.info->domain_attr->mr_mode & FI_MR_LOCAL)
 	if (true)
 	{
-		ret = fi_mr_reg(ctx->domain, ctx->buf, ctx->buf_size,
-						FI_SEND | FI_RECV | FI_READ | FI_WRITE | FI_REMOTE_WRITE | FI_REMOTE_READ, 0, PP_MR_KEY, 0, &(ctx->mr),
-						NULL);
+		// ret = fi_mr_reg(ctx->domain, ctx->buf, ctx->buf_size,
+		// 				FI_SEND | FI_RECV | FI_READ | FI_WRITE | FI_REMOTE_WRITE | FI_REMOTE_READ, 0, PP_MR_KEY, 0, &(ctx->mr),
+		// 				NULL);
+		ret = fi_mr_regattr(ctx->domain, &attr, flags, &(ctx->mr));
 		if (ret)
 		{
 			PRINTERR("fi_mr_reg", ret);

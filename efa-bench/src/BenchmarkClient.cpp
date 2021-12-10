@@ -151,7 +151,7 @@ void startRmaClient()
 	hints->fabric_attr->prov_name = const_cast<char *>(FLAGS_provider.c_str());
 	hints->ep_attr->type = FI_EP_RDM;
 	hints->mode = FI_MSG_PREFIX;
-	hints->caps = FI_MSG | FI_RMA | FI_REMOTE_WRITE;
+	hints->caps = FI_MSG | FI_RMA | FI_REMOTE_READ | FI_REMOTE_WRITE;
 	hints->domain_attr->mode = ~0;
 	hints->domain_attr->mr_mode = FI_MR_LOCAL | FI_MR_VIRT_ADDR | FI_MR_ALLOCATED | FI_MR_PROV_KEY;
 
