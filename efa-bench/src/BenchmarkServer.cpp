@@ -239,13 +239,13 @@ void startRmaServer()
 
 	DEBUG("SERVER: Starting RMA transfer\n\n");
 
-	DEBUG("Remote Key: %lu\n\n", serverCtx.remote_rma_iov->key);
+	DEBUG("Remote Key: %X\n\n", serverCtx.remote_rma_iov->key);
+	DEBUG("Remote Addr: %X\n\n", serverCtx.remote_rma_iov->addr);
 
 	fillRmaTxBuffer((char *)serverCtx.tx_buf + serverCtx.tx_prefix_size, FLAGS_payload);
 	ret = fi_write(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size, fi_mr_desc(serverCtx.mr),
-				   serverCtx.remote_fi_addr, 0, serverCtx.remote_rma_iov->key, NULL);
-	if (ret)
-		return;
+				   serverCtx.remote_fi_addr, serverCtx.remote_rma_iov->addr, serverCtx.remote_rma_iov->key, NULL);
+	DEBUG("SERVER: fi_write ret: %d\n\n", ret);
 
 	FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), 1, -1);
 	if (ret)
