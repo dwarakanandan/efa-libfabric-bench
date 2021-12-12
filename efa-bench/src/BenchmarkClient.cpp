@@ -154,6 +154,7 @@ void startRmaClient()
 	hints->caps = FI_MSG | FI_RMA | FI_REMOTE_READ | FI_REMOTE_WRITE;
 	hints->domain_attr->mode = ~0;
 	hints->domain_attr->mr_mode = FI_MR_LOCAL | FI_MR_VIRT_ADDR | FI_MR_ALLOCATED | FI_MR_PROV_KEY;
+	hints->domain_attr->resource_mgmt = FI_RM_ENABLED;
 
 	ret = client.init(hints);
 	if (ret)

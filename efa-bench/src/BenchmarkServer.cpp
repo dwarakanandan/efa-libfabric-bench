@@ -226,6 +226,7 @@ void startRmaServer()
 	hints->caps = FI_MSG | FI_RMA;
 	hints->domain_attr->mode = ~0;
 	hints->domain_attr->mr_mode = FI_MR_LOCAL | FI_MR_VIRT_ADDR | FI_MR_ALLOCATED | FI_MR_PROV_KEY;
+	hints->domain_attr->resource_mgmt = FI_RM_ENABLED;
 
 	ret = server.init(hints);
 	if (ret)
@@ -239,8 +240,8 @@ void startRmaServer()
 
 	DEBUG("SERVER: Starting RMA transfer\n\n");
 
-	DEBUG("Remote Key: %X\n\n", serverCtx.remote_rma_iov->key);
-	DEBUG("Remote Addr: %X\n\n", serverCtx.remote_rma_iov->addr);
+	DEBUG("Remote Key: %lX\n\n", serverCtx.remote_rma_iov->key);
+	DEBUG("Remote Addr: %lX\n\n", serverCtx.remote_rma_iov->addr);
 
 	fillRmaTxBuffer((char *)serverCtx.tx_buf + serverCtx.tx_prefix_size, FLAGS_payload);
 	ret = fi_write(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size, fi_mr_desc(serverCtx.mr),
