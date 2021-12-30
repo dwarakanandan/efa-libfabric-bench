@@ -7,8 +7,8 @@ namespace libefa
 {
     class Node
     {
-    private:
-        size_t txPayloadSize;
+    protected:
+        Node(std::string provider, std::string endpoint, fi_info *userHints);
 
     public:
         int init();
@@ -40,9 +40,5 @@ namespace libefa
         int postRma();
 
         int rma();
-
-        Node(std::string provider, std::string endpoint, fi_info *userHints);
-
-        ~Node();
     };
 }

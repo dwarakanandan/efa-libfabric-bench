@@ -39,13 +39,13 @@ libefa::Node::~Node()
 
 int libefa::Node::initTxBuffer(size_t size)
 {
-    this->txPayloadSize = size;
-    return ft_fill_buf((char *)tx_buf + ft_tx_prefix_size(), this->txPayloadSize);
+    opts.transfer_size = size;
+    return ft_fill_buf((char *)tx_buf + ft_tx_prefix_size(),  opts.transfer_size);
 }
 
 int libefa::Node::postTx()
 {
-    return ft_post_tx(ep, remote_fi_addr, this->txPayloadSize, NO_CQ_DATA, &tx_ctx);
+    return ft_post_tx(ep, remote_fi_addr,  opts.transfer_size, NO_CQ_DATA, &tx_ctx);
 }
 
 int libefa::Node::getTxCompletion()
@@ -64,7 +64,7 @@ int libefa::Node::tx()
 
 int libefa::Node::inject()
 {
-    return ft_inject(ep, remote_fi_addr, this->txPayloadSize);
+    return ft_inject(ep, remote_fi_addr,  opts.transfer_size);
 }
 
 int libefa::Node::rx()
@@ -88,12 +88,12 @@ void libefa::Node::stopTimer()
 
 void libefa::Node::showTransferStatistics(int iterations, int transfersPerIterations)
 {
-    show_perf(NULL, this->txPayloadSize, iterations, &start, &end, transfersPerIterations);
+    show_perf(NULL,  opts.transfer_size, iterations, &start, &end, transfersPerIterations);
 }
 
 int libefa::Node::postRma()
 {
-    return ft_post_rma(opts.rma_op, ep, this->txPayloadSize, &remote, NULL);
+    return ft_post_rma(opts.rma_op, ep,  opts.transfer_size, &remote, NULL);
 }
 
 int libefa::Node::rma()
