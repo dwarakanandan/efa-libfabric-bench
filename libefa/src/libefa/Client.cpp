@@ -7,7 +7,7 @@ libefa::Client::Client(std::string provider, std::string endpoint, std::string d
 
     opts.options |= FT_OPT_BW;
 
-    hints->mode = FI_CONTEXT;
+    hints->mode |= FI_CONTEXT;
     hints->addr_format = opts.address_format;
 	hints->domain_attr->mr_mode = opts.mr_mode;
 
