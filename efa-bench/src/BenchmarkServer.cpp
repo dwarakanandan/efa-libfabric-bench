@@ -106,8 +106,6 @@ void startTaggedBatchServer()
         }
     }
 
-    printf("Num TX Retries %d\n\n", numTxRetries);
-    printf("CQ Already obtained %d\n\n", numCqObtained);
     ret = server.getNTxCompletion(FLAGS_iterations - numCqObtained);
     if (ret)
     {
