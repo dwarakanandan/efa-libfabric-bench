@@ -42,5 +42,7 @@ namespace libefa
         int postRma();
 
         int rma();
+
+        int printFabricInfo();
     };
 }

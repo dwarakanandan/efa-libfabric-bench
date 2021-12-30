@@ -53,7 +53,7 @@ void startRmaServer()
 {
     int ret;
 
-    hints = fi_allocinfo();
+    fi_info *hints = fi_allocinfo();
     hints->caps = FI_MSG | FI_RMA;
     hints->domain_attr->resource_mgmt = FI_RM_ENABLED;
     hints->domain_attr->threading = FI_THREAD_DOMAIN;

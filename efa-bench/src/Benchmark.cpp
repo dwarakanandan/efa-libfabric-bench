@@ -47,6 +47,11 @@ int main(int argc, char *argv[])
 
 	if (FLAGS_fabinfo)
 	{
+		fi_info *hints = fi_allocinfo();
+		hints->caps = FI_MSG;
+
+		Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
+		server.printFabricInfo();
 		return 0;
 	}
 
