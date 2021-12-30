@@ -91,6 +91,6 @@ int libefa::Node::exchangeKeys()
 int libefa::Node::initRmaOp(std::string operation)
 {
     // Set out of band key exchange
-    // ft_parsecsopts('b', NULL, &opts);
+    ft_parsecsopts('b', NULL, &opts);
     return ft_parse_rma_opts('o', strdup(operation.c_str()), hints, &opts);
 }
