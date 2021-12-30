@@ -20,7 +20,7 @@ void startNode()
 			startCapsTestServer();
 		else if (is_benchmark(FLAGS_benchmark_type, T::RMA))
 			startRmaServer();
-		else
+		else if (is_benchmark(FLAGS_benchmark_type, T::PING_PONG))
 			startPingPongServer();
 	}
 
@@ -36,7 +36,7 @@ void startNode()
 			startCapsTestClient();
 		else if (is_benchmark(FLAGS_benchmark_type, T::RMA))
 			startRmaClient();
-		else
+		else if (is_benchmark(FLAGS_benchmark_type, T::PING_PONG))
 			startPingPongClient();
 	}
 }
@@ -44,7 +44,6 @@ void startNode()
 int main(int argc, char *argv[])
 {
 	initGflagsFromArgs(argc, argv);
-
 
 	if (FLAGS_fabinfo)
 	{

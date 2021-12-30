@@ -7,16 +7,12 @@ void startPingPongClient()
 {
 	int ret;
 	fi_info *hints = fi_allocinfo();
-
-	if (!hints)
-		return;
-
-	hints->caps = FI_TAGGED;
+	hints->caps = FI_MSG;
 	hints->domain_attr->resource_mgmt = FI_RM_ENABLED;
 	hints->domain_attr->threading = FI_THREAD_DOMAIN;
 	hints->tx_attr->tclass = FI_TC_LOW_LATENCY;
 
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, FLAGS_dst_addr, hints);
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, hints, FLAGS_dst_addr);
 	client.init();
 	client.sync();
 
@@ -64,15 +60,12 @@ void startRmaClient()
 	int ret;
 
 	hints = fi_allocinfo();
-	if (!hints)
-		return;
-
 	hints->caps = FI_MSG | FI_RMA;
 	hints->domain_attr->resource_mgmt = FI_RM_ENABLED;
 	hints->domain_attr->threading = FI_THREAD_DOMAIN;
 	hints->tx_attr->tclass = FI_TC_BULK_DATA;
 
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, FLAGS_dst_addr, hints);
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, hints, FLAGS_dst_addr);
 	client.initRmaOp("write");
 
 	client.init();
@@ -81,18 +74,17 @@ void startRmaClient()
 
 	client.initTxBuffer(FLAGS_payload);
 
-    client.startTimer();
-    for (int i = 0; i < FLAGS_iterations; i++)
-    {
-        ret = client.rma();
-        if (ret)
-            return;
-    }
-    client.stopTimer();
+	client.startTimer();
+	for (int i = 0; i < FLAGS_iterations; i++)
+	{
+		ret = client.rma();
+		if (ret)
+			return;
+	}
+	client.stopTimer();
 
-	// Pingpong once after RMA ops are complete
-	client.tx();
-	client.rx();
+	// Sync after RMA ops are complete
+	client.sync();
 
-    client.showTransferStatistics(FLAGS_iterations, 1);
+	client.showTransferStatistics(FLAGS_iterations, 1);
 }

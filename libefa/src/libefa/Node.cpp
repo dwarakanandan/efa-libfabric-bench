@@ -1,5 +1,27 @@
 #include "Node.h"
 
+libefa::Node::Node(std::string provider, std::string endpoint, fi_info *userHints)
+{
+    hints = userHints;
+    init_opts(&opts);
+
+    opts.options |= FT_OPT_BW;
+
+    hints->mode |= FI_CONTEXT;
+    hints->addr_format = opts.address_format;
+    hints->domain_attr->mr_mode = opts.mr_mode;
+
+    ft_parseinfo('p', strdup(provider.c_str()), hints, &opts);
+    ft_parseinfo('e', strdup(endpoint.c_str()), hints, &opts);
+
+    // Enable out-of-band address exchange for the EFA provider
+    if (provider == "efa")
+    {
+        opts.options |= FT_OPT_OOB_SYNC;
+        opts.options |= FT_OPT_OOB_ADDR_EXCH;
+    }
+}
+
 int libefa::Node::init()
 {
     return ft_init_fabric();
@@ -90,7 +112,5 @@ int libefa::Node::exchangeKeys()
 
 int libefa::Node::initRmaOp(std::string operation)
 {
-    // Set out of band key exchange
-    ft_parsecsopts('b', NULL, &opts);
     return ft_parse_rma_opts('o', strdup(operation.c_str()), hints, &opts);
 }

@@ -7,11 +7,7 @@ void startPingPongServer()
 {
     int ret;
     fi_info *hints = fi_allocinfo();
-
-    if (!hints)
-        return;
-
-    hints->caps = FI_TAGGED;
+    hints->caps = FI_MSG;
     hints->domain_attr->resource_mgmt = FI_RM_ENABLED;
     hints->domain_attr->threading = FI_THREAD_DOMAIN;
     hints->tx_attr->tclass = FI_TC_LOW_LATENCY;
@@ -58,9 +54,6 @@ void startRmaServer()
     int ret;
 
     hints = fi_allocinfo();
-    if (!hints)
-        return ;
-
     hints->caps = FI_MSG | FI_RMA;
     hints->domain_attr->resource_mgmt = FI_RM_ENABLED;
     hints->domain_attr->threading = FI_THREAD_DOMAIN;
@@ -84,9 +77,8 @@ void startRmaServer()
     }
     server.stopTimer();
 
-    // Pingpong once after RMA ops are complete
-    server.rx();
-    server.tx();
+    // Sync after RMA ops are complete
+    server.sync();
 
     server.showTransferStatistics(FLAGS_iterations, 1);
 }

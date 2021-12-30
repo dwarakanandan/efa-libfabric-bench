@@ -9,37 +9,40 @@ namespace libefa
     {
     private:
         size_t txPayloadSize;
+
     public:
-        virtual int init();
+        int init();
 
-        virtual int sync();
+        int sync();
 
-        virtual int initTxBuffer(size_t size);
+        int initTxBuffer(size_t size);
 
-        virtual int postTx();
+        int postTx();
 
-        virtual int getTxCompletion();
+        int getTxCompletion();
 
-        virtual int tx();
+        int tx();
 
-        virtual int inject();
+        int inject();
 
-        virtual int rx();
+        int rx();
 
-        virtual void startTimer();
+        void startTimer();
 
-        virtual void stopTimer();
+        void stopTimer();
 
-        virtual void showTransferStatistics(int iterations, int transfersPerIterations);
+        void showTransferStatistics(int iterations, int transfersPerIterations);
 
-        virtual int exchangeKeys();
+        int exchangeKeys();
 
-        virtual int initRmaOp(std::string operation);
+        int initRmaOp(std::string operation);
 
-        virtual int postRma();
+        int postRma();
 
-        virtual int rma();
+        int rma();
 
-        virtual ~Node();
+        Node(std::string provider, std::string endpoint, fi_info *userHints);
+
+        ~Node();
     };
 }
