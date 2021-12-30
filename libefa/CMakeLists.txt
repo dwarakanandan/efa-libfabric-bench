@@ -13,6 +13,8 @@ include_directories(${LIBFABRIC_INCLUDE_DIR})
 file(GLOB libefa_src CONFIGURE_DEPENDS
 ${PROJECT_SOURCE_DIR}/*.h
 ${PROJECT_SOURCE_DIR}/*.cpp
+${PROJECT_SOURCE_DIR}/ftlib/*.h
+${PROJECT_SOURCE_DIR}/ftlib/*.c
 )
 
 ADD_LIBRARY( efa STATIC

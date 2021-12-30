@@ -45,16 +45,9 @@ int main(int argc, char *argv[])
 {
 	initGflagsFromArgs(argc, argv);
 
-	if (FLAGS_debug)
-	{
-		libefa::ENABLE_DEBUG = true;
-	}
 
 	if (FLAGS_fabinfo)
 	{
-		FabricInfo fabInfo = FabricInfo();
-		fabInfo.initFabricInfo(FLAGS_provider, FLAGS_endpoint, FLAGS_tagged);
-		fabInfo.printFabricInfoLong();
 		return 0;
 	}
 

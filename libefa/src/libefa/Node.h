@@ -1,36 +1,45 @@
 #pragma once
 
 #include "includes.h"
-#include "ConnectionContext.h"
+#include "ftlib/shared.h"
 
 namespace libefa
 {
     class Node
     {
-    protected:
-        ConnectionContext ctx;
-
-        std::string provider;
-
-        std::string endpoint;
-
-        bool isTagged;
-
-        uint16_t port;
-
-        virtual int initFabric(fi_info* hints) = 0;
-
-        virtual int ctrlInit() = 0;
-
-        virtual int ctrlSync() = 0;
-
+    private:
+        size_t txPayloadSize;
     public:
-        virtual ConnectionContext getConnectionContext() = 0;
+        virtual int init();
 
-        virtual int init(fi_info* hints) = 0;
+        virtual int sync();
 
-        virtual int exchangeRmaIov() = 0;
+        virtual int initTxBuffer(size_t size);
 
-        virtual ~Node() {};
+        virtual int postTx();
+
+        virtual int getTxCompletion();
+
+        virtual int tx();
+
+        virtual int inject();
+
+        virtual int rx();
+
+        virtual void startTimer();
+
+        virtual void stopTimer();
+
+        virtual void showTransferStatistics(int iterations, int transfersPerIterations);
+
+        virtual int exchangeKeys();
+
+        virtual int initRmaOp(std::string operation);
+
+        virtual int postRma();
+
+        virtual int rma();
+
+        virtual ~Node();
     };
 }

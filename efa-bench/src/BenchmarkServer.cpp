@@ -5,252 +5,88 @@ using namespace libefa;
 
 void startPingPongServer()
 {
-	int ret;
-	Server server = Server(FLAGS_provider, FLAGS_endpoint, FLAGS_tagged, FLAGS_src_port);
-	ret = server.init(NULL);
-	if (ret)
-		return;
+    int ret;
+    fi_info *hints = fi_allocinfo();
 
-	ConnectionContext serverCtx = server.getConnectionContext();
+    if (!hints)
+        return;
 
-	DEBUG("SERVER: Starting data transfer\n\n");
-	serverCtx.startTimekeeper();
+    hints->caps = FI_MSG;
+    hints->domain_attr->resource_mgmt = FI_RM_ENABLED;
+    hints->domain_attr->threading = FI_THREAD_DOMAIN;
+    hints->tx_attr->tclass = FI_TC_LOW_LATENCY;
 
-	for (int i = 0; i < FLAGS_iterations; i++)
-	{
-		ret = FabricUtil::rx(&serverCtx, serverCtx.ep, FLAGS_payload);
-		if (ret)
-			return;
-		ret = FabricUtil::tx(&serverCtx, serverCtx.ep, FLAGS_payload);
-		if (ret)
-			return;
-	}
+    Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
+    server.init();
+    server.sync();
 
-	serverCtx.stopTimekeeper();
-	DEBUG("SERVER: Completed data transfer\n\n");
+    server.initTxBuffer(FLAGS_payload);
 
-	PerformancePrinter::print(NULL, FLAGS_payload, FLAGS_iterations,
-							  serverCtx.cnt_ack_msg, serverCtx.start, serverCtx.end, 2);
+    server.startTimer();
+    for (int i = 0; i < FLAGS_iterations; i++)
+    {
+        ret = server.rx();
+        if (ret)
+            return;
+        ret = server.tx();
+        if (ret)
+            return;
+    }
+    server.stopTimer();
+
+    server.showTransferStatistics(FLAGS_iterations, 2);
 }
 
 void startPingPongInjectServer()
 {
-	int ret;
-	Server server = Server(FLAGS_provider, FLAGS_endpoint, FLAGS_tagged, FLAGS_src_port);
-	ret = server.init(NULL);
-	if (ret)
-		return;
-
-	ConnectionContext serverCtx = server.getConnectionContext();
-
-	DEBUG("SERVER: Starting data transfer\n\n");
-	serverCtx.startTimekeeper();
-
-	for (int i = 0; i < FLAGS_iterations; i++)
-	{
-		ret = FabricUtil::rx(&serverCtx, serverCtx.ep, FLAGS_payload);
-		if (ret)
-			return;
-		ret = FabricUtil::inject(&serverCtx, serverCtx.ep, FLAGS_payload);
-		if (ret)
-			return;
-	}
-
-	serverCtx.stopTimekeeper();
-	DEBUG("SERVER: Completed data transfer\n\n");
-
-	PerformancePrinter::print(NULL, FLAGS_payload, FLAGS_iterations,
-							  serverCtx.cnt_ack_msg, serverCtx.start, serverCtx.end, 2);
 }
 
 void startTaggedBatchServer()
 {
-	int ret;
-	Server server = Server(FLAGS_provider, FLAGS_endpoint, FLAGS_tagged, FLAGS_src_port);
-	ret = server.init(NULL);
-	if (ret)
-		return;
-
-	ConnectionContext serverCtx = server.getConnectionContext();
-
-	// std::cout << "Press any key to transmit..." << std::endl;
-	// std::cin.ignore();
-
-	DEBUG("SERVER: Starting data transfer\n\n");
-
-	FabricUtil::fillBuffer((char *)serverCtx.tx_buf + serverCtx.tx_prefix_size, FLAGS_payload);
-
-	serverCtx.startTimekeeper();
-	int numTxRetries = 0;
-	int numCqObtained = 0;
-	int cqTry = FLAGS_batch * FLAGS_cq_try;
-
-	for (int i = 1; i <= FLAGS_iterations; i++)
-	{
-		ret = fi_tsend(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
-					   fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, TAG, NULL);
-		while (ret == -FI_EAGAIN)
-		{
-			if (numCqObtained < i)
-			{
-				ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), serverCtx.tx_cq_cntr + 1, -1);
-				if (ret)
-				{
-					printf("SERVER: getCqCompletion failed\n\n");
-					exit(1);
-				}
-				numCqObtained++;
-			}
-
-			// printf("fi_tsend retry iteration %d\n", i);
-			ret = fi_tsend(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
-						   fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, TAG, NULL);
-			numTxRetries++;
-		}
-		if ((i - numCqObtained) > FLAGS_batch)
-		{
-			ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), serverCtx.tx_cq_cntr + cqTry, -1);
-			if (ret)
-			{
-				printf("SERVER: getCqCompletion failed\n\n");
-				exit(1);
-			}
-			numCqObtained += cqTry;
-		}
-	}
-
-	DEBUG("Num TX Retries %d\n\n", numTxRetries);
-	DEBUG("CQ Already obtained %d\n\n", numCqObtained);
-	ret = FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr),
-									  serverCtx.tx_cq_cntr + (FLAGS_iterations - numCqObtained), -1);
-	if (ret)
-	{
-		printf("SERVER: getCqCompletion failed\n\n");
-		exit(1);
-	}
-
-	serverCtx.stopTimekeeper();
-	DEBUG("SERVER: Completed data transfer\n\n");
-	PerformancePrinter::print(NULL, FLAGS_payload, FLAGS_iterations,
-							  serverCtx.tx_cq_cntr, serverCtx.start, serverCtx.end, 1);
 }
 
 void startLatencyTestServer()
 {
-	int ret;
-	Server server = Server(FLAGS_provider, FLAGS_endpoint, FLAGS_tagged, FLAGS_src_port);
-	ret = server.init(NULL);
-	if (ret)
-		return;
-
-	ConnectionContext serverCtx = server.getConnectionContext();
-
-	DEBUG("SERVER: Starting data transfer\n\n");
-
-	FabricUtil::fillBuffer((char *)serverCtx.tx_buf + serverCtx.tx_prefix_size, FLAGS_payload);
-
-	serverCtx.startTimekeeper();
-	for (int i = 1; i <= FLAGS_iterations; i++)
-	{
-		fi_tsend(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size,
-				 fi_mr_desc(serverCtx.mr), serverCtx.remote_fi_addr, TAG, NULL);
-		FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), serverCtx.tx_cq_cntr + 1, -1);
-	}
-	serverCtx.stopTimekeeper();
-	DEBUG("SERVER: Completed data transfer\n\n");
-
-	printf("SERVER: CQ Count: %lu\n\n", serverCtx.tx_cq_cntr);
-
-	PerformancePrinter::print(NULL, FLAGS_payload, FLAGS_iterations,
-							  serverCtx.tx_cq_cntr, serverCtx.start, serverCtx.end, 1);
 }
 
 void startCapsTestServer()
 {
-	int ret;
-	Server server = Server(FLAGS_provider, FLAGS_endpoint, FLAGS_tagged, FLAGS_src_port);
-	fi_info *hints = fi_allocinfo();
-
-	hints->fabric_attr->prov_name = const_cast<char *>(FLAGS_provider.c_str());
-	hints->ep_attr->type = FI_EP_RDM;
-	hints->mode = FI_MSG_PREFIX;
-	hints->caps = FI_TAGGED | FI_SEND;
-	hints->domain_attr->mode = ~0;
-	hints->domain_attr->mr_mode = FI_MR_LOCAL | FI_MR_VIRT_ADDR | FI_MR_ALLOCATED | FI_MR_PROV_KEY;
-
-	ret = server.init(hints);
-	if (ret)
-		return;
-
-	ConnectionContext serverCtx = server.getConnectionContext();
-
-	DEBUG("SERVER: Starting data transfer\n\n");
-	serverCtx.startTimekeeper();
-
-	for (int i = 0; i < FLAGS_iterations; i++)
-	{
-		ret = FabricUtil::rx(&serverCtx, serverCtx.ep, FLAGS_payload);
-		if (ret)
-			return;
-		ret = FabricUtil::tx(&serverCtx, serverCtx.ep, FLAGS_payload);
-		if (ret)
-			return;
-	}
-
-	serverCtx.stopTimekeeper();
-	DEBUG("SERVER: Completed data transfer\n\n");
-
-	PerformancePrinter::print(NULL, FLAGS_payload, FLAGS_iterations,
-							  serverCtx.cnt_ack_msg, serverCtx.start, serverCtx.end, 2);
-}
-
-void fillRmaTxBuffer(void *buf, int size)
-{
-	char *msg_buf;
-	msg_buf = (char *)buf;
-	for (int i = 0; i < size; i++)
-	{
-		msg_buf[i] = 'r';
-	}
 }
 
 void startRmaServer()
 {
-	int ret;
-	Server server = Server(FLAGS_provider, FLAGS_endpoint, FLAGS_tagged, FLAGS_src_port);
-	fi_info *hints = fi_allocinfo();
+    int ret;
 
-	hints->fabric_attr->prov_name = const_cast<char *>(FLAGS_provider.c_str());
-	hints->ep_attr->type = FI_EP_RDM;
-	hints->mode = FI_MSG_PREFIX;
-	hints->caps = FI_MSG | FI_RMA;
-	hints->domain_attr->mode = ~0;
-	hints->domain_attr->mr_mode = FI_MR_LOCAL | FI_MR_VIRT_ADDR | FI_MR_ALLOCATED | FI_MR_PROV_KEY;
-	hints->domain_attr->resource_mgmt = FI_RM_ENABLED;
+    hints = fi_allocinfo();
+    if (!hints)
+        return ;
 
-	ret = server.init(hints);
-	if (ret)
-		return;
+    hints->caps = FI_MSG | FI_RMA;
+    hints->domain_attr->resource_mgmt = FI_RM_ENABLED;
+    hints->domain_attr->threading = FI_THREAD_DOMAIN;
+    hints->tx_attr->tclass = FI_TC_BULK_DATA;
 
-	ret = server.exchangeRmaIov();
-	if (ret)
-		return;
+    Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
+    server.initRmaOp("write");
 
-	ConnectionContext serverCtx = server.getConnectionContext();
+    server.init();
+    server.exchangeKeys();
+    server.sync();
 
-	DEBUG("SERVER: Starting RMA transfer\n\n");
+    server.initTxBuffer(FLAGS_payload);
 
-	DEBUG("Remote Key: %lX\n\n", serverCtx.remote_rma_iov->key);
-	DEBUG("Remote Addr: %lX\n\n", serverCtx.remote_rma_iov->addr);
+    server.startTimer();
+    for (int i = 0; i < FLAGS_iterations; i++)
+    {
+        ret = server.rma();
+        if (ret)
+            return;
+    }
+    server.stopTimer();
 
-	fillRmaTxBuffer((char *)serverCtx.tx_buf + serverCtx.tx_prefix_size, FLAGS_payload);
-	ret = fi_write(serverCtx.ep, serverCtx.tx_buf, FLAGS_payload + serverCtx.tx_prefix_size, fi_mr_desc(serverCtx.mr),
-				   serverCtx.remote_fi_addr, serverCtx.remote_rma_iov->addr, serverCtx.remote_rma_iov->key, NULL);
-	DEBUG("SERVER: fi_write ret: %d\n\n", ret);
+    // Pingpong once after RMA ops are complete
+    server.rx();
+    server.tx();
 
-	FabricUtil::getCqCompletion(serverCtx.txcq, &(serverCtx.tx_cq_cntr), 1, -1);
-	if (ret)
-		return;
-
-	DEBUG("SERVER: Completed RMA transfer\n\n");
+    server.showTransferStatistics(FLAGS_iterations, 1);
 }
