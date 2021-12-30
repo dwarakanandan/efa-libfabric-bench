@@ -10,6 +10,8 @@ namespace libefa
     protected:
         Node(std::string provider, std::string endpoint, fi_info *userHints);
 
+        ~Node();
+
     public:
         int init();
 
