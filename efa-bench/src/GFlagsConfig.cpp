@@ -29,3 +29,4 @@ DEFINE_uint32(batch, 1000, "Batch size");
 DEFINE_double(cq_try, 0.8, "Factor used in combination with batch size to determine CQ retrievals");
 DEFINE_bool(run_all, false, "Run benchmark for all payloads");
 DEFINE_bool(tagged, false, "Use Tagged message transfer");
+DEFINE_string(rma_op, "write", "RMA Operation Eg: read/write");

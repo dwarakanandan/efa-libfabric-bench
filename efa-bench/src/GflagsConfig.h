@@ -22,3 +22,4 @@ DECLARE_uint32(batch);
 DECLARE_double(cq_try);
 DECLARE_bool(run_all);
 DECLARE_bool(tagged);
+DECLARE_string(rma_op);
