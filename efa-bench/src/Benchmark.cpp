@@ -48,8 +48,7 @@ int main(int argc, char *argv[])
 	if (FLAGS_fabinfo)
 	{
 		fi_info *hints = fi_allocinfo();
-		hints->caps = FI_MSG;
-
+		common::setBaseFabricHints(hints);
 		Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
 		server.printFabricInfo();
 		return 0;
@@ -61,10 +60,10 @@ int main(int argc, char *argv[])
 		payloadIterationMap.insert(std::make_pair(1, 5000000));
 		payloadIterationMap.insert(std::make_pair(8, 5000000));
 		payloadIterationMap.insert(std::make_pair(64, 5000000));
-		payloadIterationMap.insert(std::make_pair(512, 5000000));
-		payloadIterationMap.insert(std::make_pair(1024, 5000000));
-		payloadIterationMap.insert(std::make_pair(4096, 5000000));
-		payloadIterationMap.insert(std::make_pair(8192, 5000000));
+		payloadIterationMap.insert(std::make_pair(512, 1000000));
+		payloadIterationMap.insert(std::make_pair(1024, 1000000));
+		payloadIterationMap.insert(std::make_pair(4096, 1000000));
+		payloadIterationMap.insert(std::make_pair(8192, 1000000));
 
 		for (auto const &x : payloadIterationMap)
 		{
@@ -74,8 +73,10 @@ int main(int argc, char *argv[])
 		}
 		return 0;
 	}
-
-	startNode();
+	else
+	{
+		startNode();
+	}
 
 	return 0;
 }

@@ -52,6 +52,11 @@ int libefa::Node::getTxCompletion()
     return ft_get_tx_comp(tx_seq);
 }
 
+int libefa::Node::getNTxCompletion(int n)
+{
+    return ft_get_tx_comp(tx_cq_cntr + n);
+}
+
 int libefa::Node::tx()
 {
     int ret;

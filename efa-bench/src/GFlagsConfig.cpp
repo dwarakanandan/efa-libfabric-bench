@@ -17,7 +17,7 @@ void initGflagsFromArgs(int argc, char *argv[])
 DEFINE_bool(fabinfo, false, "Show provider info");
 DEFINE_bool(debug, false, "Print debug logs");
 DEFINE_string(mode, "server", "Mode of operation Eg: server, client");
-DEFINE_string(benchmark_type, "bandwidth", "Type of benchmark Eg: bandwidth, latency, inject");
+DEFINE_string(benchmark_type, "batch", "Type of benchmark Eg: batch, latency, inject");
 DEFINE_uint32(src_port, 47500, "Source port server listens on");
 DEFINE_uint32(dst_port, 47500, "Destination port client connects to");
 DEFINE_string(provider, "sockets", "Fabric provider Eg: sockets, efa");

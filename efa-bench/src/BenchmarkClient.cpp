@@ -7,11 +7,7 @@ void startPingPongClient()
 {
 	int ret;
 	fi_info *hints = fi_allocinfo();
-	hints->mode |= (FLAGS_endpoint == "dgram") ? FI_MSG_PREFIX : FI_CONTEXT;
-	hints->caps = FLAGS_tagged ? FI_TAGGED : FI_MSG;
-	hints->domain_attr->resource_mgmt = FI_RM_ENABLED;
-	hints->domain_attr->threading = FI_THREAD_DOMAIN;
-	hints->tx_attr->tclass = FI_TC_LOW_LATENCY;
+	common::setBaseFabricHints(hints);
 
 	Client client = Client(FLAGS_provider, FLAGS_endpoint, hints, FLAGS_dst_addr);
 	client.init();
@@ -38,11 +34,7 @@ void startPingPongInjectClient()
 {
 	int ret;
 	fi_info *hints = fi_allocinfo();
-	hints->mode |= (FLAGS_endpoint == "dgram") ? FI_MSG_PREFIX : FI_CONTEXT;
-	hints->caps = FLAGS_tagged ? FI_TAGGED : FI_MSG;
-	hints->domain_attr->resource_mgmt = FI_RM_ENABLED;
-	hints->domain_attr->threading = FI_THREAD_DOMAIN;
-	hints->tx_attr->tclass = FI_TC_LOW_LATENCY;
+	common::setBaseFabricHints(hints);
 
 	Client client = Client(FLAGS_provider, FLAGS_endpoint, hints, FLAGS_dst_addr);
 	client.init();
@@ -67,6 +59,26 @@ void startPingPongInjectClient()
 
 void defaultClient()
 {
+	int ret;
+	fi_info *hints = fi_allocinfo();
+	common::setBaseFabricHints(hints);
+
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, hints, FLAGS_dst_addr);
+	client.init();
+	client.sync();
+
+	client.initTxBuffer(FLAGS_payload);
+
+	client.startTimer();
+	for (int i = 0; i < FLAGS_iterations; i++)
+	{
+		ret = client.rx();
+		if (ret)
+			return;
+	}
+	client.stopTimer();
+
+	client.showTransferStatistics(FLAGS_iterations, 1);
 }
 
 void startTaggedBatchClient()
@@ -88,11 +100,7 @@ void startRmaClient()
 	int ret;
 
 	fi_info *hints = fi_allocinfo();
-	hints->mode |= FI_CONTEXT;
-	hints->caps = FI_MSG | FI_RMA;
-	hints->domain_attr->resource_mgmt = FI_RM_ENABLED;
-	hints->domain_attr->threading = FI_THREAD_DOMAIN;
-	hints->tx_attr->tclass = FI_TC_BULK_DATA;
+	common::setRmaFabricHints(hints);
 
 	Client client = Client(FLAGS_provider, FLAGS_endpoint, hints, FLAGS_dst_addr);
 	client.initRmaOp(FLAGS_rma_op);

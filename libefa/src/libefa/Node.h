@@ -23,6 +23,8 @@ namespace libefa
 
         int getTxCompletion();
 
+        int getNTxCompletion(int n);
+
         int tx();
 
         int inject();

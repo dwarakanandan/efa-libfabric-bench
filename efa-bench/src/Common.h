@@ -40,4 +40,8 @@ namespace common
     bool is_benchmark(std::string t1, T t2);
 
     bool is_node(std::string t1, T t2);
+
+    void setBaseFabricHints(fi_info *hints);
+
+    void setRmaFabricHints(fi_info *hints);
 }

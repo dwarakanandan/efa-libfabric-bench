@@ -7,11 +7,7 @@ void startPingPongServer()
 {
     int ret;
     fi_info *hints = fi_allocinfo();
-    hints->mode |= (FLAGS_endpoint == "dgram") ? FI_MSG_PREFIX : FI_CONTEXT;
-    hints->caps = FLAGS_tagged ? FI_TAGGED : FI_MSG;
-    hints->domain_attr->resource_mgmt = FI_RM_ENABLED;
-    hints->domain_attr->threading = FI_THREAD_DOMAIN;
-    hints->tx_attr->tclass = FI_TC_LOW_LATENCY;
+    common::setBaseFabricHints(hints);
 
     Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
     server.init();
@@ -38,11 +34,7 @@ void startPingPongInjectServer()
 {
     int ret;
     fi_info *hints = fi_allocinfo();
-    hints->mode |= (FLAGS_endpoint == "dgram") ? FI_MSG_PREFIX : FI_CONTEXT;
-    hints->caps = FLAGS_tagged ? FI_TAGGED : FI_MSG;
-    hints->domain_attr->resource_mgmt = FI_RM_ENABLED;
-    hints->domain_attr->threading = FI_THREAD_DOMAIN;
-    hints->tx_attr->tclass = FI_TC_LOW_LATENCY;
+    common::setBaseFabricHints(hints);
 
     Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
     server.init();
@@ -67,10 +59,89 @@ void startPingPongInjectServer()
 
 void startTaggedBatchServer()
 {
+    int ret;
+    fi_info *hints = fi_allocinfo();
+    common::setBaseFabricHints(hints);
+
+    Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
+    server.init();
+    server.sync();
+
+    server.initTxBuffer(FLAGS_payload);
+
+    server.startTimer();
+    int numTxRetries = 0;
+    int numCqObtained = 0;
+    int cqTry = FLAGS_batch * FLAGS_cq_try;
+
+    for (int i = 1; i <= FLAGS_iterations; i++)
+    {
+        ret = server.postTx();
+        while (ret == -FI_EAGAIN)
+        {
+            if (numCqObtained < i)
+            {
+                ret = server.getNTxCompletion(1);
+                if (ret)
+                {
+                    printf("SERVER: getCqCompletion failed\n\n");
+                    exit(1);
+                }
+                numCqObtained++;
+            }
+
+            // printf("fi_tsend retry iteration %d\n", i);
+            ret = server.postTx();
+            numTxRetries++;
+        }
+        if ((i - numCqObtained) > FLAGS_batch)
+        {
+            ret = server.getNTxCompletion(cqTry);
+            if (ret)
+            {
+                printf("SERVER: getCqCompletion failed\n\n");
+                exit(1);
+            }
+            numCqObtained += cqTry;
+        }
+    }
+
+    printf("Num TX Retries %d\n\n", numTxRetries);
+    printf("CQ Already obtained %d\n\n", numCqObtained);
+    ret = server.getNTxCompletion(FLAGS_iterations - numCqObtained);
+    if (ret)
+    {
+        printf("SERVER: getCqCompletion failed\n\n");
+        exit(1);
+    }
+
+    server.stopTimer();
+
+    server.showTransferStatistics(FLAGS_iterations, 1);
 }
 
 void startLatencyTestServer()
 {
+    int ret;
+    fi_info *hints = fi_allocinfo();
+    common::setBaseFabricHints(hints);
+
+    Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
+    server.init();
+    server.sync();
+
+    server.initTxBuffer(FLAGS_payload);
+
+    server.startTimer();
+    for (int i = 0; i < FLAGS_iterations; i++)
+    {
+        ret = server.tx();
+        if (ret)
+            return;
+    }
+    server.stopTimer();
+
+    server.showTransferStatistics(FLAGS_iterations, 1);
 }
 
 void startCapsTestServer()
@@ -82,11 +153,7 @@ void startRmaServer()
     int ret;
 
     fi_info *hints = fi_allocinfo();
-    hints->mode |= FI_CONTEXT;
-    hints->caps = FI_MSG | FI_RMA;
-    hints->domain_attr->resource_mgmt = FI_RM_ENABLED;
-    hints->domain_attr->threading = FI_THREAD_DOMAIN;
-    hints->tx_attr->tclass = FI_TC_BULK_DATA;
+    common::setRmaFabricHints(hints);
 
     Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
     server.initRmaOp(FLAGS_rma_op);
