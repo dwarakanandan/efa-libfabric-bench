@@ -265,11 +265,9 @@ void startRmaSelectiveCompletionServer()
     server.startTimer();
     for (int i = 0; i < FLAGS_iterations; i++)
     {
-        ret = server.postRmaSelectiveComp(true);
+        ret = server.postRmaInject();
         if (ret)
             return;
-        printf("rma %d\n", ret);
-        server.getTxCompletion();
     }
     server.stopTimer();
 

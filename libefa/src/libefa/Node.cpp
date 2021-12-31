@@ -49,11 +49,13 @@ int libefa::Node::postTx()
 
 int libefa::Node::getTxCompletion()
 {
+    printf("%lu\n", tx_cq_cntr);
     return ft_get_tx_comp(tx_seq);
 }
 
 int libefa::Node::getNTxCompletion(int n)
 {
+    printf("%lu\n", tx_cq_cntr);
     return ft_get_tx_comp(tx_cq_cntr + n);
 }
 
@@ -100,9 +102,9 @@ int libefa::Node::postRma()
     return ft_post_rma(opts.rma_op, ep,  opts.transfer_size, &remote, NULL);
 }
 
-int libefa::Node::postRmaSelectiveComp(bool enableCompletion)
+int libefa::Node::postRmaInject()
 {
-    return ft_post_rma_selective_comp(opts.rma_op, ep,  opts.transfer_size, &remote, NULL, enableCompletion);
+    return ft_post_rma_inject(opts.rma_op, ep,  opts.transfer_size, &remote);
 }
 
 int libefa::Node::rma()

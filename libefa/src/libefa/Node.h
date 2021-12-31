@@ -43,7 +43,7 @@ namespace libefa
 
         int postRma();
 
-        int postRmaSelectiveComp(bool enableCompletion);
+        int postRmaInject();
 
         int rma();
 

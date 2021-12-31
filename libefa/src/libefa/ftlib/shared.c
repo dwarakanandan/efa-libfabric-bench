@@ -1240,7 +1240,7 @@ int ft_enable_ep(struct fid_ep *ep, struct fid_eq *eq, struct fid_av *av,
 
 	FT_EP_BIND(ep, av, 0);
 
-	flags = FI_TRANSMIT | FI_SELECTIVE_COMPLETION;
+	flags = FI_TRANSMIT;
 	if (!(opts.options & FT_OPT_TX_CQ))
 		flags |= FI_SELECTIVE_COMPLETION;
 	FT_EP_BIND(ep, txcq, flags);
