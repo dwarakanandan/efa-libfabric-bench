@@ -19,15 +19,17 @@ enum T
     BATCH,
     CAPS,
     RMA,
+    RMA_BATCH,
 };
 
 static std::map<T, const char *> BENCHMARK_TYPE = {
-    {PING_PONG, "pingpong"},
+    {PING_PONG, "ping_pong"},
     {INJECT, "inject"},
     {LATENCY, "latency"},
     {BATCH, "batch"},
     {CAPS, "caps"},
     {RMA, "rma"},
+    {RMA_BATCH, "rma_batch"},
 };
 
 static std::map<T, const char *> NODE_TYPE = {

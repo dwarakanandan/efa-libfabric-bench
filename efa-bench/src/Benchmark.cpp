@@ -22,6 +22,8 @@ void startNode()
 			startRmaServer();
 		else if (is_benchmark(FLAGS_benchmark_type, T::PING_PONG))
 			startPingPongServer();
+		else if (is_benchmark(FLAGS_benchmark_type, T::RMA_BATCH))
+			startRmaBatchServer();
 	}
 
 	if (is_node(FLAGS_mode, T::CLIENT))
@@ -38,6 +40,8 @@ void startNode()
 			startRmaClient();
 		else if (is_benchmark(FLAGS_benchmark_type, T::PING_PONG))
 			startPingPongClient();
+		else if (is_benchmark(FLAGS_benchmark_type, T::RMA_BATCH))
+			startRmaClient();
 	}
 }
 

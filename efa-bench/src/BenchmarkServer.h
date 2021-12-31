@@ -11,3 +11,5 @@ void startLatencyTestServer();
 void startCapsTestServer();
 
 void startRmaServer();
+
+void startRmaBatchServer();

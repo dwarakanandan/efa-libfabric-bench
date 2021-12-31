@@ -111,17 +111,17 @@ void startRmaClient()
 
 	client.initTxBuffer(FLAGS_payload);
 
-	client.startTimer();
-	for (int i = 0; i < FLAGS_iterations; i++)
-	{
-		ret = client.rma();
-		if (ret)
-			return;
-	}
-	client.stopTimer();
+	// client.startTimer();
+	// for (int i = 0; i < FLAGS_iterations; i++)
+	// {
+	// 	ret = client.rma();
+	// 	if (ret)
+	// 		return;
+	// }
+	// client.stopTimer();
 
 	// Sync after RMA ops are complete
 	client.sync();
 
-	client.showTransferStatistics(FLAGS_iterations, 1);
+	// client.showTransferStatistics(FLAGS_iterations, 1);
 }
