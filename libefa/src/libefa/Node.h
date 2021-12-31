@@ -45,6 +45,8 @@ namespace libefa
 
         int postRmaInject();
 
+        int postRmaSelectiveComp(bool enableCompletion);
+
         int rma();
 
         int printFabricInfo();

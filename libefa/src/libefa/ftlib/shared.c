@@ -3930,6 +3930,7 @@ void ft_free_string_array(char **s)
 ssize_t ft_post_rma_selective_comp(enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
 								   struct fi_rma_iov *remote, void *context, bool enable_completion)
 {
+	int ret;
 	struct fi_msg_rma rma_msg;
 
 	struct iovec iov;
@@ -3937,14 +3938,20 @@ ssize_t ft_post_rma_selective_comp(enum ft_rma_opcodes op, struct fid_ep *ep, si
 	iov.iov_len = opts.transfer_size;
 
 	rma_msg.addr = remote_fi_addr;
-	rma_msg.desc = mr_desc;
+	rma_msg.desc = &mr_desc;
 	rma_msg.context = context;
 	rma_msg.msg_iov = &iov;
 	rma_msg.iov_count = 1;
 	rma_msg.rma_iov = remote;
 	rma_msg.rma_iov_count = 1;
-	uint64_t flags = enable_completion ? FI_COMPLETION : 0;
-	fi_writemsg(ep, &rma_msg, flags);
+	rma_msg.data = NO_CQ_DATA;
 
-	return 0;
+	uint64_t flags = enable_completion ? FI_COMPLETION : 0;
+	ret = fi_writemsg(ep, &rma_msg, flags);
+	//ret = fi_write(ep, tx_buf, opts.transfer_size, mr_desc, remote_fi_addr, remote->addr, remote->key, context);
+	//ret = fi_writev(ep, &iov, &mr_desc, 1, remote_fi_addr, remote->addr, remote->key, context);
+
+	printf("ft_post_rma_selective_comp ret: %d\n", ret);
+	tx_seq++;
+	return ret;
 }
