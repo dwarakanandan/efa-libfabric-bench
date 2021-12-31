@@ -1240,7 +1240,7 @@ int ft_enable_ep(struct fid_ep *ep, struct fid_eq *eq, struct fid_av *av,
 
 	FT_EP_BIND(ep, av, 0);
 
-	flags = FI_TRANSMIT;
+	flags = FI_TRANSMIT | FI_SELECTIVE_COMPLETION;
 	if (!(opts.options & FT_OPT_TX_CQ))
 		flags |= FI_SELECTIVE_COMPLETION;
 	FT_EP_BIND(ep, txcq, flags);
@@ -3925,4 +3925,26 @@ void ft_free_string_array(char **s)
 
 	/* and then the actual array of pointers */
 	free(s);
+}
+
+ssize_t ft_post_rma_selective_comp(enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
+								   struct fi_rma_iov *remote, void *context, bool enable_completion)
+{
+	struct fi_msg_rma rma_msg;
+
+	struct iovec iov;
+	iov.iov_base = tx_buf;
+	iov.iov_len = opts.transfer_size;
+
+	rma_msg.addr = remote_fi_addr;
+	rma_msg.desc = mr_desc;
+	rma_msg.context = context;
+	rma_msg.msg_iov = &iov;
+	rma_msg.iov_count = 1;
+	rma_msg.rma_iov = remote;
+	rma_msg.rma_iov_count = 1;
+	uint64_t flags = enable_completion ? FI_COMPLETION : 0;
+	fi_writemsg(ep, &rma_msg, flags);
+
+	return 0;
 }

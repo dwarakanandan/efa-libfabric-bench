@@ -13,3 +13,5 @@ void startCapsTestServer();
 void startRmaServer();
 
 void startRmaBatchServer();
+
+void startRmaSelectiveCompletionServer();

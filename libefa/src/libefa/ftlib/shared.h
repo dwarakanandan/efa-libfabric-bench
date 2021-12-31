@@ -499,6 +499,9 @@ extern "C"
 	char **ft_split_and_alloc(const char *s, const char *delim, size_t *count);
 	void ft_free_string_array(char **s);
 
+	ssize_t ft_post_rma_selective_comp(enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
+					struct fi_rma_iov *remote, void *context, bool enable_completion);
+
 #define FT_PROCESS_QUEUE_ERR(readerr, rd, queue, fn, str) \
 	do                                                    \
 	{                                                     \

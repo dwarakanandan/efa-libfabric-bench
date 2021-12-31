@@ -100,6 +100,11 @@ int libefa::Node::postRma()
     return ft_post_rma(opts.rma_op, ep,  opts.transfer_size, &remote, NULL);
 }
 
+int libefa::Node::postRmaSelectiveComp(bool enableCompletion)
+{
+    return ft_post_rma_selective_comp(opts.rma_op, ep,  opts.transfer_size, &remote, NULL, enableCompletion);
+}
+
 int libefa::Node::rma()
 {
     int ret;

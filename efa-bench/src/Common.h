@@ -20,6 +20,7 @@ enum T
     CAPS,
     RMA,
     RMA_BATCH,
+    RMA_SEL_COMP,
 };
 
 static std::map<T, const char *> BENCHMARK_TYPE = {
@@ -30,6 +31,7 @@ static std::map<T, const char *> BENCHMARK_TYPE = {
     {CAPS, "caps"},
     {RMA, "rma"},
     {RMA_BATCH, "rma_batch"},
+    {RMA_SEL_COMP, "rma_sel_comp"},
 };
 
 static std::map<T, const char *> NODE_TYPE = {

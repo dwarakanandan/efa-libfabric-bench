@@ -244,3 +244,37 @@ void startRmaBatchServer()
 
     server.showTransferStatistics(FLAGS_iterations, 1);
 }
+
+void startRmaSelectiveCompletionServer()
+{
+    int ret;
+
+    fi_info *hints = fi_allocinfo();
+    common::setRmaFabricHints(hints);
+    hints->tx_attr->op_flags = 0;
+
+    Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
+    server.initRmaOp(FLAGS_rma_op);
+
+    server.init();
+    server.exchangeKeys();
+    server.sync();
+
+    server.initTxBuffer(FLAGS_payload);
+
+    server.startTimer();
+    for (int i = 0; i < FLAGS_iterations; i++)
+    {
+        ret = server.postRmaSelectiveComp(true);
+        if (ret)
+            return;
+        printf("rma %d\n", ret);
+        server.getTxCompletion();
+    }
+    server.stopTimer();
+
+    // Sync after RMA ops are complete
+    server.sync();
+
+    server.showTransferStatistics(FLAGS_iterations, 1);
+}
