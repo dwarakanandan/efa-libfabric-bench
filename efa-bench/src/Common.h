@@ -20,6 +20,7 @@ enum T
     CAPS,
     RMA,
     RMA_BATCH,
+    RMA_INJECT,
     RMA_SEL_COMP,
 };
 
@@ -31,6 +32,7 @@ static std::map<T, const char *> BENCHMARK_TYPE = {
     {CAPS, "caps"},
     {RMA, "rma"},
     {RMA_BATCH, "rma_batch"},
+    {RMA_INJECT, "rma_inject"},
     {RMA_SEL_COMP, "rma_sel_comp"},
 };
 

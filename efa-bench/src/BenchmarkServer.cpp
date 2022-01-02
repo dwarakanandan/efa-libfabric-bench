@@ -245,6 +245,37 @@ void startRmaBatchServer()
     server.showTransferStatistics(FLAGS_iterations, 1);
 }
 
+void startRmaInjectServer()
+{
+    int ret;
+
+    fi_info *hints = fi_allocinfo();
+    common::setRmaFabricHints(hints);
+
+    Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
+    server.initRmaOp(FLAGS_rma_op);
+
+    server.init();
+    server.exchangeKeys();
+    server.sync();
+
+    server.initTxBuffer(FLAGS_payload);
+
+    server.startTimer();
+    for (int i = 0; i < FLAGS_iterations; i++)
+    {
+        ret = server.postRmaInject();
+        if (ret)
+            return;
+    }
+    server.stopTimer();
+
+    // Sync after RMA ops are complete
+    server.sync();
+
+    server.showTransferStatistics(FLAGS_iterations, 1);
+}
+
 void startRmaSelectiveCompletionServer()
 {
     int ret;

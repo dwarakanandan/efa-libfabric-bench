@@ -24,6 +24,8 @@ void startNode()
 			startPingPongServer();
 		else if (is_benchmark(FLAGS_benchmark_type, T::RMA_BATCH))
 			startRmaBatchServer();
+		else if (is_benchmark(FLAGS_benchmark_type, T::RMA_INJECT))
+			startRmaInjectServer();
 		else if (is_benchmark(FLAGS_benchmark_type, T::RMA_SEL_COMP))
 			startRmaSelectiveCompletionServer();
 	}
@@ -38,14 +40,10 @@ void startNode()
 			startTaggedBatchClient();
 		else if (is_benchmark(FLAGS_benchmark_type, T::CAPS))
 			startCapsTestClient();
-		else if (is_benchmark(FLAGS_benchmark_type, T::RMA))
+		else if (is_benchmark(FLAGS_benchmark_type, T::RMA) || is_benchmark(FLAGS_benchmark_type, T::RMA_BATCH) || is_benchmark(FLAGS_benchmark_type, T::RMA_INJECT) || is_benchmark(FLAGS_benchmark_type, T::RMA_SEL_COMP))
 			startRmaClient();
 		else if (is_benchmark(FLAGS_benchmark_type, T::PING_PONG))
 			startPingPongClient();
-		else if (is_benchmark(FLAGS_benchmark_type, T::RMA_BATCH))
-			startRmaClient();
-		else if (is_benchmark(FLAGS_benchmark_type, T::RMA_SEL_COMP))
-			startRmaClient();
 	}
 }
 

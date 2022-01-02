@@ -14,4 +14,6 @@ void startRmaServer();
 
 void startRmaBatchServer();
 
+void startRmaInjectServer();
+
 void startRmaSelectiveCompletionServer();
