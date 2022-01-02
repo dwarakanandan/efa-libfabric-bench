@@ -107,24 +107,10 @@ void startRmaClient()
 
 	client.init();
 	client.exchangeKeys();
-    std::map<int, int> iterMap;
-    if (FLAGS_run_all)
-    {
-        iterMap = common::getPayloadIterMap();
-    }
-    else
-    {
-        iterMap.insert(std::make_pair(FLAGS_payload, FLAGS_iterations));
-    }
-	for (auto const &iter : iterMap)
-	{
-		FLAGS_payload = iter.first;
-		FLAGS_iterations = iter.second;
-		client.sync();
+	client.sync();
 
-		client.initTxBuffer(FLAGS_payload);
+	client.initTxBuffer(FLAGS_payload);
 
-		// Sync after RMA ops are complete
-		client.sync();
-	}
+	// Sync after RMA ops are complete
+	client.sync();
 }
