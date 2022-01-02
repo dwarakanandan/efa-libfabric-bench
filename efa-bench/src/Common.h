@@ -48,4 +48,6 @@ namespace common
     void setBaseFabricHints(fi_info *hints);
 
     void setRmaFabricHints(fi_info *hints);
+
+    std::map<int, int> getPayloadIterMap();
 }
