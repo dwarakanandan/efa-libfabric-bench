@@ -3932,9 +3932,15 @@ ssize_t ft_post_rma_selective_comp(enum ft_rma_opcodes op, struct fid_ep *ep, si
 {
 	int ret;
 	struct fi_msg_rma rma_msg;
+	memset(&rma_msg, 0, sizeof(rma_msg));
+
+	struct fi_rma_iov rma_iov;
+	rma_iov.addr = remote->addr;
+	rma_iov.len = remote->len;
+	rma_iov.key = remote->key;
 
 	struct iovec iov;
-	iov.iov_base = tx_buf;
+	iov.iov_base = (void *)tx_buf;
 	iov.iov_len = opts.transfer_size;
 
 	rma_msg.addr = remote_fi_addr;
@@ -3942,16 +3948,17 @@ ssize_t ft_post_rma_selective_comp(enum ft_rma_opcodes op, struct fid_ep *ep, si
 	rma_msg.context = context;
 	rma_msg.msg_iov = &iov;
 	rma_msg.iov_count = 1;
-	rma_msg.rma_iov = remote;
+	rma_msg.rma_iov = &rma_iov;
 	rma_msg.rma_iov_count = 1;
-	rma_msg.data = NO_CQ_DATA;
 
 	uint64_t flags = enable_completion ? FI_COMPLETION : 0;
-	ret = fi_writemsg(ep, &rma_msg, flags);
+	// ret = fi_writemsg(ep, &rma_msg, 0);
 	//ret = fi_write(ep, tx_buf, opts.transfer_size, mr_desc, remote_fi_addr, remote->addr, remote->key, context);
 	//ret = fi_writev(ep, &iov, &mr_desc, 1, remote_fi_addr, remote->addr, remote->key, context);
 
+	FT_POST(fi_writemsg, ft_progress, txcq, tx_seq, &tx_cq_cntr,
+			"fi_writemsg", ep, &rma_msg, 0);
 	printf("ft_post_rma_selective_comp ret: %d\n", ret);
-	tx_seq++;
+	//tx_seq++;
 	return ret;
 }
