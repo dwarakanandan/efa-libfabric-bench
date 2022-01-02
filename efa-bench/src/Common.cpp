@@ -13,13 +13,13 @@ bool common::is_node(std::string t1, T t2)
 std::map<int, int> common::getPayloadIterMap()
 {
     std::map<int, int> payloadIterationMap;
-    payloadIterationMap.insert(std::make_pair(1, 5000000));
-    payloadIterationMap.insert(std::make_pair(8, 5000000));
-    payloadIterationMap.insert(std::make_pair(64, 5000000));
+    payloadIterationMap.insert(std::make_pair(1, 1000000));
+    payloadIterationMap.insert(std::make_pair(8, 1000000));
+    payloadIterationMap.insert(std::make_pair(64, 1000000));
     payloadIterationMap.insert(std::make_pair(512, 1000000));
-    payloadIterationMap.insert(std::make_pair(1024, 1000000));
-    payloadIterationMap.insert(std::make_pair(4096, 1000000));
-    payloadIterationMap.insert(std::make_pair(8192, 1000000));
+    payloadIterationMap.insert(std::make_pair(1024, 500000));
+    payloadIterationMap.insert(std::make_pair(4096, 500000));
+    payloadIterationMap.insert(std::make_pair(8192, 500000));
     return payloadIterationMap;
 }
 

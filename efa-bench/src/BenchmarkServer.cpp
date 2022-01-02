@@ -158,37 +158,43 @@ void startRmaServer()
 
     server.init();
     server.exchangeKeys();
-    server.sync();
-
-    server.initTxBuffer(FLAGS_payload);
-
-    server.startTimer();
-    for (int i = 0; i < FLAGS_iterations; i++)
+    std::map<int, int> iterMap;
+    if (FLAGS_run_all)
     {
-        ret = server.rma();
-        if (ret)
-            return;
+        iterMap = common::getPayloadIterMap();
     }
-    server.stopTimer();
+    else
+    {
+        iterMap.insert(std::make_pair(FLAGS_payload, FLAGS_iterations));
+    }
 
-    // Sync after RMA ops are complete
-    server.sync();
+    for (auto const &iter : iterMap)
+    {
+        FLAGS_payload = iter.first;
+        FLAGS_iterations = iter.second;
+        server.sync();
 
-    server.showTransferStatistics(FLAGS_iterations, 1);
+        server.initTxBuffer(FLAGS_payload);
+
+        server.startTimer();
+        for (int i = 0; i < FLAGS_iterations; i++)
+        {
+            ret = server.rma();
+            if (ret)
+                return;
+        }
+        server.stopTimer();
+
+        // Sync after RMA ops are complete
+        server.sync();
+
+        server.showTransferStatistics(FLAGS_iterations, 1);
+    }
 }
 
-void startRmaBatchServer()
+void rmaBatchBenchmark(Server server)
 {
     int ret;
-
-    fi_info *hints = fi_allocinfo();
-    common::setRmaFabricHints(hints);
-
-    Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
-    server.initRmaOp(FLAGS_rma_op);
-
-    server.init();
-    server.exchangeKeys();
     server.sync();
 
     server.initTxBuffer(FLAGS_payload);
@@ -245,7 +251,7 @@ void startRmaBatchServer()
     server.showTransferStatistics(FLAGS_iterations, 1);
 }
 
-void startRmaInjectServer()
+void startRmaBatchServer()
 {
     int ret;
 
@@ -257,6 +263,27 @@ void startRmaInjectServer()
 
     server.init();
     server.exchangeKeys();
+    std::map<int, int> iterMap;
+    if (FLAGS_run_all)
+    {
+        iterMap = common::getPayloadIterMap();
+    }
+    else
+    {
+        iterMap.insert(std::make_pair(FLAGS_payload, FLAGS_iterations));
+    }
+
+    for (auto const &iter : iterMap)
+    {
+        FLAGS_payload = iter.first;
+        FLAGS_iterations = iter.second;
+        rmaBatchBenchmark(server);
+    }
+}
+
+void rmaInjectBenchmark(Server server)
+{
+    int ret;
     server.sync();
 
     server.initTxBuffer(FLAGS_payload);
@@ -274,6 +301,36 @@ void startRmaInjectServer()
     server.sync();
 
     server.showTransferStatistics(FLAGS_iterations, 1);
+}
+
+void startRmaInjectServer()
+{
+    int ret;
+
+    fi_info *hints = fi_allocinfo();
+    common::setRmaFabricHints(hints);
+
+    Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
+    server.initRmaOp(FLAGS_rma_op);
+
+    server.init();
+    server.exchangeKeys();
+    std::map<int, int> iterMap;
+    if (FLAGS_run_all)
+    {
+        iterMap = common::getPayloadIterMap();
+    }
+    else
+    {
+        iterMap.insert(std::make_pair(FLAGS_payload, FLAGS_iterations));
+    }
+
+    for (auto const &iter : iterMap)
+    {
+        FLAGS_payload = iter.first;
+        FLAGS_iterations = iter.second;
+        rmaInjectBenchmark(server);
+    }
 }
 
 void startRmaSelectiveCompletionServer()
