@@ -3,6 +3,11 @@
 printf "\nPulling from git...\n"
 git pull
 
+if [ "$1" != "" ]; then
+    printf "\nConfigure remote node's IP...\n"
+    sed -i "/--dst_addr=.*/c\--dst_addr=$1" efa-bench/client.conf
+fi
+
 printf "\nCleaning build DIR...\n"
 rm -rf build
 mkdir build
