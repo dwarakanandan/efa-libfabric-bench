@@ -3977,6 +3977,10 @@ ssize_t ft_post_rma_selective_comp(enum ft_rma_opcodes op, struct fid_ep *ep, si
 		FT_ERR("Unknown RMA op type\n");
 		return EXIT_FAILURE;
 	}
-
+	if (!enable_completion)
+	{
+		// No completion will be generated for this request. Manually increment completion cntr
+		tx_cq_cntr++;
+	}
 	return EXIT_SUCCESS;
 }

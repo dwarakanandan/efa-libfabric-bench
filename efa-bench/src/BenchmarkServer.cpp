@@ -293,18 +293,18 @@ void startRmaSelectiveCompletionServer()
     server.initTxBuffer(FLAGS_payload);
 
     server.startTimer();
-    int numPosted = 0;
+    int numPendingRequests = 0;
     for (int i = 0; i < FLAGS_iterations; i++)
     {
-        if (FLAGS_batch == numPosted)
+        if (numPendingRequests == (FLAGS_batch-1))
         {
-            numPosted = 0;
             server.postRmaSelectiveComp(true);
             server.getTxCompletion();
+            numPendingRequests = 0;
             continue;
         }
         server.postRmaSelectiveComp(false);
-        numPosted++;
+        numPendingRequests++;
     }
     server.stopTimer();
 
