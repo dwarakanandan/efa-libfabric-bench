@@ -3930,7 +3930,6 @@ void ft_free_string_array(char **s)
 ssize_t ft_post_rma_selective_comp(enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
 								   struct fi_rma_iov *remote, void *context, bool enable_completion)
 {
-	int ret;
 	struct fi_msg_rma rma_msg;
 	memset(&rma_msg, 0, sizeof(rma_msg));
 
@@ -3957,8 +3956,7 @@ ssize_t ft_post_rma_selective_comp(enum ft_rma_opcodes op, struct fid_ep *ep, si
 	//ret = fi_writev(ep, &iov, &mr_desc, 1, remote_fi_addr, remote->addr, remote->key, context);
 
 	FT_POST(fi_writemsg, ft_progress, txcq, tx_seq, &tx_cq_cntr,
-			"fi_writemsg", ep, &rma_msg, 0);
-	printf("ft_post_rma_selective_comp ret: %d\n", ret);
+			"fi_writemsg", ep, &rma_msg, flags);
 	//tx_seq++;
-	return ret;
+	return 0;
 }
