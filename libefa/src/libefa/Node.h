@@ -47,6 +47,8 @@ namespace libefa
 
         int postRmaSelectiveComp(bool enableCompletion);
 
+        int enableSelectiveCompletion();
+
         int rma();
 
         int printFabricInfo();

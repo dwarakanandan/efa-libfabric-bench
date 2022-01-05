@@ -1243,6 +1243,8 @@ int ft_enable_ep(struct fid_ep *ep, struct fid_eq *eq, struct fid_av *av,
 	flags = FI_TRANSMIT;
 	if (!(opts.options & FT_OPT_TX_CQ))
 		flags |= FI_SELECTIVE_COMPLETION;
+	if (ft_check_opts(FT_OPT_SELECTIVE_COMP))
+		flags |= FI_SELECTIVE_COMPLETION;
 	FT_EP_BIND(ep, txcq, flags);
 
 	flags = FI_RECV;
@@ -2081,8 +2083,16 @@ ssize_t ft_post_tx_buf(struct fid_ep *ep, fi_addr_t fi_addr, size_t size,
 ssize_t ft_post_tx(struct fid_ep *ep, fi_addr_t fi_addr, size_t size,
 				   uint64_t data, void *ctx)
 {
-	return ft_post_tx_buf(ep, fi_addr, size, data,
-						  ctx, tx_buf, mr_desc, ft_tag);
+	if (ft_check_opts(FT_OPT_SELECTIVE_COMP))
+	{
+		size += ft_tx_prefix_size();
+		return ft_sendmsg(ep, fi_addr, size, ctx, FI_COMPLETION);
+	}
+	else
+	{
+		return ft_post_tx_buf(ep, fi_addr, size, data,
+							  ctx, tx_buf, mr_desc, ft_tag);
+	}
 }
 
 ssize_t ft_tx(struct fid_ep *ep, fi_addr_t fi_addr, size_t size, void *ctx)
@@ -2700,7 +2710,7 @@ int ft_sendmsg(struct fid_ep *ep, fi_addr_t fi_addr,
 			return ret;
 		}
 	}
-
+	tx_seq++;
 	return 0;
 }
 
@@ -3951,12 +3961,22 @@ ssize_t ft_post_rma_selective_comp(enum ft_rma_opcodes op, struct fid_ep *ep, si
 	rma_msg.rma_iov_count = 1;
 
 	uint64_t flags = enable_completion ? FI_COMPLETION : 0;
-	// ret = fi_writemsg(ep, &rma_msg, 0);
-	//ret = fi_write(ep, tx_buf, opts.transfer_size, mr_desc, remote_fi_addr, remote->addr, remote->key, context);
-	//ret = fi_writev(ep, &iov, &mr_desc, 1, remote_fi_addr, remote->addr, remote->key, context);
 
-	FT_POST(fi_writemsg, ft_progress, txcq, tx_seq, &tx_cq_cntr,
-			"fi_writemsg", ep, &rma_msg, flags);
-	//tx_seq++;
-	return 0;
+	if (op == FT_RMA_WRITE)
+	{
+		FT_POST(fi_writemsg, ft_progress, txcq, tx_seq, &tx_cq_cntr,
+				"fi_writemsg", ep, &rma_msg, flags);
+	}
+	else if (op == FT_RMA_READ)
+	{
+		FT_POST(fi_readmsg, ft_progress, txcq, tx_seq, &tx_cq_cntr,
+				"fi_readmsg", ep, &rma_msg, flags);
+	}
+	else
+	{
+		FT_ERR("Unknown RMA op type\n");
+		return EXIT_FAILURE;
+	}
+
+	return EXIT_SUCCESS;
 }

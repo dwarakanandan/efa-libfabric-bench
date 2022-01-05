@@ -21,6 +21,11 @@ libefa::Node::Node(std::string provider, std::string endpoint, fi_info *userHint
     }
 }
 
+int libefa::Node::enableSelectiveCompletion()
+{
+    opts.options |= FT_OPT_SELECTIVE_COMP;
+}
+
 int libefa::Node::init()
 {
     return ft_init_fabric();

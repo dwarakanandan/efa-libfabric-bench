@@ -285,6 +285,7 @@ void startRmaSelectiveCompletionServer()
     //hints->tx_attr->op_flags = 0;
 
     Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
+    server.enableSelectiveCompletion();
     server.initRmaOp(FLAGS_rma_op);
 
     server.init();
