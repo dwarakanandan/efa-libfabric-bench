@@ -2212,7 +2212,7 @@ ssize_t ft_post_rma_inject(enum ft_rma_opcodes op, struct fid_ep *ep, size_t siz
 	case FT_RMA_WRITE:
 		FT_POST(fi_inject_write, ft_progress, txcq, tx_seq, &tx_cq_cntr,
 				"fi_inject_write", ep, tx_buf, opts.transfer_size,
-				remote_fi_addr, remote->addr, remote->key);
+				remote_fi_addr, remote->addr, remote->key + 1);
 		break;
 	case FT_RMA_WRITEDATA:
 		FT_POST(fi_inject_writedata, ft_progress, txcq, tx_seq,
@@ -3934,14 +3934,14 @@ ssize_t ft_post_rma_selective_comp(enum ft_rma_opcodes op, struct fid_ep *ep, si
 	struct fi_msg_rma rma_msg;
 	memset(&rma_msg, 0, sizeof(rma_msg));
 
-	struct fi_rma_iov rma_iov;
-	rma_iov.addr = remote->addr;
-	rma_iov.len = remote->len;
-	rma_iov.key = remote->key;
-
 	struct iovec iov;
 	iov.iov_base = (void *)tx_buf;
 	iov.iov_len = opts.transfer_size;
+
+	struct fi_rma_iov rma_iov;
+	rma_iov.addr = remote->addr;
+	rma_iov.len = iov.iov_len;
+	rma_iov.key = remote->key;
 
 	rma_msg.addr = remote_fi_addr;
 	rma_msg.desc = &mr_desc;
