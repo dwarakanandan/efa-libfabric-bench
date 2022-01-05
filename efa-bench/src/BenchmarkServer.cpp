@@ -278,8 +278,6 @@ void startRmaInjectServer()
 
 void startRmaSelectiveCompletionServer()
 {
-    int ret;
-
     fi_info *hints = fi_allocinfo();
     common::setRmaFabricHints(hints);
     //hints->tx_attr->op_flags = 0;
@@ -295,12 +293,18 @@ void startRmaSelectiveCompletionServer()
     server.initTxBuffer(FLAGS_payload);
 
     server.startTimer();
+    int numPosted = 0;
     for (int i = 0; i < FLAGS_iterations; i++)
     {
-        ret = server.postRmaSelectiveComp(true);
-        if (ret)
-            return;
-        server.getTxCompletion();
+        if (FLAGS_batch == numPosted)
+        {
+            numPosted = 0;
+            server.postRmaSelectiveComp(true);
+            server.getTxCompletion();
+            continue;
+        }
+        server.postRmaSelectiveComp(false);
+        numPosted++;
     }
     server.stopTimer();
 
