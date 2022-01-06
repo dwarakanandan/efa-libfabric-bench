@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <chrono>
+#include <thread>
 
 #include <libefa/Server.h>
 #include <libefa/Client.h>
@@ -41,6 +43,18 @@ static std::map<T, const char *> NODE_TYPE = {
     {CLIENT, "client"},
 };
 
+struct BenchmarkContext
+{
+    std::string experimentName;
+    std::string provider;
+    std::string endpoint;
+    std::string nodeType;
+    uint64_t batchSize;
+    uint64_t numThreads;
+    std::string operationType;
+    uint64_t msgSize;
+};
+
 namespace common
 {
     bool is_benchmark(std::string t1, T t2);
@@ -52,4 +66,6 @@ namespace common
     void setRmaFabricHints(fi_info *hints);
 
     std::map<int, int> getPayloadIterMap();
+
+    inline uint64_t iterationCounter = 0;
 }

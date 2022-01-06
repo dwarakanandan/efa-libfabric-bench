@@ -6,6 +6,17 @@ using namespace libefa;
 void startPingPongServer()
 {
     int ret;
+    BenchmarkContext context;
+    context.experimentName = FLAGS_benchmark_type;
+    context.endpoint = FLAGS_endpoint;
+    context.provider = FLAGS_provider;
+    context.msgSize = FLAGS_payload;
+    context.nodeType = FLAGS_mode;
+    context.batchSize = 1;
+    context.numThreads = 1;
+    
+    CsvLogger logger = CsvLogger(context);
+
     fi_info *hints = fi_allocinfo();
     common::setBaseFabricHints(hints);
 
@@ -15,19 +26,26 @@ void startPingPongServer()
 
     server.initTxBuffer(FLAGS_payload);
 
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+    logger.start();
+    std::cout << "Starting benchmark" << std::endl;
     server.startTimer();
-    for (int i = 0; i < FLAGS_iterations; i++)
+    while (true)
     {
+        common::iterationCounter++;
         ret = server.rx();
         if (ret)
             return;
         ret = server.tx();
         if (ret)
             return;
+        if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
+            break;
     }
     server.stopTimer();
+    logger.stop();
 
-    server.showTransferStatistics(FLAGS_iterations, 2);
+    server.showTransferStatistics(common::iterationCounter, 2);
 }
 
 void startPingPongInjectServer()
@@ -296,7 +314,7 @@ void startRmaSelectiveCompletionServer()
     int numPendingRequests = 0;
     for (int i = 0; i < FLAGS_iterations; i++)
     {
-        if (numPendingRequests == (FLAGS_batch-1))
+        if (numPendingRequests == (FLAGS_batch - 1))
         {
             server.postRmaSelectiveComp(true);
             server.getTxCompletion();

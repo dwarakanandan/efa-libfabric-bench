@@ -24,6 +24,7 @@ DEFINE_string(provider, "sockets", "Fabric provider Eg: sockets, efa");
 DEFINE_string(endpoint, "dgram", "Endpoint type Eg: dgram, rdm");
 DEFINE_string(dst_addr, "127.0.0.1", "Destination address");
 DEFINE_uint32(iterations, 10, "Number of transfers to perform");
+DEFINE_uint32(runtime, 30, "Benchmark run-time in seconds");
 DEFINE_uint32(payload, 64, "Size of transfer payload in Kilobytes");
 DEFINE_uint32(batch, 1000, "Batch size");
 DEFINE_double(cq_try, 0.8, "Factor used in combination with batch size to determine CQ retrievals");

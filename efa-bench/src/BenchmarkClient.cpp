@@ -15,19 +15,23 @@ void startPingPongClient()
 
 	client.initTxBuffer(FLAGS_payload);
 
-	client.startTimer();
-	for (int i = 0; i < FLAGS_iterations; i++)
-	{
-		ret = client.tx();
-		if (ret)
-			return;
-		ret = client.rx();
-		if (ret)
-			return;
-	}
-	client.stopTimer();
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+    client.startTimer();
+    while (true)
+    {
+        common::iterationCounter++;
+        ret = client.tx();
+        if (ret)
+            return;
+        ret = client.rx();
+        if (ret)
+            return;
+        if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
+            break;
+    }
+    client.stopTimer();
 
-	client.showTransferStatistics(FLAGS_iterations, 2);
+    client.showTransferStatistics(common::iterationCounter, 2);
 }
 
 void startPingPongInjectClient()

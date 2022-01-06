@@ -6,6 +6,8 @@ SET (CMAKE_BUILD_TYPE Debug)
 
 SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -O3")
 
+SET (CMAKE_CXX_STANDARD 17)
+
 SET (PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/src")
 
 include_directories(${CMAKE_SOURCE_DIR}/libefa/src/)
