@@ -29,14 +29,35 @@ void CsvLogger::stop()
     this->lThread.join();
 }
 
+uint64_t CsvLogger::getCounter(std::string counter)
+{
+    char data[20];
+    std::ifstream infile;
+    infile.open("/sys/class/infiniband/rdmap0s6/ports/1/hw_counters/" + counter);
+    infile >> data;
+    infile.close();
+    return std::stoull(data);
+}
+
+double CsvLogger::calculateBandwidthMbps(uint64_t initial, uint64_t current, int timeElapsed)
+{
+    return (current - initial) / (timeElapsed * 1024.0 * 1024.0);
+}
+
 void CsvLogger::loggerTask()
 {
     this->logHeader();
     int timestamp = 0;
+
+    this->initialTxBytes = this->getCounter("tx_bytes");
+    this->initialRxBytes = this->getCounter("rx_bytes");
+
     while (this->benchmarkRunning)
     {
         std::this_thread::sleep_for(std::chrono::seconds(1));
-        this->logRow(timestamp++, common::iterationCounter, 0,0);
+        timestamp++;
+        std::cout << this->calculateBandwidthMbps(this->initialTxBytes, this->getCounter("tx_bytes"), timestamp) << std::endl;
+        this->logRow(timestamp, common::iterationCounter, 0, 0);
     }
 }
 

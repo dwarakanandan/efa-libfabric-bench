@@ -5,6 +5,7 @@
 #include <map>
 #include <chrono>
 #include <thread>
+#include <fstream>
 
 #include <libefa/Server.h>
 #include <libefa/Client.h>
