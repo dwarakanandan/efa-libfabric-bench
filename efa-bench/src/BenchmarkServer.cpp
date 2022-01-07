@@ -14,7 +14,7 @@ void startPingPongServer()
     context.nodeType = FLAGS_mode;
     context.batchSize = 1;
     context.numThreads = 1;
-    
+
     CsvLogger logger = CsvLogger(context);
 
     fi_info *hints = fi_allocinfo();
@@ -28,11 +28,10 @@ void startPingPongServer()
 
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
     logger.start();
-    std::cout << "Starting benchmark" << std::endl;
     server.startTimer();
     while (true)
     {
-        common::iterationCounter++;
+        common::operationCounter += 2;
         ret = server.rx();
         if (ret)
             return;
@@ -45,7 +44,7 @@ void startPingPongServer()
     server.stopTimer();
     logger.stop();
 
-    server.showTransferStatistics(common::iterationCounter, 2);
+    server.showTransferStatistics(common::operationCounter / 2, 2);
 }
 
 void startPingPongInjectServer()
@@ -78,6 +77,17 @@ void startPingPongInjectServer()
 void startTaggedBatchServer()
 {
     int ret;
+    BenchmarkContext context;
+    context.experimentName = FLAGS_benchmark_type;
+    context.endpoint = FLAGS_endpoint;
+    context.provider = FLAGS_provider;
+    context.msgSize = FLAGS_payload;
+    context.nodeType = FLAGS_mode;
+    context.batchSize = 1;
+    context.numThreads = 1;
+
+    CsvLogger logger = CsvLogger(context);
+
     fi_info *hints = fi_allocinfo();
     common::setBaseFabricHints(hints);
 
@@ -87,17 +97,21 @@ void startTaggedBatchServer()
 
     server.initTxBuffer(FLAGS_payload);
 
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+    logger.start();
     server.startTimer();
+
     int numTxRetries = 0;
     int numCqObtained = 0;
     int cqTry = FLAGS_batch * FLAGS_cq_try;
 
-    for (int i = 1; i <= FLAGS_iterations; i++)
+    while (true)
     {
+        common::operationCounter++;
         ret = server.postTx();
         while (ret == -FI_EAGAIN)
         {
-            if (numCqObtained < i)
+            if (numCqObtained < common::operationCounter)
             {
                 ret = server.getNTxCompletion(1);
                 if (ret)
@@ -112,7 +126,7 @@ void startTaggedBatchServer()
             ret = server.postTx();
             numTxRetries++;
         }
-        if ((i - numCqObtained) > FLAGS_batch)
+        if ((common::operationCounter - numCqObtained) > FLAGS_batch)
         {
             ret = server.getNTxCompletion(cqTry);
             if (ret)
@@ -122,9 +136,12 @@ void startTaggedBatchServer()
             }
             numCqObtained += cqTry;
         }
+
+        if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
+            break;
     }
 
-    ret = server.getNTxCompletion(FLAGS_iterations - numCqObtained);
+    ret = server.getNTxCompletion(common::operationCounter - numCqObtained);
     if (ret)
     {
         printf("SERVER: getCqCompletion failed\n\n");
@@ -132,8 +149,9 @@ void startTaggedBatchServer()
     }
 
     server.stopTimer();
+    logger.stop();
 
-    server.showTransferStatistics(FLAGS_iterations, 1);
+    server.showTransferStatistics(common::operationCounter, 1);
 }
 
 void startLatencyTestServer()

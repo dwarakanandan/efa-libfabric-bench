@@ -6,6 +6,7 @@
 #include <chrono>
 #include <thread>
 #include <fstream>
+#include <sstream>
 
 #include <libefa/Server.h>
 #include <libefa/Client.h>
@@ -68,5 +69,5 @@ namespace common
 
     std::map<int, int> getPayloadIterMap();
 
-    inline uint64_t iterationCounter = 0;
+    inline uint64_t operationCounter = 0;
 }

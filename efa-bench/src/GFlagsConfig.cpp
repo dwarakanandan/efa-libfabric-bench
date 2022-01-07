@@ -31,3 +31,4 @@ DEFINE_double(cq_try, 0.8, "Factor used in combination with batch size to determ
 DEFINE_bool(run_all, false, "Run benchmark for all payloads");
 DEFINE_bool(tagged, false, "Use Tagged message transfer");
 DEFINE_string(rma_op, "write", "RMA Operation Eg: read/write");
+DEFINE_string(hw_counters, "/sys/class/infiniband/rdmap0s6/ports/1/hw_counters/", "Path to network interface HW Counters");

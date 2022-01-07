@@ -33,7 +33,7 @@ uint64_t CsvLogger::getCounter(std::string counter)
 {
     char data[20];
     std::ifstream infile;
-    infile.open("/sys/class/infiniband/rdmap0s6/ports/1/hw_counters/" + counter);
+    infile.open(FLAGS_hw_counters.c_str() + counter);
     infile >> data;
     infile.close();
     return std::stoull(data);
@@ -46,9 +46,15 @@ double CsvLogger::calculateBandwidthMbps(uint64_t initial, uint64_t current, int
 
 void CsvLogger::loggerTask()
 {
-    this->logHeader();
-    int timestamp = 0;
+    std::stringstream ss;
+    ss << std::time(0);
+    this->statsFile.open("stats_" + ss.str() + ".csv");
 
+    ss = this->logHeader();
+    this->statsFile << ss.str();
+    std::cout << ss.str();
+
+    int timestamp = 0;
     this->initialTxBytes = this->getCounter("tx_bytes");
     this->initialRxBytes = this->getCounter("rx_bytes");
 
@@ -56,34 +62,44 @@ void CsvLogger::loggerTask()
     {
         std::this_thread::sleep_for(std::chrono::seconds(1));
         timestamp++;
-        std::cout << this->calculateBandwidthMbps(this->initialTxBytes, this->getCounter("tx_bytes"), timestamp) << std::endl;
-        this->logRow(timestamp, common::iterationCounter, 0, 0);
+        double txBw = this->calculateBandwidthMbps(this->initialTxBytes, this->getCounter("tx_bytes"), timestamp);
+        double rxBw = this->calculateBandwidthMbps(this->initialRxBytes, this->getCounter("rx_bytes"), timestamp);
+        double opsPsec = (common::operationCounter * 1.0) / timestamp;
+        ss = this->logRow(timestamp, opsPsec, txBw, rxBw);
+        this->statsFile << ss.str();
+        std::cout << ss.str();
     }
+
+    this->statsFile.close();
 }
 
-void CsvLogger::logHeader()
+std::stringstream CsvLogger::logHeader()
 {
+    std::stringstream ss;
     int i;
     for (i = 0; i < headerFields.size() - 1; i++)
     {
-        std::cout << headerFields[i] << ",";
+        ss << headerFields[i] << ",";
     }
-    std::cout << headerFields[i] << std::endl;
+    ss << headerFields[i] << std::endl;
+    return ss;
 }
 
-void CsvLogger::logRow(int timestamp, double opsPerSecond, double rxBw, double txBw)
+std::stringstream CsvLogger::logRow(int timestamp, double opsPerSecond, double rxBw, double txBw)
 {
-    std::cout << timestamp << ",";
-    std::cout << this->context.experimentName << ",";
-    std::cout << this->context.provider << ",";
-    std::cout << this->context.endpoint << ",";
-    std::cout << this->context.nodeType << ",";
-    std::cout << this->context.batchSize << ",";
-    std::cout << this->context.numThreads << ",";
-    std::cout << this->context.operationType << ",";
-    std::cout << this->context.msgSize << ",";
-    std::cout << opsPerSecond << ",";
-    std::cout << txBw << ",";
-    std::cout << rxBw;
-    std::cout << std::endl;
+    std::stringstream ss;
+    ss << timestamp << ",";
+    ss << this->context.experimentName << ",";
+    ss << this->context.provider << ",";
+    ss << this->context.endpoint << ",";
+    ss << this->context.nodeType << ",";
+    ss << this->context.batchSize << ",";
+    ss << this->context.numThreads << ",";
+    ss << this->context.operationType << ",";
+    ss << this->context.msgSize << ",";
+    ss << opsPerSecond << ",";
+    ss << txBw << ",";
+    ss << rxBw;
+    ss << std::endl;
+    return ss;
 }
