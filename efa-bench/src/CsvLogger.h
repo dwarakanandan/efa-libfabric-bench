@@ -14,6 +14,10 @@ class CsvLogger
 
     uint64_t initialRxBytes;
 
+    uint64_t initialTxPkts;
+
+    uint64_t initialRxPkts;
+
     std::ofstream statsFile;
 
 public:
@@ -31,5 +35,7 @@ public:
 
     double calculateBandwidthMbps(uint64_t initial, uint64_t current, int timeElapsed);
 
-    std::stringstream logRow(int timestamp, double opsPerSecond, double rxBw, double txBw);
+    double calculatePktsPsec(uint64_t initial, uint64_t current, int timeElapsed);
+
+    std::stringstream logRow(int timestamp, double opsPerSecond, double txPktsPsec, double rxPktsPsec, double txBw, double rxBw);
 };

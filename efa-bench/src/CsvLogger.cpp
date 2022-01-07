@@ -12,7 +12,9 @@ CsvLogger::CsvLogger(BenchmarkContext context)
     headerFields.push_back("thread_count");
     headerFields.push_back("operation_type");
     headerFields.push_back("message_size");
-    headerFields.push_back("ops_per_sec");
+    headerFields.push_back("ops_psec");
+    headerFields.push_back("tx_pkts_psec");
+    headerFields.push_back("rx_pkts_psec");
     headerFields.push_back("tx_bandwidth");
     headerFields.push_back("rx_bandwidth");
 }
@@ -44,6 +46,11 @@ double CsvLogger::calculateBandwidthMbps(uint64_t initial, uint64_t current, int
     return (current - initial) / (timeElapsed * 1024.0 * 1024.0);
 }
 
+double CsvLogger::calculatePktsPsec(uint64_t initial, uint64_t current, int timeElapsed)
+{
+    return (current - initial) * 1.0 / (timeElapsed);
+}
+
 void CsvLogger::loggerTask()
 {
     std::stringstream ss;
@@ -57,15 +64,27 @@ void CsvLogger::loggerTask()
     int timestamp = 0;
     this->initialTxBytes = this->getCounter("tx_bytes");
     this->initialRxBytes = this->getCounter("rx_bytes");
+    this->initialTxPkts = this->getCounter("tx_pkts");
+    this->initialRxPkts = this->getCounter("rx_pkts");
 
     while (this->benchmarkRunning)
     {
         std::this_thread::sleep_for(std::chrono::seconds(1));
         timestamp++;
+
         double txBw = this->calculateBandwidthMbps(this->initialTxBytes, this->getCounter("tx_bytes"), timestamp);
+        txBw = txBw < 1 ? 0 : txBw;
         double rxBw = this->calculateBandwidthMbps(this->initialRxBytes, this->getCounter("rx_bytes"), timestamp);
+        rxBw = rxBw < 1 ? 0 : rxBw;
+        
+        double txPktsPsec = this->calculatePktsPsec(this->initialTxPkts, this->getCounter("tx_pkts"), timestamp);
+        txPktsPsec = txPktsPsec < 1 ? 0 : txPktsPsec;
+        double rxPktsPsec = this->calculatePktsPsec(this->initialRxPkts, this->getCounter("rx_pkts"), timestamp);
+        rxPktsPsec = rxPktsPsec < 1 ? 0 : rxPktsPsec;
+
         double opsPsec = (common::operationCounter * 1.0) / timestamp;
-        ss = this->logRow(timestamp, opsPsec, txBw, rxBw);
+
+        ss = this->logRow(timestamp, opsPsec, txPktsPsec, rxPktsPsec, txBw, rxBw);
         this->statsFile << ss.str();
         std::cout << ss.str();
     }
@@ -85,7 +104,7 @@ std::stringstream CsvLogger::logHeader()
     return ss;
 }
 
-std::stringstream CsvLogger::logRow(int timestamp, double opsPerSecond, double rxBw, double txBw)
+std::stringstream CsvLogger::logRow(int timestamp, double opsPerSecond, double txPktsPsec, double rxPktsPsec, double txBw, double rxBw)
 {
     std::stringstream ss;
     ss << timestamp << ",";
@@ -98,6 +117,8 @@ std::stringstream CsvLogger::logRow(int timestamp, double opsPerSecond, double r
     ss << this->context.operationType << ",";
     ss << this->context.msgSize << ",";
     ss << opsPerSecond << ",";
+    ss << txPktsPsec << ",";
+    ss << rxPktsPsec << ",";
     ss << txBw << ",";
     ss << rxBw;
     ss << std::endl;
