@@ -3,14 +3,16 @@ import subprocess
 import time
 import io
 
-server_ip = '127.0.0.1'
-client_ip = '127.0.0.1'
+server_ip = '172.31.27.197'
+client_ip = '172.31.25.149'
 port = 22
-username = 'dwaraka'
-password = 'dwarakacool007'
+username = 'ec2-user'
+password = ''
 
-executable_name = '/home/dwaraka/workspace/efa-libfabric-bench/build/benchmark'
-base_config = '--debug --benchmark_type=batch --provider=sockets --endpoint=rdm --iterations=10000 --payload=64 --batch=100 --rma_op=write --tagged --hw_counters=/sys/class/net/lo/statistics/'
+executable_name = '/home/ec2-user/workspace/efa-libfabric-bench/build/benchmark'
+base_config = ['--debug', '--benchmark_type=batch', '--provider=efa', '--endpoint=rdm',
+               '--payload=1024', '--batch=100', '--rma_op=write', '--tagged',
+               '--hw_counters=/sys/class/infiniband/rdmap0s6/ports/1/hw_counters/']
 
 
 def getSSHClient():
@@ -32,38 +34,45 @@ def killClient(stdin):
     stdin.channel.close()
 
 
-def startServer(cmd):
+def startServer(args):
     return subprocess.Popen(
-        cmd,
-        shell=True,
+        args,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
     )
 
 
-def buildClientConfig(config, runtime):
-    return executable_name + ' ' + \
-        config + ' ' + \
-        '--mode=client' + ' ' + \
-        '--dst_addr=' + server_ip + ' ' + \
-        '--runtime=' + str(runtime)
+def buildClientCmd(baseconfig, runtime):
+    args = []
+    args.append(executable_name)
+    args.extend(baseconfig)
+    args.append('--mode=client')
+    args.append('--dst_addr=' + server_ip)
+    args.append('--runtime=' + str(runtime))
+
+    flatargs = ''
+    for i in args:
+        flatargs += ' ' + i
+    return flatargs
 
 
-def buildServerConfig(config, runtime):
-    return executable_name + ' ' + \
-        config + ' ' + \
-        '--mode=server' + ' ' + \
-        '--runtime=' + str(runtime)
+def buildServerCmd(baseconfig, runtime):
+    args = []
+    args.append(executable_name)
+    args.extend(baseconfig)
+    args.append('--mode=server')
+    args.append('--runtime=' + str(runtime))
+    return args
 
 
 def runTestWithConfig(config):
     # Start server process
-    server = startServer(buildServerConfig(config, 5))
+    server = startServer(buildServerCmd(config, 5))
 
-    # Connect to client node and start client process
+    # SSH to client node and start client process
     client = getSSHClient()
-    c_stdin, c_stdout = execOnClient(client, buildClientConfig(config, 7))
+    c_stdin, c_stdout = execOnClient(client, buildClientCmd(config, 7))
 
     # Wait till server completes
     s_stdout, s_stderr = server.communicate()

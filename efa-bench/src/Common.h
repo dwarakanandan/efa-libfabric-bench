@@ -7,6 +7,7 @@
 #include <thread>
 #include <fstream>
 #include <sstream>
+#include <iomanip>
 
 #include <libefa/Server.h>
 #include <libefa/Client.h>

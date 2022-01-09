@@ -73,14 +73,10 @@ void CsvLogger::loggerTask()
         timestamp++;
 
         double txBw = this->calculateBandwidthMbps(this->initialTxBytes, this->getCounter("tx_bytes"), timestamp);
-        txBw = txBw < 1 ? 0 : txBw;
         double rxBw = this->calculateBandwidthMbps(this->initialRxBytes, this->getCounter("rx_bytes"), timestamp);
-        rxBw = rxBw < 1 ? 0 : rxBw;
         
         double txPktsPsec = this->calculatePktsPsec(this->initialTxPkts, this->getCounter("tx_pkts"), timestamp);
-        txPktsPsec = txPktsPsec < 1 ? 0 : txPktsPsec;
         double rxPktsPsec = this->calculatePktsPsec(this->initialRxPkts, this->getCounter("rx_pkts"), timestamp);
-        rxPktsPsec = rxPktsPsec < 1 ? 0 : rxPktsPsec;
 
         double opsPsec = (common::operationCounter * 1.0) / timestamp;
 
@@ -107,6 +103,7 @@ std::stringstream CsvLogger::logHeader()
 std::stringstream CsvLogger::logRow(int timestamp, double opsPerSecond, double txPktsPsec, double rxPktsPsec, double txBw, double rxBw)
 {
     std::stringstream ss;
+    ss << std::fixed << std::setprecision(2);
     ss << timestamp << ",";
     ss << this->context.experimentName << ",";
     ss << this->context.provider << ",";
