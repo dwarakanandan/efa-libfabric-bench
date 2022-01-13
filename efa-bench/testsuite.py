@@ -3,8 +3,13 @@ import subprocess
 import time
 import io
 import sys
+from threading import Timer
 
-if len(sys.argv) > 1 and sys.argv[1] == 'local':
+'''
+    Usage: python3 testsuite.py <server-ip> <client-ip> [local]
+'''
+
+if len(sys.argv) > 3 and sys.argv[3] == 'local':
     SERVER_IP = '127.0.0.1'
     CLIENT_IP = '127.0.0.1'
     USERNAME = 'dwaraka'
@@ -13,16 +18,17 @@ if len(sys.argv) > 1 and sys.argv[1] == 'local':
     BASE_CONFIG = [
         '--debug', '--provider=sockets', '--hw_counters=/sys/class/net/lo/statistics/']
 else:
-    SERVER_IP = '172.31.27.197'
-    CLIENT_IP = '172.31.25.149'
+    SERVER_IP = sys.argv[1]
+    CLIENT_IP = sys.argv[2]
     USERNAME = 'ec2-user'
     PASSWORD = ''
     EXECUTABLE_NAME = '/home/ec2-user/workspace/efa-libfabric-bench/build/benchmark'
     BASE_CONFIG = [
         '--debug', '--provider=efa', '--hw_counters=/sys/class/infiniband/rdmap0s6/ports/1/hw_counters/']
 
-RUNTIME = 2
-PAYLOADS = [4, 64, 512, 1024, 4096, 8192, 16384, 65536]
+RUNTIME = 1
+DGRAM_PAYLOADS = [4, 64, 512, 1024, 4096, 8192]
+RDM_PAYLOADS = [4, 64, 512, 1024, 4096, 8192, 16384, 65536]
 
 
 def getSSHClient():
@@ -93,14 +99,21 @@ def runTestWithConfig(config, stat_file, runtime):
     c_stdin, c_stdout = execOnClient(client, buildClientCmd(config, runtime+2))
 
     # Wait till server completes
-    s_stdout, s_stderr = server.communicate()
-    # print(server.returncode)
-
+    timer = Timer(RUNTIME + 5, server.kill)
+    try:
+        timer.start()
+        s_stdout, s_stderr = server.communicate()
+    finally:
+        if not timer.is_alive():
+            print('Server process killed due to timeout...')
+        timer.cancel()
+    if server.returncode != 0:
+        print('Server exited with code:', server.returncode)
     killClient(c_stdin)
 
 
-def runDGRAMPingPongTests():
-    for payload in PAYLOADS:
+def runPingPongDGRAM():
+    for payload in DGRAM_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
         config = ['--benchmark_type=ping_pong',
                   '--endpoint=dgram', payload_flag]
@@ -108,16 +121,16 @@ def runDGRAMPingPongTests():
         runTestWithConfig(config, stats_file, RUNTIME)
 
 
-def runRDMPingPongTests():
-    for payload in PAYLOADS:
+def runPingPongRDM():
+    for payload in RDM_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
         config = ['--benchmark_type=ping_pong', '--endpoint=rdm', payload_flag]
         stats_file = 'ping_pong_rdm_' + str(payload)
         runTestWithConfig(config, stats_file, RUNTIME)
 
 
-def runRDMTaggedPingPongTests():
-    for payload in PAYLOADS:
+def runPingPongRDMTagged():
+    for payload in RDM_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
         config = ['--benchmark_type=ping_pong',
                   '--endpoint=rdm', '--tagged', payload_flag]
@@ -125,11 +138,78 @@ def runRDMTaggedPingPongTests():
         runTestWithConfig(config, stats_file, RUNTIME)
 
 
+def runBatchDGRAM(batch):
+    for payload in DGRAM_PAYLOADS:
+        payload_flag = '--payload=' + str(payload)
+        batch_flag = '--batch=' + str(batch)
+        config = ['--benchmark_type=batch',
+                  '--endpoint=dgram', batch_flag, payload_flag]
+        stats_file = 'batch_dgram_' + str(batch) + 'b_' + str(payload)
+        runTestWithConfig(config, stats_file, RUNTIME)
+
+
+def runBatchRDM(batch):
+    for payload in RDM_PAYLOADS:
+        payload_flag = '--payload=' + str(payload)
+        batch_flag = '--batch=' + str(batch)
+        config = ['--benchmark_type=batch',
+                  '--endpoint=rdm', batch_flag, payload_flag]
+        stats_file = 'batch_rdm_' + str(batch) + 'b_' + str(payload)
+        runTestWithConfig(config, stats_file, RUNTIME)
+
+
+def runBatchRDMTagged(batch):
+    for payload in RDM_PAYLOADS:
+        payload_flag = '--payload=' + str(payload)
+        batch_flag = '--batch=' + str(batch)
+        config = ['--benchmark_type=batch',
+                  '--endpoint=rdm', '--tagged', batch_flag, payload_flag]
+        stats_file = 'batch_rdm_tagged_' + str(batch) + 'b_' + str(payload)
+        runTestWithConfig(config, stats_file, RUNTIME)
+
+
+def runRMA(rma_op):
+    for payload in RDM_PAYLOADS:
+        payload_flag = '--payload=' + str(payload)
+        rma_flag = '--rma_op=' + rma_op
+        config = ['--benchmark_type=rma',
+                  '--endpoint=rdm', rma_flag, payload_flag]
+        stats_file = 'rma_' + rma_op + '_' + str(payload)
+        runTestWithConfig(config, stats_file, RUNTIME)
+
+
+def runRMABatch(rma_op, batch):
+    for payload in RDM_PAYLOADS:
+        payload_flag = '--payload=' + str(payload)
+        batch_flag = '--batch=' + str(batch)
+        rma_flag = '--rma_op=' + rma_op
+        config = ['--benchmark_type=rma_batch',
+                  '--endpoint=rdm', rma_flag, batch_flag, payload_flag]
+        stats_file = 'rma_batch_' + rma_op + \
+            '_' + str(batch) + 'b_' + str(payload)
+        runTestWithConfig(config, stats_file, RUNTIME)
+
+
+def runRMASelectiveCompletion(rma_op):
+    for payload in RDM_PAYLOADS:
+        payload_flag = '--payload=' + str(payload)
+        rma_flag = '--rma_op=' + rma_op
+        config = ['--benchmark_type=rma_sel_comp',
+                  '--endpoint=rdm', rma_flag, payload_flag]
+        stats_file = 'rma_sel_comp_' + rma_op + '_' + str(payload)
+        runTestWithConfig(config, stats_file, RUNTIME)
+
+
 if __name__ == "__main__":
-    batch_config = ['--benchmark_type=batch', '--endpoint=rdm',
-                    '--payload=1024', '--batch=100', '--tagged']
-    rma_config = ['--benchmark_type=rma_sel_comp', '--endpoint=rdm',
-                  '--payload=8192', '--batch=100', '--rma_op=write']
-    runDGRAMPingPongTests()
-    runRDMPingPongTests()
-    runRDMTaggedPingPongTests()
+    runPingPongDGRAM()
+    runPingPongRDM()
+    runPingPongRDMTagged()
+    runBatchDGRAM(100)
+    runBatchRDM(100)
+    runBatchRDMTagged(100)
+    runRMA('write')
+    runRMA('read')
+    runRMABatch('write', 100)
+    runRMABatch('read', 100)
+    runRMASelectiveCompletion('write')
+    runRMASelectiveCompletion('read')
