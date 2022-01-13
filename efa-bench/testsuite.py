@@ -7,6 +7,9 @@ from threading import Timer
 
 '''
     Usage: python3 testsuite.py <server-ip> <client-ip> [local]
+    TEST_CASE_COUTN = 92
+    RUNTIME_PER_CASE = 30sec
+    TOTAL_RUNTIME = ~45min
 '''
 
 if len(sys.argv) > 3 and sys.argv[3] == 'local':
