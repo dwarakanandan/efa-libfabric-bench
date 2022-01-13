@@ -211,7 +211,7 @@ void startRmaServer()
     context.provider = FLAGS_provider;
     context.msgSize = FLAGS_payload;
     context.nodeType = FLAGS_mode;
-    context.operationType = "rma";
+    context.operationType = FLAGS_rma_op;
     context.batchSize = 1;
     context.numThreads = 1;
 
@@ -256,7 +256,7 @@ void startRmaBatchServer()
     context.provider = FLAGS_provider;
     context.msgSize = FLAGS_payload;
     context.nodeType = FLAGS_mode;
-    context.operationType = "rma";
+    context.operationType = FLAGS_rma_op;
     context.batchSize = FLAGS_batch;
     context.numThreads = 1;
 
@@ -341,7 +341,7 @@ void startRmaInjectServer()
     context.provider = FLAGS_provider;
     context.msgSize = FLAGS_payload;
     context.nodeType = FLAGS_mode;
-    context.operationType = "rma-inject";
+    context.operationType = FLAGS_rma_op;
     context.batchSize = 1;
     context.numThreads = 1;
 
@@ -374,6 +374,9 @@ void startRmaInjectServer()
     server.stopTimer();
     logger.stop();
 
+    // Sync after RMA ops are complete
+    server.sync();
+
     server.showTransferStatistics(common::operationCounter, 1);
 }
 
@@ -386,7 +389,7 @@ void startRmaSelectiveCompletionServer()
     context.provider = FLAGS_provider;
     context.msgSize = FLAGS_payload;
     context.nodeType = FLAGS_mode;
-    context.operationType = "rma";
+    context.operationType = FLAGS_rma_op;
     context.batchSize = FLAGS_batch;
     context.numThreads = 1;
 
@@ -396,6 +399,7 @@ void startRmaSelectiveCompletionServer()
     common::setRmaFabricHints(hints);
 
     Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
+    server.enableSelectiveCompletion();
     server.initRmaOp(FLAGS_rma_op);
 
     server.init();
@@ -414,9 +418,7 @@ void startRmaSelectiveCompletionServer()
         if (numPendingRequests == (FLAGS_batch - 1))
         {
             server.postRmaSelectiveComp(true);
-            printf("Waiting at %lu\n", common::operationCounter);
             server.getTxCompletion();
-            printf("Got completion %lu\n", common::operationCounter);
             numPendingRequests = 0;
             continue;
         }
@@ -427,6 +429,9 @@ void startRmaSelectiveCompletionServer()
     }
     server.stopTimer();
     logger.stop();
+
+    // Sync after RMA ops are complete
+    server.sync();
 
     server.showTransferStatistics(common::operationCounter, 1);
 }

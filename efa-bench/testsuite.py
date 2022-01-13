@@ -101,6 +101,6 @@ def runTestWithConfig(config, stat_file):
 if __name__ == "__main__":
     batch_config = ['--benchmark_type=batch', '--endpoint=rdm',
                     '--payload=1024', '--batch=100', '--tagged']
-    rma_config = ['--benchmark_type=rma_batch', '--endpoint=rdm',
+    rma_config = ['--benchmark_type=rma_sel_comp', '--endpoint=rdm',
                   '--payload=8192', '--batch=100', '--rma_op=write']
-    runTestWithConfig(rma_config, 'rma1024')
+    runTestWithConfig(rma_config, 'rma8192')
