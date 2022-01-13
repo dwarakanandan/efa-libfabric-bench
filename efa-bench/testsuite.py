@@ -4,7 +4,7 @@ import time
 import io
 import sys
 
-if sys.argv[1] == 'local':
+if len(sys.argv) > 1 and sys.argv[1] == 'local':
     server_ip = '127.0.0.1'
     client_ip = '127.0.0.1'
     port = 22
@@ -39,8 +39,12 @@ def execOnClient(client, cmd):
 
 
 def killClient(stdin):
-    stdin.write("\x03".encode())
-    stdin.channel.close()
+    try:
+        stdin.write("\x03".encode())
+        stdin.channel.close()
+    except OSError:
+        # print('Client socket closed')
+        return
 
 
 def startServer(args):
@@ -95,5 +99,8 @@ def runTestWithConfig(config, stat_file):
 
 
 if __name__ == "__main__":
-    batch_config = ['--benchmark_type=batch', '--endpoint=rdm', '--payload=1024', '--batch=100', '--tagged']
-    runTestWithConfig(batch_config, 'batch1024')
+    batch_config = ['--benchmark_type=batch', '--endpoint=rdm',
+                    '--payload=1024', '--batch=100', '--tagged']
+    rma_config = ['--benchmark_type=rma_batch', '--endpoint=rdm',
+                  '--payload=8192', '--batch=100', '--rma_op=write']
+    runTestWithConfig(rma_config, 'rma1024')

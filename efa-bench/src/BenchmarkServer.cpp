@@ -250,6 +250,17 @@ void startRmaServer()
 void startRmaBatchServer()
 {
     int ret;
+    BenchmarkContext context;
+    context.experimentName = FLAGS_benchmark_type;
+    context.endpoint = FLAGS_endpoint;
+    context.provider = FLAGS_provider;
+    context.msgSize = FLAGS_payload;
+    context.nodeType = FLAGS_mode;
+    context.operationType = "rma";
+    context.batchSize = FLAGS_batch;
+    context.numThreads = 1;
+
+    CsvLogger logger = CsvLogger(context);
 
     fi_info *hints = fi_allocinfo();
     common::setRmaFabricHints(hints);
@@ -263,17 +274,20 @@ void startRmaBatchServer()
 
     server.initTxBuffer(FLAGS_payload);
 
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+    logger.start();
     server.startTimer();
     int numTxRetries = 0;
     int numCqObtained = 0;
     int cqTry = FLAGS_batch * FLAGS_cq_try;
 
-    for (int i = 1; i <= FLAGS_iterations; i++)
+    while (true)
     {
+        common::operationCounter++;
         ret = server.postRma();
         while (ret == -FI_EAGAIN)
         {
-            if (numCqObtained < i)
+            if (numCqObtained < common::operationCounter)
             {
                 ret = server.getNTxCompletion(1);
                 if (ret)
@@ -288,7 +302,7 @@ void startRmaBatchServer()
             ret = server.postRma();
             numTxRetries++;
         }
-        if ((i - numCqObtained) > FLAGS_batch)
+        if ((common::operationCounter - numCqObtained) > FLAGS_batch)
         {
             ret = server.getNTxCompletion(cqTry);
             if (ret)
@@ -298,9 +312,11 @@ void startRmaBatchServer()
             }
             numCqObtained += cqTry;
         }
+        if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
+            break;
     }
 
-    ret = server.getNTxCompletion(FLAGS_iterations - numCqObtained);
+    ret = server.getNTxCompletion(common::operationCounter - numCqObtained);
     if (ret)
     {
         printf("SERVER: getCqCompletion failed\n\n");
@@ -308,11 +324,12 @@ void startRmaBatchServer()
     }
 
     server.stopTimer();
+    logger.stop();
 
     // Sync after RMA ops are complete
     server.sync();
 
-    server.showTransferStatistics(FLAGS_iterations, 1);
+    server.showTransferStatistics(common::operationCounter, 1);
 }
 
 void startRmaInjectServer()
@@ -397,7 +414,9 @@ void startRmaSelectiveCompletionServer()
         if (numPendingRequests == (FLAGS_batch - 1))
         {
             server.postRmaSelectiveComp(true);
+            printf("Waiting at %lu\n", common::operationCounter);
             server.getTxCompletion();
+            printf("Got completion %lu\n", common::operationCounter);
             numPendingRequests = 0;
             continue;
         }
