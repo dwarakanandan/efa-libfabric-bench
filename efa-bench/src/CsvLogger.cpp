@@ -54,29 +54,45 @@ double CsvLogger::calculatePktsPsec(uint64_t initial, uint64_t current, int time
 void CsvLogger::loggerTask()
 {
     std::stringstream ss;
-    ss << std::time(0);
-    this->statsFile.open("stats_" + ss.str() + ".csv");
+    this->statsFile.open(FLAGS_stat_file + ".csv");
 
     ss = this->logHeader();
     this->statsFile << ss.str();
     std::cout << ss.str();
 
     int timestamp = 0;
-    this->initialTxBytes = this->getCounter("tx_bytes");
-    this->initialRxBytes = this->getCounter("rx_bytes");
-    this->initialTxPkts = this->getCounter("tx_pkts");
-    this->initialRxPkts = this->getCounter("rx_pkts");
+    std::string tx_bytes, rx_bytes, tx_packets, rx_packets;
+
+    if (FLAGS_hw_counters.find("infiniband") != std::string::npos)
+    {
+        tx_bytes = "tx_bytes";
+        rx_bytes = "rx_bytes";
+        tx_packets = "tx_pkts";
+        rx_packets = "rx_pkts";
+    }
+    else
+    {
+        tx_bytes = "tx_bytes";
+        rx_bytes = "rx_bytes";
+        tx_packets = "tx_packets";
+        rx_packets = "rx_packets";
+    }
+
+    this->initialTxBytes = this->getCounter(tx_bytes);
+    this->initialRxBytes = this->getCounter(rx_bytes);
+    this->initialTxPkts = this->getCounter(tx_packets);
+    this->initialRxPkts = this->getCounter(rx_packets);
 
     while (this->benchmarkRunning)
     {
         std::this_thread::sleep_for(std::chrono::seconds(1));
         timestamp++;
 
-        double txBw = this->calculateBandwidthMbps(this->initialTxBytes, this->getCounter("tx_bytes"), timestamp);
-        double rxBw = this->calculateBandwidthMbps(this->initialRxBytes, this->getCounter("rx_bytes"), timestamp);
-        
-        double txPktsPsec = this->calculatePktsPsec(this->initialTxPkts, this->getCounter("tx_pkts"), timestamp);
-        double rxPktsPsec = this->calculatePktsPsec(this->initialRxPkts, this->getCounter("rx_pkts"), timestamp);
+        double txBw = this->calculateBandwidthMbps(this->initialTxBytes, this->getCounter(tx_bytes), timestamp);
+        double rxBw = this->calculateBandwidthMbps(this->initialRxBytes, this->getCounter(rx_bytes), timestamp);
+
+        double txPktsPsec = this->calculatePktsPsec(this->initialTxPkts, this->getCounter(tx_packets), timestamp);
+        double rxPktsPsec = this->calculatePktsPsec(this->initialRxPkts, this->getCounter(rx_packets), timestamp);
 
         double opsPsec = (common::operationCounter * 1.0) / timestamp;
 

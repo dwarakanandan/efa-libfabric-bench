@@ -12,6 +12,7 @@ void startPingPongServer()
     context.provider = FLAGS_provider;
     context.msgSize = FLAGS_payload;
     context.nodeType = FLAGS_mode;
+    context.operationType = "send";
     context.batchSize = 1;
     context.numThreads = 1;
 
@@ -50,6 +51,18 @@ void startPingPongServer()
 void startPingPongInjectServer()
 {
     int ret;
+    BenchmarkContext context;
+    context.experimentName = FLAGS_benchmark_type;
+    context.endpoint = FLAGS_endpoint;
+    context.provider = FLAGS_provider;
+    context.msgSize = FLAGS_payload;
+    context.nodeType = FLAGS_mode;
+    context.operationType = "inject";
+    context.batchSize = 1;
+    context.numThreads = 1;
+
+    CsvLogger logger = CsvLogger(context);
+
     fi_info *hints = fi_allocinfo();
     common::setBaseFabricHints(hints);
 
@@ -59,19 +72,25 @@ void startPingPongInjectServer()
 
     server.initTxBuffer(FLAGS_payload);
 
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+    logger.start();
     server.startTimer();
-    for (int i = 0; i < FLAGS_iterations; i++)
+    while (true)
     {
+        common::operationCounter += 2;
         ret = server.rx();
         if (ret)
             return;
         ret = server.inject();
         if (ret)
             return;
+        if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
+            break;
     }
     server.stopTimer();
+    logger.stop();
 
-    server.showTransferStatistics(FLAGS_iterations, 2);
+    server.showTransferStatistics(common::operationCounter / 2, 2);
 }
 
 void startTaggedBatchServer()
@@ -83,7 +102,8 @@ void startTaggedBatchServer()
     context.provider = FLAGS_provider;
     context.msgSize = FLAGS_payload;
     context.nodeType = FLAGS_mode;
-    context.batchSize = 1;
+    context.operationType = "send";
+    context.batchSize = FLAGS_batch;
     context.numThreads = 1;
 
     CsvLogger logger = CsvLogger(context);
@@ -185,6 +205,17 @@ void startCapsTestServer()
 void startRmaServer()
 {
     int ret;
+    BenchmarkContext context;
+    context.experimentName = FLAGS_benchmark_type;
+    context.endpoint = FLAGS_endpoint;
+    context.provider = FLAGS_provider;
+    context.msgSize = FLAGS_payload;
+    context.nodeType = FLAGS_mode;
+    context.operationType = "rma";
+    context.batchSize = 1;
+    context.numThreads = 1;
+
+    CsvLogger logger = CsvLogger(context);
 
     fi_info *hints = fi_allocinfo();
     common::setRmaFabricHints(hints);
@@ -198,19 +229,22 @@ void startRmaServer()
 
     server.initTxBuffer(FLAGS_payload);
 
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+    logger.start();
     server.startTimer();
-    for (int i = 0; i < FLAGS_iterations; i++)
+    while (true)
     {
+        common::operationCounter += 1;
         ret = server.rma();
         if (ret)
             return;
+        if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
+            break;
     }
     server.stopTimer();
+    logger.stop();
 
-    // Sync after RMA ops are complete
-    server.sync();
-
-    server.showTransferStatistics(FLAGS_iterations, 1);
+    server.showTransferStatistics(common::operationCounter, 1);
 }
 
 void startRmaBatchServer()
@@ -284,6 +318,17 @@ void startRmaBatchServer()
 void startRmaInjectServer()
 {
     int ret;
+    BenchmarkContext context;
+    context.experimentName = FLAGS_benchmark_type;
+    context.endpoint = FLAGS_endpoint;
+    context.provider = FLAGS_provider;
+    context.msgSize = FLAGS_payload;
+    context.nodeType = FLAGS_mode;
+    context.operationType = "rma-inject";
+    context.batchSize = 1;
+    context.numThreads = 1;
+
+    CsvLogger logger = CsvLogger(context);
 
     fi_info *hints = fi_allocinfo();
     common::setRmaFabricHints(hints);
@@ -297,29 +342,43 @@ void startRmaInjectServer()
 
     server.initTxBuffer(FLAGS_payload);
 
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+    logger.start();
     server.startTimer();
-    for (int i = 0; i < FLAGS_iterations; i++)
+    while (true)
     {
+        common::operationCounter += 1;
         ret = server.postRmaInject();
         if (ret)
             return;
+        if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
+            break;
     }
     server.stopTimer();
+    logger.stop();
 
-    // Sync after RMA ops are complete
-    server.sync();
-
-    server.showTransferStatistics(FLAGS_iterations, 1);
+    server.showTransferStatistics(common::operationCounter, 1);
 }
 
 void startRmaSelectiveCompletionServer()
 {
+    int ret;
+    BenchmarkContext context;
+    context.experimentName = FLAGS_benchmark_type;
+    context.endpoint = FLAGS_endpoint;
+    context.provider = FLAGS_provider;
+    context.msgSize = FLAGS_payload;
+    context.nodeType = FLAGS_mode;
+    context.operationType = "rma";
+    context.batchSize = FLAGS_batch;
+    context.numThreads = 1;
+
+    CsvLogger logger = CsvLogger(context);
+
     fi_info *hints = fi_allocinfo();
     common::setRmaFabricHints(hints);
-    //hints->tx_attr->op_flags = 0;
 
     Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
-    server.enableSelectiveCompletion();
     server.initRmaOp(FLAGS_rma_op);
 
     server.init();
@@ -328,10 +387,13 @@ void startRmaSelectiveCompletionServer()
 
     server.initTxBuffer(FLAGS_payload);
 
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+    logger.start();
     server.startTimer();
     int numPendingRequests = 0;
-    for (int i = 0; i < FLAGS_iterations; i++)
+    while (true)
     {
+        common::operationCounter += 1;
         if (numPendingRequests == (FLAGS_batch - 1))
         {
             server.postRmaSelectiveComp(true);
@@ -341,11 +403,11 @@ void startRmaSelectiveCompletionServer()
         }
         server.postRmaSelectiveComp(false);
         numPendingRequests++;
+        if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
+            break;
     }
     server.stopTimer();
+    logger.stop();
 
-    // Sync after RMA ops are complete
-    server.sync();
-
-    server.showTransferStatistics(FLAGS_iterations, 1);
+    server.showTransferStatistics(common::operationCounter, 1);
 }

@@ -2,17 +2,26 @@ import paramiko
 import subprocess
 import time
 import io
+import sys
 
-server_ip = '172.31.27.197'
-client_ip = '172.31.25.149'
-port = 22
-username = 'ec2-user'
-password = ''
-
-executable_name = '/home/ec2-user/workspace/efa-libfabric-bench/build/benchmark'
-base_config = ['--debug', '--benchmark_type=batch', '--provider=efa', '--endpoint=rdm',
-               '--payload=1024', '--batch=100', '--rma_op=write', '--tagged',
-               '--hw_counters=/sys/class/infiniband/rdmap0s6/ports/1/hw_counters/']
+if sys.argv[1] == 'local':
+    server_ip = '127.0.0.1'
+    client_ip = '127.0.0.1'
+    port = 22
+    username = 'dwaraka'
+    password = 'dwarakacool007'
+    executable_name = '/home/dwaraka/workspace/efa-libfabric-bench/build/benchmark'
+    base_config = [
+        '--debug', '--provider=sockets', '--hw_counters=/sys/class/net/lo/statistics/']
+else:
+    server_ip = '172.31.27.197'
+    client_ip = '172.31.25.149'
+    port = 22
+    username = 'ec2-user'
+    password = ''
+    executable_name = '/home/ec2-user/workspace/efa-libfabric-bench/build/benchmark'
+    base_config = [
+        '--debug', '--provider=efa', '--hw_counters=/sys/class/infiniband/rdmap0s6/ports/1/hw_counters/']
 
 
 def getSSHClient():
@@ -43,10 +52,11 @@ def startServer(args):
     )
 
 
-def buildClientCmd(baseconfig, runtime):
+def buildClientCmd(config, runtime):
     args = []
     args.append(executable_name)
-    args.extend(baseconfig)
+    args.extend(base_config)
+    args.extend(config)
     args.append('--mode=client')
     args.append('--dst_addr=' + server_ip)
     args.append('--runtime=' + str(runtime))
@@ -57,18 +67,21 @@ def buildClientCmd(baseconfig, runtime):
     return flatargs
 
 
-def buildServerCmd(baseconfig, runtime):
+def buildServerCmd(config, stat_file, runtime):
     args = []
     args.append(executable_name)
-    args.extend(baseconfig)
+    args.extend(base_config)
+    args.extend(config)
     args.append('--mode=server')
+    args.append('--stat_file=' + stat_file)
     args.append('--runtime=' + str(runtime))
+    print("Running config:", args)
     return args
 
 
-def runTestWithConfig(config):
+def runTestWithConfig(config, stat_file):
     # Start server process
-    server = startServer(buildServerCmd(config, 5))
+    server = startServer(buildServerCmd(config, stat_file, 5))
 
     # SSH to client node and start client process
     client = getSSHClient()
@@ -81,4 +94,6 @@ def runTestWithConfig(config):
     killClient(c_stdin)
 
 
-runTestWithConfig(base_config)
+if __name__ == "__main__":
+    batch_config = ['--benchmark_type=batch', '--endpoint=rdm', '--payload=1024', '--batch=100', '--tagged']
+    runTestWithConfig(batch_config, 'batch1024')

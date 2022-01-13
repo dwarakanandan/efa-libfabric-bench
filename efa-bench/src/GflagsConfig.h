@@ -25,3 +25,4 @@ DECLARE_bool(run_all);
 DECLARE_bool(tagged);
 DECLARE_string(rma_op);
 DECLARE_string(hw_counters);
+DECLARE_string(stat_file);
