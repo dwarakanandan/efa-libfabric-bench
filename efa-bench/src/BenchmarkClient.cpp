@@ -3,13 +3,13 @@
 using namespace std;
 using namespace libefa;
 
-void pingPongClient(std::string port)
+void pingPongClient(std::string port, std::string oobPort)
 {
 	int ret;
 	fi_info *hints = fi_allocinfo();
 	common::setBaseFabricHints(hints);
 
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, port, hints, FLAGS_dst_addr);
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, port, oobPort, hints, FLAGS_dst_addr);
 	client.init();
 	client.sync();
 
@@ -36,10 +36,10 @@ void pingPongClient(std::string port)
 
 void startPingPongClient()
 {
-    std::thread worker0(pingPongClient, "10000");
-    std::thread worker1(pingPongClient, "10001");
-    std::thread worker2(pingPongClient, "10002");
-    std::thread worker3(pingPongClient, "10003");
+    std::thread worker0(pingPongClient, "10000", "9000");
+    std::thread worker1(pingPongClient, "10001", "9001");
+    std::thread worker2(pingPongClient, "10002", "9002");
+    std::thread worker3(pingPongClient, "10003", "9003");
     worker0.join();
     worker1.join();
     worker2.join();
@@ -52,7 +52,7 @@ void startPingPongInjectClient()
 	fi_info *hints = fi_allocinfo();
 	common::setBaseFabricHints(hints);
 
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", hints, FLAGS_dst_addr);
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
 	client.init();
 	client.sync();
 
@@ -83,7 +83,7 @@ void defaultClient()
 	fi_info *hints = fi_allocinfo();
 	common::setBaseFabricHints(hints);
 
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", hints, FLAGS_dst_addr);
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
 	client.init();
 	client.sync();
 
@@ -126,7 +126,7 @@ void startRmaClient()
 	fi_info *hints = fi_allocinfo();
 	common::setRmaFabricHints(hints);
 
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", hints, FLAGS_dst_addr);
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
 	client.initRmaOp(FLAGS_rma_op);
 
 	client.init();

@@ -1,6 +1,6 @@
 #include "Node.h"
 
-libefa::Node::Node(std::string provider, std::string endpoint, fi_info *userHints)
+libefa::Node::Node(std::string provider, std::string endpoint, std::string oobPort, fi_info *userHints)
 {
     ctx = {0};
     init_connection_context(&ctx);
@@ -21,6 +21,7 @@ libefa::Node::Node(std::string provider, std::string endpoint, fi_info *userHint
     {
         ctx.opts.options |= FT_OPT_OOB_SYNC;
         ctx.opts.options |= FT_OPT_OOB_ADDR_EXCH;
+        ctx.opts.oob_port = strdup(oobPort.c_str());
     }
 }
 

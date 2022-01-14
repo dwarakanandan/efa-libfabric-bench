@@ -8,7 +8,7 @@ namespace libefa
     class Node
     {
     protected:
-        Node(std::string provider, std::string endpoint, fi_info *userHints);
+        Node(std::string provider, std::string endpoint, std::string oobPort, fi_info *userHints);
 
         ~Node();
 
