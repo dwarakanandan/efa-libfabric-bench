@@ -2,8 +2,6 @@
 
 import paramiko
 import subprocess
-import time
-import io
 import sys
 from threading import Timer
 
@@ -219,8 +217,9 @@ def runBatchRDMTagged(batch):
     for payload in RDM_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
         batch_flag = '--batch=' + str(batch)
+        cq_try_flag = '--cq_try=' + str(0.8 if payload <= 8192 else 0.9)
         config = ['--benchmark_type=batch',
-                  '--endpoint=rdm', '--tagged', batch_flag, payload_flag]
+                  '--endpoint=rdm', '--tagged', batch_flag, cq_try_flag, payload_flag]
         stats_file = 'batch_rdm_tagged_' + str(batch) + 'b_' + str(payload)
         runTestWithConfig(config, stats_file, RUNTIME)
 
@@ -270,6 +269,11 @@ if __name__ == "__main__":
     # runRMABatch('read', 100)
     # runRMASelectiveCompletion('write')
     # runRMASelectiveCompletion('read')
-    runLatencyDGRAM()
-    runLatencyRDM()
-    runLatencyRDMTagged()
+    # runLatencyDGRAM()
+    # runLatencyRDM()
+    # runLatencyRDMTagged()
+    runBatchRDMTagged(10)
+    runBatchRDMTagged(50)
+    runBatchRDMTagged(80)
+    runBatchRDMTagged(100)
+    runBatchRDMTagged(200)
