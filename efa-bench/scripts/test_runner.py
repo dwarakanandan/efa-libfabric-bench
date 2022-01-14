@@ -35,6 +35,17 @@ RUNTIME = 1
 DGRAM_PAYLOADS = [4, 64, 512, 1024, 4096, 8192]
 RDM_PAYLOADS = [4, 64, 512, 1024, 4096, 8192, 16384, 65536]
 
+PAYLOAD_ITERATION_MAP = {
+    4: 100000,
+    64: 100000,
+    512: 100000,
+    1024: 100000,
+    4096: 100000,
+    8192: 100000,
+    16384: 50000,
+    65536: 50000
+}
+
 
 def getSSHClient():
     ssh = paramiko.SSHClient()
@@ -94,7 +105,7 @@ def buildServerCmd(config, stat_file, runtime):
     return args
 
 
-def runTestWithConfig(config, stat_file, runtime, print_cmd=True, print_stdout=False):
+def runTestWithConfig(config, stat_file, runtime, kill_timeout=True, print_cmd=True, print_stdout=False):
     # Start server process
     server_cmd = buildServerCmd(config, stat_file, runtime)
     if print_cmd:
@@ -106,7 +117,8 @@ def runTestWithConfig(config, stat_file, runtime, print_cmd=True, print_stdout=F
     c_stdin, c_stdout = execOnClient(client, buildClientCmd(config, runtime+2))
 
     # Wait till server completes
-    timer = Timer(RUNTIME + 5, server.kill)
+    timeout = RUNTIME + 5 if kill_timeout else 3600
+    timer = Timer(timeout, server.kill)
     try:
         timer.start()
         s_stdout, s_stderr = server.communicate()
@@ -151,10 +163,11 @@ def runLatencyDGRAM():
     print('LatencyDGRAM:')
     for payload in DGRAM_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
+        iterations_flag = '--iterations=' + str(PAYLOAD_ITERATION_MAP[payload])
         config = ['--benchmark_type=latency',
-                  '--endpoint=dgram', payload_flag]
+                  '--endpoint=dgram', payload_flag, iterations_flag]
         stats_file = 'latency_dgram_' + str(payload)
-        runTestWithConfig(config, stats_file, RUNTIME, False, True)
+        runTestWithConfig(config, stats_file, RUNTIME, False, False, True)
     print('\n')
 
 
@@ -162,10 +175,11 @@ def runLatencyRDM():
     print('LatencyRDM:')
     for payload in RDM_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
+        iterations_flag = '--iterations=' + str(PAYLOAD_ITERATION_MAP[payload])
         config = ['--benchmark_type=latency',
-                  '--endpoint=rdm', payload_flag]
+                  '--endpoint=rdm', payload_flag, iterations_flag]
         stats_file = 'latency_rdm_' + str(payload)
-        runTestWithConfig(config, stats_file, RUNTIME, False, True)
+        runTestWithConfig(config, stats_file, RUNTIME, False, False, True)
     print('\n')
 
 
@@ -173,10 +187,11 @@ def runLatencyRDMTagged():
     print('LatencyRDMTagged:')
     for payload in RDM_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
+        iterations_flag = '--iterations=' + str(PAYLOAD_ITERATION_MAP[payload])
         config = ['--benchmark_type=latency',
-                  '--endpoint=rdm', '--tagged', payload_flag]
+                  '--endpoint=rdm', '--tagged', payload_flag, iterations_flag]
         stats_file = 'latency_rdm_tagged_' + str(payload)
-        runTestWithConfig(config, stats_file, RUNTIME, False, True)
+        runTestWithConfig(config, stats_file, RUNTIME, False, False, True)
     print('\n')
 
 
