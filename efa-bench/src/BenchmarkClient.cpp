@@ -112,7 +112,29 @@ void startTaggedBatchClient()
 
 void startLatencyTestClient()
 {
-	defaultClient();
+	int ret;
+    fi_info *hints = fi_allocinfo();
+    common::setBaseFabricHints(hints);
+
+    Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
+    client.init();
+    client.sync();
+
+    client.initTxBuffer(FLAGS_payload);
+
+    client.startTimer();
+    for (int i = 0; i < FLAGS_iterations; i++)
+    {
+        ret = client.tx();
+        if (ret)
+            return;
+        ret = client.rx();
+        if (ret)
+            return;
+    }
+    client.stopTimer();
+
+    client.showTransferStatistics(FLAGS_iterations, 2);
 }
 
 void startCapsTestClient()

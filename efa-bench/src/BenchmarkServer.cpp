@@ -201,13 +201,16 @@ void startLatencyTestServer()
     server.startTimer();
     for (int i = 0; i < FLAGS_iterations; i++)
     {
+        ret = server.rx();
+        if (ret)
+            return;
         ret = server.tx();
         if (ret)
             return;
     }
     server.stopTimer();
 
-    server.showTransferStatistics(FLAGS_iterations, 1);
+    server.showTransferStatistics(FLAGS_iterations, 2);
 }
 
 void startCapsTestServer()

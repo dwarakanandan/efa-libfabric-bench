@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import paramiko
 import subprocess
 import time
@@ -6,7 +8,7 @@ import sys
 from threading import Timer
 
 '''
-    Usage: python3 testsuite.py <server-ip> <client-ip> [local]
+    Usage: test_runner.py <server-ip> <client-ip> [local]
     TEST_CASE_COUTN = 92
     RUNTIME_PER_CASE = 30sec
     TOTAL_RUNTIME = ~45min
@@ -89,13 +91,15 @@ def buildServerCmd(config, stat_file, runtime):
     args.append('--mode=server')
     args.append('--stat_file=' + stat_file)
     args.append('--runtime=' + str(runtime))
-    print('Running config:', args, '\n')
     return args
 
 
-def runTestWithConfig(config, stat_file, runtime):
+def runTestWithConfig(config, stat_file, runtime, print_cmd=True, print_stdout=False):
     # Start server process
-    server = startServer(buildServerCmd(config, stat_file, runtime))
+    server_cmd = buildServerCmd(config, stat_file, runtime)
+    if print_cmd:
+        print('Running config:', server_cmd, '\n')
+    server = startServer(server_cmd)
 
     # SSH to client node and start client process
     client = getSSHClient()
@@ -106,6 +110,8 @@ def runTestWithConfig(config, stat_file, runtime):
     try:
         timer.start()
         s_stdout, s_stderr = server.communicate()
+        if print_stdout:
+            print(s_stdout.decode("utf-8"))
     finally:
         if not timer.is_alive():
             print('Server process killed due to timeout...')
@@ -139,6 +145,39 @@ def runPingPongRDMTagged():
                   '--endpoint=rdm', '--tagged', payload_flag]
         stats_file = 'ping_pong_rdm_tagged_' + str(payload)
         runTestWithConfig(config, stats_file, RUNTIME)
+
+
+def runLatencyDGRAM():
+    print('LatencyDGRAM:')
+    for payload in DGRAM_PAYLOADS:
+        payload_flag = '--payload=' + str(payload)
+        config = ['--benchmark_type=latency',
+                  '--endpoint=dgram', payload_flag]
+        stats_file = 'latency_dgram_' + str(payload)
+        runTestWithConfig(config, stats_file, RUNTIME, False, True)
+    print('\n')
+
+
+def runLatencyRDM():
+    print('LatencyRDM:')
+    for payload in RDM_PAYLOADS:
+        payload_flag = '--payload=' + str(payload)
+        config = ['--benchmark_type=latency',
+                  '--endpoint=rdm', payload_flag]
+        stats_file = 'latency_rdm_' + str(payload)
+        runTestWithConfig(config, stats_file, RUNTIME, False, True)
+    print('\n')
+
+
+def runLatencyRDMTagged():
+    print('LatencyRDMTagged:')
+    for payload in RDM_PAYLOADS:
+        payload_flag = '--payload=' + str(payload)
+        config = ['--benchmark_type=latency',
+                  '--endpoint=rdm', '--tagged', payload_flag]
+        stats_file = 'latency_rdm_tagged_' + str(payload)
+        runTestWithConfig(config, stats_file, RUNTIME, False, True)
+    print('\n')
 
 
 def runBatchDGRAM(batch):
@@ -204,15 +243,18 @@ def runRMASelectiveCompletion(rma_op):
 
 
 if __name__ == "__main__":
-    runPingPongDGRAM()
-    runPingPongRDM()
-    runPingPongRDMTagged()
-    runBatchDGRAM(100)
-    runBatchRDM(100)
-    runBatchRDMTagged(100)
-    runRMA('write')
-    runRMA('read')
-    runRMABatch('write', 100)
-    runRMABatch('read', 100)
-    runRMASelectiveCompletion('write')
-    runRMASelectiveCompletion('read')
+    # runPingPongDGRAM()
+    # runPingPongRDM()
+    # runPingPongRDMTagged()
+    # runBatchDGRAM(100)
+    # runBatchRDM(100)
+    # runBatchRDMTagged(100)
+    # runRMA('write')
+    # runRMA('read')
+    # runRMABatch('write', 100)
+    # runRMABatch('read', 100)
+    # runRMASelectiveCompletion('write')
+    # runRMASelectiveCompletion('read')
+    runLatencyDGRAM()
+    runLatencyRDM()
+    runLatencyRDMTagged()
