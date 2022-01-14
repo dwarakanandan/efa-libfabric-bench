@@ -31,64 +31,44 @@
 #include "shared.h"
 #include "hmem.h"
 
-struct fi_info *fi_pep, *fi, *hints;
-struct fid_fabric *fabric;
-struct fid_wait *waitset;
-struct fid_domain *domain;
-struct fid_poll *pollset;
-struct fid_pep *pep;
-struct fid_ep *ep, *alias_ep;
-struct fid_cq *txcq, *rxcq;
-struct fid_cntr *txcntr, *rxcntr;
-struct fid_mr *mr;
-void *mr_desc = NULL;
-struct fid_av *av;
-struct fid_eq *eq;
-struct fid_mc *mc;
-
-struct fid_mr no_mr;
-struct fi_context tx_ctx, rx_ctx;
-struct ft_context *tx_ctx_arr = NULL, *rx_ctx_arr = NULL;
-uint64_t remote_cq_data = 0;
-
-uint64_t tx_seq, rx_seq, tx_cq_cntr, rx_cq_cntr;
 int (*ft_mr_alloc_func)(void);
-uint64_t ft_tag = 0;
+
 int ft_parent_proc = 0;
 pid_t ft_child_pid = 0;
 int ft_socket_pair[2];
 
-fi_addr_t remote_fi_addr = FI_ADDR_UNSPEC;
-char *buf, *tx_buf, *rx_buf;
-char **tx_mr_bufs = NULL, **rx_mr_bufs = NULL;
-size_t buf_size, tx_size, rx_size, tx_mr_size, rx_mr_size;
-int rx_fd = -1, tx_fd = -1;
 char default_port[8] = "9228";
 static char default_oob_port[8] = "3000";
 const char *greeting = "Hello from Client!";
 
 char test_name[50] = "custom";
-int timeout = -1;
-struct timespec start, end;
 
-int listen_sock = -1;
-int sock = -1;
-int oob_sock = -1;
+void init_connection_context(struct ConnectionContext *ctx)
+{
+	ctx->mr_desc = NULL;
+	ctx->tx_ctx_arr = NULL;
+	ctx->rx_ctx_arr = NULL;
+	ctx->remote_cq_data = 0;
 
-struct fi_av_attr av_attr = {
-	.type = FI_AV_MAP,
-	.count = 1};
-struct fi_eq_attr eq_attr = {
-	.wait_obj = FI_WAIT_UNSPEC};
-struct fi_cq_attr cq_attr = {
-	.wait_obj = FI_WAIT_NONE};
-struct fi_cntr_attr cntr_attr = {
-	.events = FI_CNTR_EVENTS_COMP,
-	.wait_obj = FI_WAIT_NONE};
+	ctx->remote_fi_addr = FI_ADDR_UNSPEC;
+	ctx->tx_mr_bufs = NULL;
+	ctx->rx_mr_bufs = NULL;
+	ctx->rx_fd = -1;
+	ctx->tx_fd = -1;
 
-struct fi_rma_iov remote;
+	ctx->timeout = -1;
+	ctx->av_attr.type = FI_AV_MAP;
+	ctx->av_attr.count = 1;
 
-struct ft_opts opts;
+	ctx->eq_attr.wait_obj = FI_WAIT_UNSPEC;
+	ctx->cq_attr.wait_obj = FI_WAIT_NONE;
+	ctx->cntr_attr.events = FI_CNTR_EVENTS_COMP;
+	ctx->cntr_attr.wait_obj = FI_WAIT_NONE;
+
+	ctx->listen_sock = -1;
+	ctx->sock = -1;
+	ctx->oob_sock = -1;
+}
 
 struct test_size_param test_size[] = {
 	{1 << 0, 0},
@@ -188,76 +168,76 @@ void init_opts(struct ft_opts *init_opts)
 	init_opts->address_format = FI_FORMAT_UNSPEC;
 }
 
-size_t ft_tx_prefix_size(void)
+size_t ft_tx_prefix_size(struct ConnectionContext *ctx)
 {
-	return (fi->tx_attr->mode & FI_MSG_PREFIX) ? fi->ep_attr->msg_prefix_size : 0;
+	return (ctx->fi->tx_attr->mode & FI_MSG_PREFIX) ? ctx->fi->ep_attr->msg_prefix_size : 0;
 }
 
-size_t ft_rx_prefix_size(void)
+size_t ft_rx_prefix_size(struct ConnectionContext *ctx)
 {
-	return (fi->rx_attr->mode & FI_MSG_PREFIX) ? fi->ep_attr->msg_prefix_size : 0;
+	return (ctx->fi->rx_attr->mode & FI_MSG_PREFIX) ? ctx->fi->ep_attr->msg_prefix_size : 0;
 }
 
-int ft_check_opts(uint64_t flags)
+int ft_check_opts(struct ConnectionContext *ctx, uint64_t flags)
 {
-	return (opts.options & flags) == flags;
+	return (ctx->opts.options & flags) == flags;
 }
 
-static void ft_cq_set_wait_attr(void)
+static void ft_cq_set_wait_attr(struct ConnectionContext *ctx)
 {
-	switch (opts.comp_method)
+	switch (ctx->opts.comp_method)
 	{
 	case FT_COMP_SREAD:
-		cq_attr.wait_obj = FI_WAIT_UNSPEC;
-		cq_attr.wait_cond = FI_CQ_COND_NONE;
+		ctx->cq_attr.wait_obj = FI_WAIT_UNSPEC;
+		ctx->cq_attr.wait_cond = FI_CQ_COND_NONE;
 		break;
 	case FT_COMP_WAITSET:
-		assert(waitset);
-		cq_attr.wait_obj = FI_WAIT_SET;
-		cq_attr.wait_cond = FI_CQ_COND_NONE;
-		cq_attr.wait_set = waitset;
+		assert(ctx->waitset);
+		ctx->cq_attr.wait_obj = FI_WAIT_SET;
+		ctx->cq_attr.wait_cond = FI_CQ_COND_NONE;
+		ctx->cq_attr.wait_set = ctx->waitset;
 		break;
 	case FT_COMP_WAIT_FD:
-		cq_attr.wait_obj = FI_WAIT_FD;
-		cq_attr.wait_cond = FI_CQ_COND_NONE;
+		ctx->cq_attr.wait_obj = FI_WAIT_FD;
+		ctx->cq_attr.wait_cond = FI_CQ_COND_NONE;
 		break;
 	case FT_COMP_YIELD:
-		cq_attr.wait_obj = FI_WAIT_YIELD;
-		cq_attr.wait_cond = FI_CQ_COND_NONE;
+		ctx->cq_attr.wait_obj = FI_WAIT_YIELD;
+		ctx->cq_attr.wait_cond = FI_CQ_COND_NONE;
 		break;
 	default:
-		cq_attr.wait_obj = FI_WAIT_NONE;
+		ctx->cq_attr.wait_obj = FI_WAIT_NONE;
 		break;
 	}
 }
 
-static void ft_cntr_set_wait_attr(void)
+static void ft_cntr_set_wait_attr(struct ConnectionContext *ctx)
 {
-	switch (opts.comp_method)
+	switch (ctx->opts.comp_method)
 	{
 	case FT_COMP_SREAD:
-		cntr_attr.wait_obj = FI_WAIT_UNSPEC;
+		ctx->cntr_attr.wait_obj = FI_WAIT_UNSPEC;
 		break;
 	case FT_COMP_WAITSET:
-		assert(waitset);
-		cntr_attr.wait_obj = FI_WAIT_SET;
+		assert(ctx->waitset);
+		ctx->cntr_attr.wait_obj = FI_WAIT_SET;
 		break;
 	case FT_COMP_WAIT_FD:
-		cntr_attr.wait_obj = FI_WAIT_FD;
+		ctx->cntr_attr.wait_obj = FI_WAIT_FD;
 		break;
 	case FT_COMP_YIELD:
-		cntr_attr.wait_obj = FI_WAIT_YIELD;
+		ctx->cntr_attr.wait_obj = FI_WAIT_YIELD;
 		break;
 	default:
-		cntr_attr.wait_obj = FI_WAIT_NONE;
+		ctx->cntr_attr.wait_obj = FI_WAIT_NONE;
 		break;
 	}
 }
 
-int ft_cntr_open(struct fid_cntr **cntr)
+int ft_cntr_open(struct ConnectionContext *ctx, struct fid_cntr **cntr)
 {
-	ft_cntr_set_wait_attr();
-	return fi_cntr_open(domain, &cntr_attr, cntr, cntr);
+	ft_cntr_set_wait_attr(ctx);
+	return fi_cntr_open(ctx->domain, &ctx->cntr_attr, cntr, cntr);
 }
 
 static inline int ft_rma_read_target_allowed(uint64_t caps)
@@ -401,18 +381,18 @@ void ft_free_bit_combo(uint64_t *combo)
 	free(combo);
 }
 
-static int ft_reg_mr(void *buf, size_t size, uint64_t access,
+static int ft_reg_mr(struct ConnectionContext *ctx, void *buf, size_t size, uint64_t access,
 					 uint64_t key, struct fid_mr **mr, void **desc)
 {
 	struct fi_mr_attr attr = {0};
 	struct iovec iov = {0};
 	int ret;
 
-	if (((!(fi->domain_attr->mr_mode & FI_MR_LOCAL) &&
-		  !(opts.options & FT_OPT_USE_DEVICE)) ||
-		 (!(fi->domain_attr->mr_mode & FI_MR_HMEM) &&
-		  opts.options & FT_OPT_USE_DEVICE)) &&
-		!(fi->caps & (FI_RMA | FI_ATOMIC)))
+	if (((!(ctx->fi->domain_attr->mr_mode & FI_MR_LOCAL) &&
+		  !(ctx->opts.options & FT_OPT_USE_DEVICE)) ||
+		 (!(ctx->fi->domain_attr->mr_mode & FI_MR_HMEM) &&
+		  ctx->opts.options & FT_OPT_USE_DEVICE)) &&
+		!(ctx->fi->caps & (FI_RMA | FI_ATOMIC)))
 		return 0;
 
 	iov.iov_base = buf;
@@ -423,18 +403,18 @@ static int ft_reg_mr(void *buf, size_t size, uint64_t access,
 	attr.offset = 0;
 	attr.requested_key = key;
 	attr.context = NULL;
-	attr.iface = opts.iface;
+	attr.iface = ctx->opts.iface;
 
-	switch (opts.iface)
+	switch (ctx->opts.iface)
 	{
 	case FI_HMEM_ZE:
-		attr.device.ze = opts.device;
+		attr.device.ze = ctx->opts.device;
 		break;
 	default:
 		break;
 	}
 
-	ret = fi_mr_regattr(domain, &attr, 0, mr);
+	ret = fi_mr_regattr(ctx->domain, &attr, 0, mr);
 	if (ret)
 		return ret;
 
@@ -444,43 +424,43 @@ static int ft_reg_mr(void *buf, size_t size, uint64_t access,
 	return FI_SUCCESS;
 }
 
-static int ft_alloc_ctx_array(struct ft_context **mr_array, char ***mr_bufs,
+static int ft_alloc_ctx_array(struct ConnectionContext *ctx, struct ft_context **mr_array, char ***mr_bufs,
 							  char *default_buf, size_t mr_size,
 							  uint64_t start_key)
 {
 	int i, ret;
-	uint64_t access = ft_info_to_mr_access(fi);
+	uint64_t access = ft_info_to_mr_access(ctx->fi);
 	struct ft_context *context;
 
-	*mr_array = calloc(opts.window_size, sizeof(**mr_array));
+	*mr_array = calloc(ctx->opts.window_size, sizeof(**mr_array));
 	if (!*mr_array)
 		return -FI_ENOMEM;
 
-	if (opts.options & FT_OPT_ALLOC_MULT_MR)
+	if (ctx->opts.options & FT_OPT_ALLOC_MULT_MR)
 	{
-		*mr_bufs = calloc(opts.window_size, sizeof(**mr_bufs));
+		*mr_bufs = calloc(ctx->opts.window_size, sizeof(**mr_bufs));
 		if (!mr_bufs)
 			return -FI_ENOMEM;
 	}
 
-	for (i = 0; i < opts.window_size; i++)
+	for (i = 0; i < ctx->opts.window_size; i++)
 	{
 		context = &(*mr_array)[i];
-		if (!(opts.options & FT_OPT_ALLOC_MULT_MR))
+		if (!(ctx->opts.options & FT_OPT_ALLOC_MULT_MR))
 		{
 			context->buf = default_buf + mr_size * i;
-			context->mr = mr;
-			context->desc = mr_desc;
+			context->mr = ctx->mr;
+			context->desc = ctx->mr_desc;
 			continue;
 		}
-		ret = ft_hmem_alloc(opts.iface, opts.device,
+		ret = ft_hmem_alloc(ctx->opts.iface, ctx->opts.device,
 							(void **)&((*mr_bufs)[i]), mr_size);
 		if (ret)
 			return ret;
 
 		context->buf = (*mr_bufs)[i];
 
-		ret = ft_reg_mr(context->buf, mr_size, access,
+		ret = ft_reg_mr(ctx, context->buf, mr_size, access,
 						start_key + i, &context->mr,
 						&context->desc);
 		if (ret)
@@ -490,13 +470,13 @@ static int ft_alloc_ctx_array(struct ft_context **mr_array, char ***mr_bufs,
 	return 0;
 }
 
-static void ft_set_tx_rx_sizes(size_t *set_tx, size_t *set_rx)
+static void ft_set_tx_rx_sizes(struct ConnectionContext *ctx, size_t *set_tx, size_t *set_rx)
 {
-	*set_tx = opts.options & FT_OPT_SIZE ? opts.transfer_size : test_size[TEST_CNT - 1].size;
-	if (*set_tx > fi->ep_attr->max_msg_size)
-		*set_tx = fi->ep_attr->max_msg_size;
-	*set_rx = *set_tx + ft_rx_prefix_size();
-	*set_tx += ft_tx_prefix_size();
+	*set_tx = ctx->opts.options & FT_OPT_SIZE ? ctx->opts.transfer_size : test_size[TEST_CNT - 1].size;
+	if (*set_tx > ctx->fi->ep_attr->max_msg_size)
+		*set_tx = ctx->fi->ep_attr->max_msg_size;
+	*set_rx = *set_tx + ft_rx_prefix_size(ctx);
+	*set_tx += ft_tx_prefix_size(ctx);
 }
 
 /*
@@ -504,39 +484,39 @@ static void ft_set_tx_rx_sizes(size_t *set_tx, size_t *set_rx)
  * buffer is large enough for a control message used to exchange addressing
  * data.
  */
-static int ft_alloc_msgs(void)
+static int ft_alloc_msgs(struct ConnectionContext *ctx)
 {
 	int ret;
 	long alignment = 1;
 
-	if (ft_check_opts(FT_OPT_SKIP_MSG_ALLOC))
+	if (ft_check_opts(ctx, FT_OPT_SKIP_MSG_ALLOC))
 		return 0;
 
-	if (opts.options & FT_OPT_ALLOC_MULT_MR)
+	if (ctx->opts.options & FT_OPT_ALLOC_MULT_MR)
 	{
-		ft_set_tx_rx_sizes(&tx_mr_size, &rx_mr_size);
-		rx_size = FT_MAX_CTRL_MSG + ft_rx_prefix_size();
-		tx_size = FT_MAX_CTRL_MSG + ft_tx_prefix_size();
-		buf_size = rx_size + tx_size;
+		ft_set_tx_rx_sizes(ctx, &ctx->tx_mr_size, &ctx->rx_mr_size);
+		ctx->rx_size = FT_MAX_CTRL_MSG + ft_rx_prefix_size(ctx);
+		ctx->tx_size = FT_MAX_CTRL_MSG + ft_tx_prefix_size(ctx);
+		ctx->buf_size = ctx->rx_size + ctx->tx_size;
 	}
 	else
 	{
-		ft_set_tx_rx_sizes(&tx_size, &rx_size);
-		tx_mr_size = 0;
-		rx_mr_size = 0;
-		buf_size = MAX(tx_size, FT_MAX_CTRL_MSG) * opts.window_size +
-				   MAX(rx_size, FT_MAX_CTRL_MSG) * opts.window_size;
+		ft_set_tx_rx_sizes(ctx, &ctx->tx_size, &ctx->rx_size);
+		ctx->tx_mr_size = 0;
+		ctx->rx_mr_size = 0;
+		ctx->buf_size = MAX(ctx->tx_size, FT_MAX_CTRL_MSG) * ctx->opts.window_size +
+						MAX(ctx->rx_size, FT_MAX_CTRL_MSG) * ctx->opts.window_size;
 	}
 
-	if (opts.options & FT_OPT_ALIGN && !(opts.options & FT_OPT_USE_DEVICE))
+	if (ctx->opts.options & FT_OPT_ALIGN && !(ctx->opts.options & FT_OPT_USE_DEVICE))
 	{
 		alignment = sysconf(_SC_PAGESIZE);
 		if (alignment < 0)
 			return -errno;
-		buf_size += alignment;
+		ctx->buf_size += alignment;
 
-		ret = posix_memalign((void **)&buf, (size_t)alignment,
-							 buf_size);
+		ret = posix_memalign((void **)&ctx->buf, (size_t)alignment,
+							 ctx->buf_size);
 		if (ret)
 		{
 			FT_PRINTERR("posix_memalign", ret);
@@ -545,27 +525,27 @@ static int ft_alloc_msgs(void)
 	}
 	else
 	{
-		ret = ft_hmem_alloc(opts.iface, opts.device, (void **)&buf, buf_size);
+		ret = ft_hmem_alloc(ctx->opts.iface, ctx->opts.device, (void **)&ctx->buf, ctx->buf_size);
 		if (ret)
 			return ret;
 	}
-	ret = ft_hmem_memset(opts.iface, opts.device, (void *)buf, 0, buf_size);
+	ret = ft_hmem_memset(ctx->opts.iface, ctx->opts.device, (void *)ctx->buf, 0, ctx->buf_size);
 	if (ret)
 		return ret;
-	rx_buf = buf;
+	ctx->rx_buf = ctx->buf;
 
-	if (opts.options & FT_OPT_ALLOC_MULT_MR)
-		tx_buf = (char *)buf + MAX(rx_size, FT_MAX_CTRL_MSG);
+	if (ctx->opts.options & FT_OPT_ALLOC_MULT_MR)
+		ctx->tx_buf = (char *)ctx->buf + MAX(ctx->rx_size, FT_MAX_CTRL_MSG);
 	else
-		tx_buf = (char *)buf + MAX(rx_size, FT_MAX_CTRL_MSG) * opts.window_size;
+		ctx->tx_buf = (char *)ctx->buf + MAX(ctx->rx_size, FT_MAX_CTRL_MSG) * ctx->opts.window_size;
 
-	remote_cq_data = ft_init_cq_data(fi);
+	ctx->remote_cq_data = ft_init_cq_data(ctx->fi);
 
-	mr = &no_mr;
-	if (!ft_mr_alloc_func && !ft_check_opts(FT_OPT_SKIP_REG_MR))
+	ctx->mr = &ctx->no_mr;
+	if (!ft_mr_alloc_func && !ft_check_opts(ctx, FT_OPT_SKIP_REG_MR))
 	{
-		ret = ft_reg_mr(buf, buf_size, ft_info_to_mr_access(fi),
-						FT_MR_KEY, &mr, &mr_desc);
+		ret = ft_reg_mr(ctx, ctx->buf, ctx->buf_size, ft_info_to_mr_access(ctx->fi),
+						FT_MR_KEY, &ctx->mr, &ctx->mr_desc);
 		if (ret)
 			return ret;
 	}
@@ -573,54 +553,54 @@ static int ft_alloc_msgs(void)
 	{
 		if (ft_mr_alloc_func)
 		{
-			assert(!ft_check_opts(FT_OPT_SKIP_REG_MR));
+			assert(!ft_check_opts(ctx, FT_OPT_SKIP_REG_MR));
 			ret = ft_mr_alloc_func();
 			if (ret)
 				return ret;
 		}
 	}
 
-	ret = ft_alloc_ctx_array(&tx_ctx_arr, &tx_mr_bufs, tx_buf,
-							 tx_mr_size, FT_TX_MR_KEY);
+	ret = ft_alloc_ctx_array(ctx, &ctx->tx_ctx_arr, &ctx->tx_mr_bufs, ctx->tx_buf,
+							 ctx->tx_mr_size, FT_TX_MR_KEY);
 	if (ret)
 		return -FI_ENOMEM;
 
-	ret = ft_alloc_ctx_array(&rx_ctx_arr, &rx_mr_bufs, rx_buf,
-							 rx_mr_size, FT_RX_MR_KEY);
+	ret = ft_alloc_ctx_array(ctx, &ctx->rx_ctx_arr, &ctx->rx_mr_bufs, ctx->rx_buf,
+							 ctx->rx_mr_size, FT_RX_MR_KEY);
 	if (ret)
 		return -FI_ENOMEM;
 
 	return 0;
 }
 
-int ft_open_fabric_res(void)
+int ft_open_fabric_res(struct ConnectionContext *ctx)
 {
 	int ret;
 
-	ret = fi_fabric(fi->fabric_attr, &fabric, NULL);
+	ret = fi_fabric(ctx->fi->fabric_attr, &ctx->fabric, NULL);
 	if (ret)
 	{
 		FT_PRINTERR("fi_fabric", ret);
 		return ret;
 	}
 
-	ret = fi_eq_open(fabric, &eq_attr, &eq, NULL);
+	ret = fi_eq_open(ctx->fabric, &ctx->eq_attr, &ctx->eq, NULL);
 	if (ret)
 	{
 		FT_PRINTERR("fi_eq_open", ret);
 		return ret;
 	}
 
-	ret = fi_domain(fabric, fi, &domain, NULL);
+	ret = fi_domain(ctx->fabric, ctx->fi, &ctx->domain, NULL);
 	if (ret)
 	{
 		FT_PRINTERR("fi_domain", ret);
 		return ret;
 	}
 
-	if (opts.options & FT_OPT_DOMAIN_EQ)
+	if (ctx->opts.options & FT_OPT_DOMAIN_EQ)
 	{
-		ret = fi_domain_bind(domain, &eq->fid, 0);
+		ret = fi_domain_bind(ctx->domain, &ctx->eq->fid, 0);
 		if (ret)
 		{
 			FT_PRINTERR("fi_domain_bind", ret);
@@ -631,55 +611,55 @@ int ft_open_fabric_res(void)
 	return 0;
 }
 
-int ft_alloc_ep_res(struct fi_info *fi)
+int ft_alloc_ep_res(struct ConnectionContext *ctx, struct fi_info *fi)
 {
 	int ret;
 
-	ret = ft_alloc_msgs();
+	ret = ft_alloc_msgs(ctx);
 	if (ret)
 		return ret;
 
-	if (cq_attr.format == FI_CQ_FORMAT_UNSPEC)
+	if (ctx->cq_attr.format == FI_CQ_FORMAT_UNSPEC)
 	{
 		if (fi->caps & FI_TAGGED)
-			cq_attr.format = FI_CQ_FORMAT_TAGGED;
+			ctx->cq_attr.format = FI_CQ_FORMAT_TAGGED;
 		else
-			cq_attr.format = FI_CQ_FORMAT_CONTEXT;
+			ctx->cq_attr.format = FI_CQ_FORMAT_CONTEXT;
 	}
 
-	if (opts.options & FT_OPT_CQ_SHARED)
+	if (ctx->opts.options & FT_OPT_CQ_SHARED)
 	{
-		ft_cq_set_wait_attr();
-		cq_attr.size = 0;
+		ft_cq_set_wait_attr(ctx);
+		ctx->cq_attr.size = 0;
 
-		if (opts.tx_cq_size)
-			cq_attr.size += opts.tx_cq_size;
+		if (ctx->opts.tx_cq_size)
+			ctx->cq_attr.size += ctx->opts.tx_cq_size;
 		else
-			cq_attr.size += fi->tx_attr->size;
+			ctx->cq_attr.size += fi->tx_attr->size;
 
-		if (opts.rx_cq_size)
-			cq_attr.size += opts.rx_cq_size;
+		if (ctx->opts.rx_cq_size)
+			ctx->cq_attr.size += ctx->opts.rx_cq_size;
 		else
-			cq_attr.size += fi->rx_attr->size;
+			ctx->cq_attr.size += fi->rx_attr->size;
 
-		ret = fi_cq_open(domain, &cq_attr, &txcq, &txcq);
+		ret = fi_cq_open(ctx->domain, &ctx->cq_attr, &ctx->txcq, &ctx->txcq);
 		if (ret)
 		{
 			FT_PRINTERR("fi_cq_open", ret);
 			return ret;
 		}
-		rxcq = txcq;
+		ctx->rxcq = ctx->txcq;
 	}
 
-	if (!(opts.options & FT_OPT_CQ_SHARED))
+	if (!(ctx->opts.options & FT_OPT_CQ_SHARED))
 	{
-		ft_cq_set_wait_attr();
-		if (opts.tx_cq_size)
-			cq_attr.size = opts.tx_cq_size;
+		ft_cq_set_wait_attr(ctx);
+		if (ctx->opts.tx_cq_size)
+			ctx->cq_attr.size = ctx->opts.tx_cq_size;
 		else
-			cq_attr.size = fi->tx_attr->size;
+			ctx->cq_attr.size = fi->tx_attr->size;
 
-		ret = fi_cq_open(domain, &cq_attr, &txcq, &txcq);
+		ret = fi_cq_open(ctx->domain, &ctx->cq_attr, &ctx->txcq, &ctx->txcq);
 		if (ret)
 		{
 			FT_PRINTERR("fi_cq_open", ret);
@@ -687,9 +667,9 @@ int ft_alloc_ep_res(struct fi_info *fi)
 		}
 	}
 
-	if (opts.options & FT_OPT_TX_CNTR)
+	if (ctx->opts.options & FT_OPT_TX_CNTR)
 	{
-		ret = ft_cntr_open(&txcntr);
+		ret = ft_cntr_open(ctx, &ctx->txcntr);
 		if (ret)
 		{
 			FT_PRINTERR("fi_cntr_open", ret);
@@ -697,15 +677,15 @@ int ft_alloc_ep_res(struct fi_info *fi)
 		}
 	}
 
-	if (!(opts.options & FT_OPT_CQ_SHARED))
+	if (!(ctx->opts.options & FT_OPT_CQ_SHARED))
 	{
-		ft_cq_set_wait_attr();
-		if (opts.rx_cq_size)
-			cq_attr.size = opts.rx_cq_size;
+		ft_cq_set_wait_attr(ctx);
+		if (ctx->opts.rx_cq_size)
+			ctx->cq_attr.size = ctx->opts.rx_cq_size;
 		else
-			cq_attr.size = fi->rx_attr->size;
+			ctx->cq_attr.size = fi->rx_attr->size;
 
-		ret = fi_cq_open(domain, &cq_attr, &rxcq, &rxcq);
+		ret = fi_cq_open(ctx->domain, &ctx->cq_attr, &ctx->rxcq, &ctx->rxcq);
 		if (ret)
 		{
 			FT_PRINTERR("fi_cq_open", ret);
@@ -713,9 +693,9 @@ int ft_alloc_ep_res(struct fi_info *fi)
 		}
 	}
 
-	if (opts.options & FT_OPT_RX_CNTR)
+	if (ctx->opts.options & FT_OPT_RX_CNTR)
 	{
-		ret = ft_cntr_open(&rxcntr);
+		ret = ft_cntr_open(ctx, &ctx->rxcntr);
 		if (ret)
 		{
 			FT_PRINTERR("fi_cntr_open", ret);
@@ -726,14 +706,14 @@ int ft_alloc_ep_res(struct fi_info *fi)
 	if (fi->ep_attr->type == FI_EP_RDM || fi->ep_attr->type == FI_EP_DGRAM)
 	{
 		if (fi->domain_attr->av_type != FI_AV_UNSPEC)
-			av_attr.type = fi->domain_attr->av_type;
+			ctx->av_attr.type = fi->domain_attr->av_type;
 
-		if (opts.av_name)
+		if (ctx->opts.av_name)
 		{
-			av_attr.name = opts.av_name;
+			ctx->av_attr.name = ctx->opts.av_name;
 		}
-		av_attr.count = opts.av_size;
-		ret = fi_av_open(domain, &av_attr, &av, NULL);
+		ctx->av_attr.count = ctx->opts.av_size;
+		ret = fi_av_open(ctx->domain, &ctx->av_attr, &ctx->av, NULL);
 		if (ret)
 		{
 			FT_PRINTERR("fi_av_open", ret);
@@ -743,14 +723,14 @@ int ft_alloc_ep_res(struct fi_info *fi)
 	return 0;
 }
 
-int ft_alloc_active_res(struct fi_info *fi)
+int ft_alloc_active_res(struct ConnectionContext *ctx, struct fi_info *fi)
 {
 	int ret;
-	ret = ft_alloc_ep_res(fi);
+	ret = ft_alloc_ep_res(ctx, fi);
 	if (ret)
 		return ret;
 
-	ret = fi_endpoint(domain, fi, &ep, NULL);
+	ret = fi_endpoint(ctx->domain, fi, &ctx->ep, NULL);
 	if (ret)
 	{
 		FT_PRINTERR("fi_endpoint", ret);
@@ -760,20 +740,20 @@ int ft_alloc_active_res(struct fi_info *fi)
 	return 0;
 }
 
-static int ft_init(void)
+static int ft_init(struct ConnectionContext *ctx)
 {
-	tx_seq = 0;
-	rx_seq = 0;
-	tx_cq_cntr = 0;
-	rx_cq_cntr = 0;
+	ctx->tx_seq = 0;
+	ctx->rx_seq = 0;
+	ctx->tx_cq_cntr = 0;
+	ctx->rx_cq_cntr = 0;
 
 	//If using device memory for transfers, require OOB address
 	//exchange because extra steps are involved when passing
 	//device buffers into fi_av_insert
-	if (opts.options & FT_OPT_ENABLE_HMEM)
-		opts.options |= FT_OPT_OOB_ADDR_EXCH;
+	if (ctx->opts.options & FT_OPT_ENABLE_HMEM)
+		ctx->opts.options |= FT_OPT_OOB_ADDR_EXCH;
 
-	return ft_hmem_init(opts.iface);
+	return ft_hmem_init(ctx->opts.iface);
 }
 
 int ft_fd_nonblock(int fd)
@@ -807,61 +787,61 @@ int ft_sock_setup(int sock)
 	return 0;
 }
 
-int ft_init_oob(void)
+int ft_init_oob(struct ConnectionContext *ctx)
 {
 	struct addrinfo *ai = NULL;
 	int ret;
 
-	if (!(opts.options & FT_OPT_OOB_CTRL) || oob_sock != -1)
+	if (!(ctx->opts.options & FT_OPT_OOB_CTRL) || ctx->oob_sock != -1)
 		return 0;
 
-	if (!opts.oob_port)
-		opts.oob_port = default_oob_port;
+	if (!ctx->opts.oob_port)
+		ctx->opts.oob_port = default_oob_port;
 
-	if (!opts.dst_addr)
+	if (!ctx->opts.dst_addr)
 	{
-		ret = ft_sock_listen(opts.src_addr, opts.oob_port);
+		ret = ft_sock_listen(ctx, ctx->opts.src_addr, ctx->opts.oob_port);
 		if (ret)
 			return ret;
 
-		oob_sock = accept(listen_sock, NULL, 0);
-		if (oob_sock < 0)
+		ctx->oob_sock = accept(ctx->listen_sock, NULL, 0);
+		if (ctx->oob_sock < 0)
 		{
 			perror("accept");
-			ret = oob_sock;
+			ret = ctx->oob_sock;
 			return ret;
 		}
 
-		close(listen_sock);
+		close(ctx->listen_sock);
 	}
 	else
 	{
-		ret = getaddrinfo(opts.dst_addr, opts.oob_port, NULL, &ai);
+		ret = getaddrinfo(ctx->opts.dst_addr, ctx->opts.oob_port, NULL, &ai);
 		if (ret)
 		{
 			perror("getaddrinfo");
 			return ret;
 		}
 
-		oob_sock = socket(ai->ai_family, SOCK_STREAM, 0);
-		if (oob_sock < 0)
+		ctx->oob_sock = socket(ai->ai_family, SOCK_STREAM, 0);
+		if (ctx->oob_sock < 0)
 		{
 			perror("socket");
-			ret = oob_sock;
+			ret = ctx->oob_sock;
 			goto free;
 		}
 
-		ret = connect(oob_sock, ai->ai_addr, ai->ai_addrlen);
+		ret = connect(ctx->oob_sock, ai->ai_addr, ai->ai_addrlen);
 		if (ret)
 		{
 			perror("connect");
-			close(oob_sock);
+			close(ctx->oob_sock);
 			goto free;
 		}
 		sleep(1);
 	}
 
-	ret = ft_sock_setup(oob_sock);
+	ret = ft_sock_setup(ctx->oob_sock);
 
 free:
 	if (ai)
@@ -869,35 +849,35 @@ free:
 	return ret;
 }
 
-int ft_accept_next_client()
+int ft_accept_next_client(struct ConnectionContext *ctx)
 {
 	int ret;
 
-	if (!ft_check_opts(FT_OPT_SKIP_MSG_ALLOC) && (fi->caps & (FI_MSG | FI_TAGGED)))
+	if (!ft_check_opts(ctx, FT_OPT_SKIP_MSG_ALLOC) && (ctx->fi->caps & (FI_MSG | FI_TAGGED)))
 	{
 		/* Initial receive will get remote address for unconnected EPs */
-		ret = ft_post_rx(ep, MAX(rx_size, FT_MAX_CTRL_MSG), &rx_ctx);
+		ret = ft_post_rx(ctx, ctx->ep, MAX(ctx->rx_size, FT_MAX_CTRL_MSG), &ctx->rx_ctx);
 		if (ret)
 			return ret;
 	}
 
-	return ft_init_av();
+	return ft_init_av(ctx);
 }
 
-int ft_getinfo(struct fi_info *hints, struct fi_info **info)
+int ft_getinfo(struct ConnectionContext *ctx, struct fi_info *hints, struct fi_info **info)
 {
 	char *node, *service;
 	uint64_t flags = 0;
 	int ret;
 
-	ret = ft_read_addr_opts(&node, &service, hints, &flags, &opts);
+	ret = ft_read_addr_opts(&node, &service, hints, &flags, &ctx->opts);
 	if (ret)
 		return ret;
 
 	if (!hints->ep_attr->type)
 		hints->ep_attr->type = FI_EP_RDM;
 
-	if (opts.options & FT_OPT_ENABLE_HMEM)
+	if (ctx->opts.options & FT_OPT_ENABLE_HMEM)
 	{
 		hints->caps |= FI_HMEM;
 		hints->domain_attr->mr_mode |= FI_MR_HMEM;
@@ -910,7 +890,7 @@ int ft_getinfo(struct fi_info *hints, struct fi_info **info)
 		return ret;
 	}
 
-	if (!ft_check_prefix_forced(*info, &opts))
+	if (!ft_check_prefix_forced(*info, &ctx->opts))
 	{
 		FT_ERR("Provider disabled requested prefix mode.");
 		return -FI_ENODATA;
@@ -919,66 +899,66 @@ int ft_getinfo(struct fi_info *hints, struct fi_info **info)
 	return 0;
 }
 
-int ft_init_fabric_cm(void)
+int ft_init_fabric_cm(struct ConnectionContext *ctx)
 {
 	int ret;
-	if (!opts.dst_addr)
+	if (!ctx->opts.dst_addr)
 	{
-		ret = ft_start_server();
+		ret = ft_start_server(ctx);
 		if (ret)
 			return ret;
 	}
 
-	ret = opts.dst_addr ? ft_client_connect() : ft_server_connect();
+	ret = ctx->opts.dst_addr ? ft_client_connect(ctx) : ft_server_connect(ctx);
 
 	return ret;
 }
 
-int ft_start_server(void)
+int ft_start_server(struct ConnectionContext *ctx)
 {
 	int ret;
 
-	ret = ft_init();
+	ret = ft_init(ctx);
 	if (ret)
 		return ret;
 
-	ret = ft_init_oob();
+	ret = ft_init_oob(ctx);
 	if (ret)
 		return ret;
 
-	ret = ft_getinfo(hints, &fi_pep);
+	ret = ft_getinfo(ctx, ctx->hints, &ctx->fi_pep);
 	if (ret)
 		return ret;
 
-	ret = fi_fabric(fi_pep->fabric_attr, &fabric, NULL);
+	ret = fi_fabric(ctx->fi_pep->fabric_attr, &ctx->fabric, NULL);
 	if (ret)
 	{
 		FT_PRINTERR("fi_fabric", ret);
 		return ret;
 	}
 
-	ret = fi_eq_open(fabric, &eq_attr, &eq, NULL);
+	ret = fi_eq_open(ctx->fabric, &ctx->eq_attr, &ctx->eq, NULL);
 	if (ret)
 	{
 		FT_PRINTERR("fi_eq_open", ret);
 		return ret;
 	}
 
-	ret = fi_passive_ep(fabric, fi_pep, &pep, NULL);
+	ret = fi_passive_ep(ctx->fabric, ctx->fi_pep, &ctx->pep, NULL);
 	if (ret)
 	{
 		FT_PRINTERR("fi_passive_ep", ret);
 		return ret;
 	}
 
-	ret = fi_pep_bind(pep, &eq->fid, 0);
+	ret = fi_pep_bind(ctx->pep, &ctx->eq->fid, 0);
 	if (ret)
 	{
 		FT_PRINTERR("fi_pep_bind", ret);
 		return ret;
 	}
 
-	ret = fi_listen(pep);
+	ret = fi_listen(ctx->pep);
 	if (ret)
 	{
 		FT_PRINTERR("fi_listen", ret);
@@ -1057,24 +1037,24 @@ int ft_accept_connection(struct fid_ep *ep, struct fid_eq *eq)
 	return 0;
 }
 
-int ft_server_connect(void)
+int ft_server_connect(struct ConnectionContext *ctx)
 {
 	int ret;
 
-	ret = ft_retrieve_conn_req(eq, &fi);
+	ret = ft_retrieve_conn_req(ctx->eq, &ctx->fi);
 	if (ret)
 		goto err;
 
-	ret = fi_domain(fabric, fi, &domain, NULL);
+	ret = fi_domain(ctx->fabric, ctx->fi, &ctx->domain, NULL);
 	if (ret)
 	{
 		FT_PRINTERR("fi_domain", ret);
 		goto err;
 	}
 
-	if (opts.options & FT_OPT_DOMAIN_EQ)
+	if (ctx->opts.options & FT_OPT_DOMAIN_EQ)
 	{
-		ret = fi_domain_bind(domain, &eq->fid, 0);
+		ret = fi_domain_bind(ctx->domain, &ctx->eq->fid, 0);
 		if (ret)
 		{
 			FT_PRINTERR("fi_domain_bind", ret);
@@ -1082,26 +1062,26 @@ int ft_server_connect(void)
 		}
 	}
 
-	ret = ft_alloc_active_res(fi);
+	ret = ft_alloc_active_res(ctx, ctx->fi);
 	if (ret)
 		goto err;
 
-	ret = ft_enable_ep_recv();
+	ret = ft_enable_ep_recv(ctx);
 	if (ret)
 		goto err;
 
-	ret = ft_accept_connection(ep, eq);
+	ret = ft_accept_connection(ctx->ep, ctx->eq);
 	if (ret)
 		goto err;
 
-	if (ft_check_opts(FT_OPT_FORK_CHILD))
+	if (ft_check_opts(ctx, FT_OPT_FORK_CHILD))
 		ft_fork_child();
 
 	return 0;
 
 err:
-	if (fi)
-		fi_reject(pep, fi->handle, NULL, 0);
+	if (ctx->fi)
+		fi_reject(ctx->pep, ctx->fi->handle, NULL, 0);
 	return ret;
 }
 
@@ -1124,87 +1104,87 @@ int ft_connect_ep(struct fid_ep *ep,
 	return 0;
 }
 
-int ft_client_connect(void)
+int ft_client_connect(struct ConnectionContext *ctx)
 {
 	int ret;
 
-	ret = ft_init();
+	ret = ft_init(ctx);
 	if (ret)
 		return ret;
 
-	ret = ft_init_oob();
+	ret = ft_init_oob(ctx);
 	if (ret)
 		return ret;
 
-	ret = ft_getinfo(hints, &fi);
+	ret = ft_getinfo(ctx, ctx->hints, &ctx->fi);
 	if (ret)
 		return ret;
 
-	ret = ft_open_fabric_res();
+	ret = ft_open_fabric_res(ctx);
 	if (ret)
 		return ret;
 
-	ret = ft_alloc_active_res(fi);
+	ret = ft_alloc_active_res(ctx, ctx->fi);
 	if (ret)
 		return ret;
 
-	ret = ft_enable_ep_recv();
+	ret = ft_enable_ep_recv(ctx);
 	if (ret)
 		return ret;
 
-	ret = ft_connect_ep(ep, eq, fi->dest_addr);
+	ret = ft_connect_ep(ctx->ep, ctx->eq, ctx->fi->dest_addr);
 	if (ret)
 		return ret;
 
-	if (ft_check_opts(FT_OPT_FORK_CHILD))
+	if (ft_check_opts(ctx, FT_OPT_FORK_CHILD))
 		ft_fork_child();
 
 	return 0;
 }
 
-int ft_init_fabric(void)
+int ft_init_fabric(struct ConnectionContext *ctx)
 {
 	int ret;
 
-	ret = ft_init();
+	ret = ft_init(ctx);
 	if (ret)
 		return ret;
 
-	ret = ft_init_oob();
+	ret = ft_init_oob(ctx);
 	if (ret)
 		return ret;
 
-	ret = ft_getinfo(hints, &fi);
+	ret = ft_getinfo(ctx, ctx->hints, &ctx->fi);
 	if (ret)
 		return ret;
 
-	ret = ft_open_fabric_res();
+	ret = ft_open_fabric_res(ctx);
 	if (ret)
 		return ret;
 
-	ret = ft_alloc_active_res(fi);
+	ret = ft_alloc_active_res(ctx, ctx->fi);
 	if (ret)
 		return ret;
 
-	ret = ft_enable_ep_recv();
+	ret = ft_enable_ep_recv(ctx);
 	if (ret)
 		return ret;
 
-	ret = ft_init_av();
+	ret = ft_init_av(ctx);
 	if (ret)
 		return ret;
 
-	if (ft_check_opts(FT_OPT_FORK_CHILD))
+	if (ft_check_opts(ctx, FT_OPT_FORK_CHILD))
 		ft_fork_child();
 
 	return 0;
 }
 
-int ft_get_cq_fd(struct fid_cq *cq, int *fd)
+int ft_get_cq_fd(struct ConnectionContext *ctx, struct fid_cq *cq, int *fd)
 {
 	int ret = FI_SUCCESS;
 
-	if (cq && opts.comp_method == FT_COMP_WAIT_FD)
+	if (cq && ctx->opts.comp_method == FT_COMP_WAIT_FD)
 	{
 		ret = fi_control(&cq->fid, FI_GETWAIT, fd);
 		if (ret)
@@ -1214,10 +1194,10 @@ int ft_get_cq_fd(struct fid_cq *cq, int *fd)
 	return ret;
 }
 
-int ft_init_alias_ep(uint64_t flags)
+int ft_init_alias_ep(struct ConnectionContext *ctx, uint64_t flags)
 {
 	int ret;
-	ret = fi_ep_alias(ep, &alias_ep, flags);
+	ret = fi_ep_alias(ctx->ep, &ctx->alias_ep, flags);
 	if (ret)
 	{
 		FT_PRINTERR("fi_ep_alias", ret);
@@ -1226,58 +1206,58 @@ int ft_init_alias_ep(uint64_t flags)
 	return 0;
 }
 
-int ft_enable_ep(struct fid_ep *ep, struct fid_eq *eq, struct fid_av *av,
+int ft_enable_ep(struct ConnectionContext *ctx, struct fid_ep *ep, struct fid_eq *eq, struct fid_av *av,
 				 struct fid_cq *txcq, struct fid_cq *rxcq,
 				 struct fid_cntr *txcntr, struct fid_cntr *rxcntr)
 {
 	uint64_t flags;
 	int ret;
 
-	if ((fi->ep_attr->type == FI_EP_MSG || fi->caps & FI_MULTICAST ||
-		 fi->caps & FI_COLLECTIVE) &&
-		!(opts.options & FT_OPT_DOMAIN_EQ))
+	if ((ctx->fi->ep_attr->type == FI_EP_MSG || ctx->fi->caps & FI_MULTICAST ||
+		 ctx->fi->caps & FI_COLLECTIVE) &&
+		!(ctx->opts.options & FT_OPT_DOMAIN_EQ))
 		FT_EP_BIND(ep, eq, 0);
 
 	FT_EP_BIND(ep, av, 0);
 
 	flags = FI_TRANSMIT;
-	if (!(opts.options & FT_OPT_TX_CQ))
+	if (!(ctx->opts.options & FT_OPT_TX_CQ))
 		flags |= FI_SELECTIVE_COMPLETION;
-	if (ft_check_opts(FT_OPT_SELECTIVE_COMP))
+	if (ft_check_opts(ctx, FT_OPT_SELECTIVE_COMP))
 		flags |= FI_SELECTIVE_COMPLETION;
 	FT_EP_BIND(ep, txcq, flags);
 
 	flags = FI_RECV;
-	if (!(opts.options & FT_OPT_RX_CQ))
+	if (!(ctx->opts.options & FT_OPT_RX_CQ))
 		flags |= FI_SELECTIVE_COMPLETION;
 	FT_EP_BIND(ep, rxcq, flags);
 
-	ret = ft_get_cq_fd(txcq, &tx_fd);
+	ret = ft_get_cq_fd(ctx, txcq, &ctx->tx_fd);
 	if (ret)
 		return ret;
 
-	ret = ft_get_cq_fd(rxcq, &rx_fd);
+	ret = ft_get_cq_fd(ctx, rxcq, &ctx->rx_fd);
 	if (ret)
 		return ret;
 
 	/* TODO: use control structure to select counter bindings explicitly */
-	if (opts.options & FT_OPT_TX_CQ)
+	if (ctx->opts.options & FT_OPT_TX_CQ)
 		flags = 0;
 	else
 		flags = FI_SEND;
-	if (hints->caps & (FI_WRITE | FI_READ))
-		flags |= hints->caps & (FI_WRITE | FI_READ);
-	else if (hints->caps & FI_RMA)
+	if (ctx->hints->caps & (FI_WRITE | FI_READ))
+		flags |= ctx->hints->caps & (FI_WRITE | FI_READ);
+	else if (ctx->hints->caps & FI_RMA)
 		flags |= FI_WRITE | FI_READ;
 	FT_EP_BIND(ep, txcntr, flags);
 
-	if (opts.options & FT_OPT_RX_CQ)
+	if (ctx->opts.options & FT_OPT_RX_CQ)
 		flags = 0;
 	else
 		flags = FI_RECV;
-	if (hints->caps & (FI_REMOTE_WRITE | FI_REMOTE_READ))
-		flags |= hints->caps & (FI_REMOTE_WRITE | FI_REMOTE_READ);
-	else if (hints->caps & FI_RMA)
+	if (ctx->hints->caps & (FI_REMOTE_WRITE | FI_REMOTE_READ))
+		flags |= ctx->hints->caps & (FI_REMOTE_WRITE | FI_REMOTE_READ);
+	else if (ctx->hints->caps & FI_RMA)
 		flags |= FI_REMOTE_WRITE | FI_REMOTE_READ;
 	FT_EP_BIND(ep, rxcntr, flags);
 
@@ -1291,19 +1271,19 @@ int ft_enable_ep(struct fid_ep *ep, struct fid_eq *eq, struct fid_av *av,
 	return 0;
 }
 
-int ft_enable_ep_recv(void)
+int ft_enable_ep_recv(struct ConnectionContext *ctx)
 {
 	int ret;
 
-	ret = ft_enable_ep(ep, eq, av, txcq, rxcq, txcntr, rxcntr);
+	ret = ft_enable_ep(ctx, ctx->ep, ctx->eq, ctx->av, ctx->txcq, ctx->rxcq, ctx->txcntr, ctx->rxcntr);
 	if (ret)
 		return ret;
 
-	if (!ft_check_opts(FT_OPT_SKIP_MSG_ALLOC) &&
-		(fi->caps & (FI_MSG | FI_TAGGED)))
+	if (!ft_check_opts(ctx, FT_OPT_SKIP_MSG_ALLOC) &&
+		(ctx->fi->caps & (FI_MSG | FI_TAGGED)))
 	{
 		/* Initial receive will get remote address for unconnected EPs */
-		ret = ft_post_rx(ep, MAX(rx_size, FT_MAX_CTRL_MSG), &rx_ctx);
+		ret = ft_post_rx(ctx, ctx->ep, MAX(ctx->rx_size, FT_MAX_CTRL_MSG), &ctx->rx_ctx);
 		if (ret)
 			return ret;
 	}
@@ -1311,32 +1291,32 @@ int ft_enable_ep_recv(void)
 	return 0;
 }
 
-int ft_join_mc(void)
+int ft_join_mc(struct ConnectionContext *ctx)
 {
 	struct fi_eq_entry entry;
 	uint32_t event;
 	ssize_t rd;
 	int ret;
 
-	ret = fi_join(ep, fi->dest_addr, 0, &mc, ep->fid.context);
+	ret = fi_join(ctx->ep, ctx->fi->dest_addr, 0, &ctx->mc, ctx->ep->fid.context);
 	if (ret)
 	{
 		FT_PRINTERR("fi_join", ret);
 		return ret;
 	}
 
-	rd = fi_eq_sread(eq, &event, &entry, sizeof entry, -1, 0);
+	rd = fi_eq_sread(ctx->eq, &event, &entry, sizeof entry, -1, 0);
 	if (rd != sizeof entry)
 	{
-		FT_PROCESS_EQ_ERR(rd, eq, "fi_eq_sread", "join");
+		FT_PROCESS_EQ_ERR(rd, ctx->eq, "fi_eq_sread", "join");
 		ret = (int)rd;
 		return ret;
 	}
 
-	if (event != FI_JOIN_COMPLETE || entry.fid != &mc->fid)
+	if (event != FI_JOIN_COMPLETE || entry.fid != &ctx->mc->fid)
 	{
 		fprintf(stderr, "Unexpected join event %d fid %p (mc %p)\n",
-				event, entry.fid, ep);
+				event, entry.fid, ctx->ep);
 		ret = -FI_EOTHER;
 		return ret;
 	}
@@ -1366,12 +1346,12 @@ int ft_av_insert(struct fid_av *av, void *addr, size_t count, fi_addr_t *fi_addr
 	return 0;
 }
 
-int ft_init_av(void)
+int ft_init_av(struct ConnectionContext *ctx)
 {
-	return ft_init_av_dst_addr(av, ep, &remote_fi_addr);
+	return ft_init_av_dst_addr(ctx, ctx->av, ctx->ep, &ctx->remote_fi_addr);
 }
 
-int ft_exchange_addresses_oob(struct fid_av *av_ptr, struct fid_ep *ep_ptr,
+int ft_exchange_addresses_oob(struct ConnectionContext *ctx, struct fid_av *av_ptr, struct fid_ep *ep_ptr,
 							  fi_addr_t *remote_addr)
 {
 	char buf[FT_MAX_CTRL_MSG];
@@ -1385,11 +1365,11 @@ int ft_exchange_addresses_oob(struct fid_av *av_ptr, struct fid_ep *ep_ptr,
 		return ret;
 	}
 
-	ret = ft_sock_send(oob_sock, buf, FT_MAX_CTRL_MSG);
+	ret = ft_sock_send(ctx, ctx->oob_sock, buf, FT_MAX_CTRL_MSG);
 	if (ret)
 		return ret;
 
-	ret = ft_sock_recv(oob_sock, buf, FT_MAX_CTRL_MSG);
+	ret = ft_sock_recv(ctx, ctx->oob_sock, buf, FT_MAX_CTRL_MSG);
 	if (ret)
 		return ret;
 
@@ -1401,29 +1381,29 @@ int ft_exchange_addresses_oob(struct fid_av *av_ptr, struct fid_ep *ep_ptr,
 }
 
 /* TODO: retry send for unreliable endpoints */
-int ft_init_av_dst_addr(struct fid_av *av_ptr, struct fid_ep *ep_ptr,
+int ft_init_av_dst_addr(struct ConnectionContext *ctx, struct fid_av *av_ptr, struct fid_ep *ep_ptr,
 						fi_addr_t *remote_addr)
 {
 	size_t addrlen;
 	int ret;
 
-	if (opts.options & FT_OPT_OOB_ADDR_EXCH)
+	if (ctx->opts.options & FT_OPT_OOB_ADDR_EXCH)
 	{
-		ret = ft_exchange_addresses_oob(av_ptr, ep_ptr, remote_addr);
+		ret = ft_exchange_addresses_oob(ctx, av_ptr, ep_ptr, remote_addr);
 		if (ret)
 			return ret;
 		else
 			goto set_rx_seq_close;
 	}
 
-	if (opts.dst_addr)
+	if (ctx->opts.dst_addr)
 	{
-		ret = ft_av_insert(av_ptr, fi->dest_addr, 1, remote_addr, 0, NULL);
+		ret = ft_av_insert(av_ptr, ctx->fi->dest_addr, 1, remote_addr, 0, NULL);
 		if (ret)
 			return ret;
 
 		addrlen = FT_MAX_CTRL_MSG;
-		ret = fi_getname(&ep_ptr->fid, (char *)tx_buf + ft_tx_prefix_size(),
+		ret = fi_getname(&ep_ptr->fid, (char *)ctx->tx_buf + ft_tx_prefix_size(ctx),
 						 &addrlen);
 		if (ret)
 		{
@@ -1431,35 +1411,35 @@ int ft_init_av_dst_addr(struct fid_av *av_ptr, struct fid_ep *ep_ptr,
 			return ret;
 		}
 
-		ret = (int)ft_tx(ep, *remote_addr, addrlen, &tx_ctx);
+		ret = (int)ft_tx(ctx, ctx->ep, *remote_addr, addrlen, &ctx->tx_ctx);
 		if (ret)
 			return ret;
 
-		ret = ft_rx(ep, 1);
+		ret = ft_rx(ctx, ctx->ep, 1);
 		if (ret)
 			return ret;
 	}
 	else
 	{
-		ret = ft_get_rx_comp(rx_seq);
+		ret = ft_get_rx_comp(ctx, ctx->rx_seq);
 		if (ret)
 			return ret;
 
 		/* Test passing NULL fi_addr on one of the sides (server) if
 		 * AV type is FI_AV_TABLE */
-		ret = ft_av_insert(av_ptr, (char *)rx_buf + ft_rx_prefix_size(),
-						   1, ((fi->domain_attr->av_type == FI_AV_TABLE) ? NULL : remote_addr), 0, NULL);
+		ret = ft_av_insert(av_ptr, (char *)ctx->rx_buf + ft_rx_prefix_size(ctx),
+						   1, ((ctx->fi->domain_attr->av_type == FI_AV_TABLE) ? NULL : remote_addr), 0, NULL);
 		if (ret)
 			return ret;
 
-		ret = ft_post_rx(ep, rx_size, &rx_ctx);
+		ret = ft_post_rx(ctx, ctx->ep, ctx->rx_size, &ctx->rx_ctx);
 		if (ret)
 			return ret;
 
-		if (fi->domain_attr->av_type == FI_AV_TABLE)
+		if (ctx->fi->domain_attr->av_type == FI_AV_TABLE)
 			*remote_addr = 0;
 
-		ret = (int)ft_tx(ep, *remote_addr, 1, &tx_ctx);
+		ret = (int)ft_tx(ctx, ctx->ep, *remote_addr, 1, &ctx->tx_ctx);
 		if (ret)
 			return ret;
 	}
@@ -1472,26 +1452,26 @@ set_rx_seq_close:
 	* then the rx_seq needs to be incremented to wait on the first RMA/Atomic
 	* completion.
 	*/
-	if (!(fi->caps & FI_MSG) && !(fi->caps & FI_TAGGED) && opts.oob_port)
-		rx_seq++;
+	if (!(ctx->fi->caps & FI_MSG) && !(ctx->fi->caps & FI_TAGGED) && ctx->opts.oob_port)
+		ctx->rx_seq++;
 
 	return 0;
 }
 
 /* TODO: retry send for unreliable endpoints */
-int ft_init_av_addr(struct fid_av *av_ptr, struct fid_ep *ep_ptr,
+int ft_init_av_addr(struct ConnectionContext *ctx, struct fid_av *av_ptr, struct fid_ep *ep_ptr,
 					fi_addr_t *remote_addr)
 {
 	size_t addrlen;
 	int ret;
 
-	if (opts.options & FT_OPT_OOB_ADDR_EXCH)
-		return ft_exchange_addresses_oob(av_ptr, ep_ptr, remote_addr);
+	if (ctx->opts.options & FT_OPT_OOB_ADDR_EXCH)
+		return ft_exchange_addresses_oob(ctx, av_ptr, ep_ptr, remote_addr);
 
-	if (opts.dst_addr)
+	if (ctx->opts.dst_addr)
 	{
 		addrlen = FT_MAX_CTRL_MSG;
-		ret = fi_getname(&ep_ptr->fid, (char *)tx_buf + ft_tx_prefix_size(),
+		ret = fi_getname(&ep_ptr->fid, (char *)ctx->tx_buf + ft_tx_prefix_size(ctx),
 						 &addrlen);
 		if (ret)
 		{
@@ -1499,33 +1479,33 @@ int ft_init_av_addr(struct fid_av *av_ptr, struct fid_ep *ep_ptr,
 			return ret;
 		}
 
-		ret = (int)ft_tx(ep, remote_fi_addr, addrlen, &tx_ctx);
+		ret = (int)ft_tx(ctx, ctx->ep, ctx->remote_fi_addr, addrlen, &ctx->tx_ctx);
 		if (ret)
 			return ret;
 
-		ret = (int)ft_rx(ep, FT_MAX_CTRL_MSG);
+		ret = (int)ft_rx(ctx, ctx->ep, FT_MAX_CTRL_MSG);
 		if (ret)
 			return ret;
 
-		ret = ft_av_insert(av_ptr, (char *)rx_buf + ft_rx_prefix_size(),
+		ret = ft_av_insert(av_ptr, (char *)ctx->rx_buf + ft_rx_prefix_size(ctx),
 						   1, remote_addr, 0, NULL);
 		if (ret)
 			return ret;
 	}
 	else
 	{
-		ret = (int)ft_rx(ep, FT_MAX_CTRL_MSG);
+		ret = (int)ft_rx(ctx, ctx->ep, FT_MAX_CTRL_MSG);
 		if (ret)
 			return ret;
 
-		ret = ft_av_insert(av_ptr, (char *)rx_buf + ft_rx_prefix_size(),
+		ret = ft_av_insert(av_ptr, (char *)ctx->rx_buf + ft_rx_prefix_size(ctx),
 						   1, remote_addr, 0, NULL);
 		if (ret)
 			return ret;
 
 		addrlen = FT_MAX_CTRL_MSG;
 		ret = fi_getname(&ep_ptr->fid,
-						 (char *)tx_buf + ft_tx_prefix_size(),
+						 (char *)ctx->tx_buf + ft_tx_prefix_size(ctx),
 						 &addrlen);
 		if (ret)
 		{
@@ -1533,7 +1513,7 @@ int ft_init_av_addr(struct fid_av *av_ptr, struct fid_ep *ep_ptr,
 			return ret;
 		}
 
-		ret = (int)ft_tx(ep, remote_fi_addr, addrlen, &tx_ctx);
+		ret = (int)ft_tx(ctx, ctx->ep, ctx->remote_fi_addr, addrlen, &ctx->tx_ctx);
 		if (ret)
 			return ret;
 	}
@@ -1541,7 +1521,7 @@ int ft_init_av_addr(struct fid_av *av_ptr, struct fid_ep *ep_ptr,
 	return 0;
 }
 
-int ft_exchange_raw_keys(struct fi_rma_iov *peer_iov)
+int ft_exchange_raw_keys(struct ConnectionContext *ctx, struct fi_rma_iov *peer_iov)
 {
 	struct fi_rma_iov *rma_iov;
 	size_t key_size;
@@ -1551,7 +1531,7 @@ int ft_exchange_raw_keys(struct fi_rma_iov *peer_iov)
 
 	/* Get key size */
 	key_size = 0;
-	ret = fi_mr_raw_attr(mr, &addr, NULL, &key_size, 0);
+	ret = fi_mr_raw_attr(ctx->mr, &addr, NULL, &key_size, 0);
 	if (ret != -FI_ETOOSMALL)
 	{
 		return ret;
@@ -1560,13 +1540,13 @@ int ft_exchange_raw_keys(struct fi_rma_iov *peer_iov)
 	len = sizeof(*rma_iov) + key_size - sizeof(rma_iov->key);
 	/* TODO: make sure this fits in tx_buf and rx_buf */
 
-	if (opts.dst_addr)
+	if (ctx->opts.dst_addr)
 	{
-		rma_iov = (struct fi_rma_iov *)(tx_buf + ft_tx_prefix_size());
-		if ((fi->domain_attr->mr_mode == FI_MR_BASIC) ||
-			(fi->domain_attr->mr_mode & FI_MR_VIRT_ADDR))
+		rma_iov = (struct fi_rma_iov *)(ctx->tx_buf + ft_tx_prefix_size(ctx));
+		if ((ctx->fi->domain_attr->mr_mode == FI_MR_BASIC) ||
+			(ctx->fi->domain_attr->mr_mode & FI_MR_VIRT_ADDR))
 		{
-			rma_iov->addr = (uintptr_t)rx_buf + ft_rx_prefix_size();
+			rma_iov->addr = (uintptr_t)ctx->rx_buf + ft_rx_prefix_size(ctx);
 		}
 		else
 		{
@@ -1574,56 +1554,56 @@ int ft_exchange_raw_keys(struct fi_rma_iov *peer_iov)
 		}
 
 		/* Get raw attributes */
-		ret = fi_mr_raw_attr(mr, &addr, (uint8_t *)&rma_iov->key,
+		ret = fi_mr_raw_attr(ctx->mr, &addr, (uint8_t *)&rma_iov->key,
 							 &key_size, 0);
 		if (ret)
 			return ret;
 
-		ret = ft_tx(ep, remote_fi_addr, len, &tx_ctx);
+		ret = ft_tx(ctx, ctx->ep, ctx->remote_fi_addr, len, &ctx->tx_ctx);
 		if (ret)
 			return ret;
 
-		ret = ft_get_rx_comp(rx_seq);
+		ret = ft_get_rx_comp(ctx, ctx->rx_seq);
 		if (ret)
 			return ret;
 
-		rma_iov = (struct fi_rma_iov *)(rx_buf + ft_rx_prefix_size());
+		rma_iov = (struct fi_rma_iov *)(ctx->rx_buf + ft_rx_prefix_size(ctx));
 		peer_iov->addr = rma_iov->addr;
 		peer_iov->len = rma_iov->len;
 		/* Map remote mr raw locally */
-		ret = fi_mr_map_raw(domain, rma_iov->addr,
+		ret = fi_mr_map_raw(ctx->domain, rma_iov->addr,
 							(uint8_t *)&rma_iov->key, key_size,
 							&peer_iov->key, 0);
 		if (ret)
 			return ret;
 
-		ret = ft_post_rx(ep, rx_size, &rx_ctx);
+		ret = ft_post_rx(ctx, ctx->ep, ctx->rx_size, &ctx->rx_ctx);
 	}
 	else
 	{
-		ret = ft_get_rx_comp(rx_seq);
+		ret = ft_get_rx_comp(ctx, ctx->rx_seq);
 		if (ret)
 			return ret;
 
-		rma_iov = (struct fi_rma_iov *)(rx_buf + ft_rx_prefix_size());
+		rma_iov = (struct fi_rma_iov *)(ctx->rx_buf + ft_rx_prefix_size(ctx));
 		peer_iov->addr = rma_iov->addr;
 		peer_iov->len = rma_iov->len;
 		/* Map remote mr raw locally */
-		ret = fi_mr_map_raw(domain, rma_iov->addr,
+		ret = fi_mr_map_raw(ctx->domain, rma_iov->addr,
 							(uint8_t *)&rma_iov->key, key_size,
 							&peer_iov->key, 0);
 		if (ret)
 			return ret;
 
-		ret = ft_post_rx(ep, rx_size, &rx_ctx);
+		ret = ft_post_rx(ctx, ctx->ep, ctx->rx_size, &ctx->rx_ctx);
 		if (ret)
 			return ret;
 
-		rma_iov = (struct fi_rma_iov *)(tx_buf + ft_tx_prefix_size());
-		if ((fi->domain_attr->mr_mode == FI_MR_BASIC) ||
-			(fi->domain_attr->mr_mode & FI_MR_VIRT_ADDR))
+		rma_iov = (struct fi_rma_iov *)(ctx->tx_buf + ft_tx_prefix_size(ctx));
+		if ((ctx->fi->domain_attr->mr_mode == FI_MR_BASIC) ||
+			(ctx->fi->domain_attr->mr_mode & FI_MR_VIRT_ADDR))
 		{
-			rma_iov->addr = (uintptr_t)rx_buf + ft_rx_prefix_size();
+			rma_iov->addr = (uintptr_t)ctx->rx_buf + ft_rx_prefix_size(ctx);
 		}
 		else
 		{
@@ -1631,161 +1611,161 @@ int ft_exchange_raw_keys(struct fi_rma_iov *peer_iov)
 		}
 
 		/* Get raw attributes */
-		ret = fi_mr_raw_attr(mr, &addr, (uint8_t *)&rma_iov->key,
+		ret = fi_mr_raw_attr(ctx->mr, &addr, (uint8_t *)&rma_iov->key,
 							 &key_size, 0);
 		if (ret)
 			return ret;
 
-		ret = ft_tx(ep, remote_fi_addr, len, &tx_ctx);
+		ret = ft_tx(ctx, ctx->ep, ctx->remote_fi_addr, len, &ctx->tx_ctx);
 	}
 
 	return ret;
 }
 
-int ft_exchange_keys(struct fi_rma_iov *peer_iov)
+int ft_exchange_keys(struct ConnectionContext *ctx, struct fi_rma_iov *peer_iov)
 {
 	struct fi_rma_iov *rma_iov;
 	int ret;
 
-	if (fi->domain_attr->mr_mode & FI_MR_RAW)
-		return ft_exchange_raw_keys(peer_iov);
+	if (ctx->fi->domain_attr->mr_mode & FI_MR_RAW)
+		return ft_exchange_raw_keys(ctx, peer_iov);
 
-	if (opts.dst_addr)
+	if (ctx->opts.dst_addr)
 	{
-		rma_iov = (struct fi_rma_iov *)(tx_buf + ft_tx_prefix_size());
-		if ((fi->domain_attr->mr_mode == FI_MR_BASIC) ||
-			(fi->domain_attr->mr_mode & FI_MR_VIRT_ADDR))
+		rma_iov = (struct fi_rma_iov *)(ctx->tx_buf + ft_tx_prefix_size(ctx));
+		if ((ctx->fi->domain_attr->mr_mode == FI_MR_BASIC) ||
+			(ctx->fi->domain_attr->mr_mode & FI_MR_VIRT_ADDR))
 		{
-			rma_iov->addr = (uintptr_t)rx_buf + ft_rx_prefix_size();
+			rma_iov->addr = (uintptr_t)ctx->rx_buf + ft_rx_prefix_size(ctx);
 		}
 		else
 		{
 			rma_iov->addr = 0;
 		}
-		rma_iov->key = fi_mr_key(mr);
-		ret = ft_tx(ep, remote_fi_addr, sizeof *rma_iov, &tx_ctx);
+		rma_iov->key = fi_mr_key(ctx->mr);
+		ret = ft_tx(ctx, ctx->ep, ctx->remote_fi_addr, sizeof *rma_iov, &ctx->tx_ctx);
 		if (ret)
 			return ret;
 
-		ret = ft_get_rx_comp(rx_seq);
+		ret = ft_get_rx_comp(ctx, ctx->rx_seq);
 		if (ret)
 			return ret;
 
-		rma_iov = (struct fi_rma_iov *)(rx_buf + ft_rx_prefix_size());
+		rma_iov = (struct fi_rma_iov *)(ctx->rx_buf + ft_rx_prefix_size(ctx));
 		*peer_iov = *rma_iov;
-		ret = ft_post_rx(ep, rx_size, &rx_ctx);
+		ret = ft_post_rx(ctx, ctx->ep, ctx->rx_size, &ctx->rx_ctx);
 	}
 	else
 	{
-		ret = ft_get_rx_comp(rx_seq);
+		ret = ft_get_rx_comp(ctx, ctx->rx_seq);
 		if (ret)
 			return ret;
 
-		rma_iov = (struct fi_rma_iov *)(rx_buf + ft_rx_prefix_size());
+		rma_iov = (struct fi_rma_iov *)(ctx->rx_buf + ft_rx_prefix_size(ctx));
 		*peer_iov = *rma_iov;
-		ret = ft_post_rx(ep, rx_size, &rx_ctx);
+		ret = ft_post_rx(ctx, ctx->ep, ctx->rx_size, &ctx->rx_ctx);
 		if (ret)
 			return ret;
 
-		rma_iov = (struct fi_rma_iov *)(tx_buf + ft_tx_prefix_size());
-		if ((fi->domain_attr->mr_mode == FI_MR_BASIC) ||
-			(fi->domain_attr->mr_mode & FI_MR_VIRT_ADDR))
+		rma_iov = (struct fi_rma_iov *)(ctx->tx_buf + ft_tx_prefix_size(ctx));
+		if ((ctx->fi->domain_attr->mr_mode == FI_MR_BASIC) ||
+			(ctx->fi->domain_attr->mr_mode & FI_MR_VIRT_ADDR))
 		{
-			rma_iov->addr = (uintptr_t)rx_buf + ft_rx_prefix_size();
+			rma_iov->addr = (uintptr_t)ctx->rx_buf + ft_rx_prefix_size(ctx);
 		}
 		else
 		{
 			rma_iov->addr = 0;
 		}
-		rma_iov->key = fi_mr_key(mr);
-		ret = ft_tx(ep, remote_fi_addr, sizeof *rma_iov, &tx_ctx);
+		rma_iov->key = fi_mr_key(ctx->mr);
+		ret = ft_tx(ctx, ctx->ep, ctx->remote_fi_addr, sizeof *rma_iov, &ctx->tx_ctx);
 	}
 
 	return ret;
 }
 
-static void ft_cleanup_mr_array(struct ft_context *ctx_arr, char **mr_bufs)
+static void ft_cleanup_mr_array(struct ConnectionContext *ctx, struct ft_context *ctx_arr, char **mr_bufs)
 {
 	int i, ret;
 
 	if (!mr_bufs)
 		return;
 
-	for (i = 0; i < opts.window_size; i++)
+	for (i = 0; i < ctx->opts.window_size; i++)
 	{
 		FT_CLOSE_FID(ctx_arr[i].mr);
-		ret = ft_hmem_free(opts.iface, mr_bufs[i]);
+		ret = ft_hmem_free(ctx->opts.iface, mr_bufs[i]);
 		if (ret)
 			FT_PRINTERR("ft_hmem_free", ret);
 	}
 }
 
-static void ft_close_fids(void)
+static void ft_close_fids(struct ConnectionContext *ctx)
 {
-	FT_CLOSE_FID(mc);
-	FT_CLOSE_FID(alias_ep);
-	FT_CLOSE_FID(ep);
-	FT_CLOSE_FID(pep);
-	if (opts.options & FT_OPT_CQ_SHARED)
+	FT_CLOSE_FID(ctx->mc);
+	FT_CLOSE_FID(ctx->alias_ep);
+	FT_CLOSE_FID(ctx->ep);
+	FT_CLOSE_FID(ctx->pep);
+	if (ctx->opts.options & FT_OPT_CQ_SHARED)
 	{
-		FT_CLOSE_FID(txcq);
+		FT_CLOSE_FID(ctx->txcq);
 	}
 	else
 	{
-		FT_CLOSE_FID(rxcq);
-		FT_CLOSE_FID(txcq);
+		FT_CLOSE_FID(ctx->rxcq);
+		FT_CLOSE_FID(ctx->txcq);
 	}
-	FT_CLOSE_FID(rxcntr);
-	FT_CLOSE_FID(txcntr);
-	FT_CLOSE_FID(pollset);
-	if (mr != &no_mr)
-		FT_CLOSE_FID(mr);
-	FT_CLOSE_FID(av);
-	FT_CLOSE_FID(domain);
-	FT_CLOSE_FID(eq);
-	FT_CLOSE_FID(waitset);
-	FT_CLOSE_FID(fabric);
+	FT_CLOSE_FID(ctx->rxcntr);
+	FT_CLOSE_FID(ctx->txcntr);
+	FT_CLOSE_FID(ctx->pollset);
+	if (ctx->mr != &ctx->no_mr)
+		FT_CLOSE_FID(ctx->mr);
+	FT_CLOSE_FID(ctx->av);
+	FT_CLOSE_FID(ctx->domain);
+	FT_CLOSE_FID(ctx->eq);
+	FT_CLOSE_FID(ctx->waitset);
+	FT_CLOSE_FID(ctx->fabric);
 }
 
-void ft_free_res(void)
+void ft_free_res(struct ConnectionContext *ctx)
 {
 	int ret;
 
-	ft_cleanup_mr_array(tx_ctx_arr, tx_mr_bufs);
-	ft_cleanup_mr_array(rx_ctx_arr, rx_mr_bufs);
+	ft_cleanup_mr_array(ctx, ctx->tx_ctx_arr, ctx->tx_mr_bufs);
+	ft_cleanup_mr_array(ctx, ctx->rx_ctx_arr, ctx->rx_mr_bufs);
 
-	free(tx_ctx_arr);
-	free(rx_ctx_arr);
-	tx_ctx_arr = NULL;
-	rx_ctx_arr = NULL;
+	free(ctx->tx_ctx_arr);
+	free(ctx->rx_ctx_arr);
+	ctx->tx_ctx_arr = NULL;
+	ctx->rx_ctx_arr = NULL;
 
-	ft_close_fids();
+	ft_close_fids(ctx);
 
-	if (buf)
+	if (ctx->buf)
 	{
-		ret = ft_hmem_free(opts.iface, buf);
+		ret = ft_hmem_free(ctx->opts.iface, ctx->buf);
 		if (ret)
 			FT_PRINTERR("ft_hmem_free", ret);
-		buf = rx_buf = tx_buf = NULL;
-		buf_size = rx_size = tx_size = tx_mr_size = rx_mr_size = 0;
+		ctx->buf = ctx->rx_buf = ctx->tx_buf = NULL;
+		ctx->buf_size = ctx->rx_size = ctx->tx_size = ctx->tx_mr_size = ctx->rx_mr_size = 0;
 	}
-	if (fi_pep)
+	if (ctx->fi_pep)
 	{
-		fi_freeinfo(fi_pep);
-		fi_pep = NULL;
+		fi_freeinfo(ctx->fi_pep);
+		ctx->fi_pep = NULL;
 	}
-	if (fi)
+	if (ctx->fi)
 	{
-		fi_freeinfo(fi);
-		fi = NULL;
+		fi_freeinfo(ctx->fi);
+		ctx->fi = NULL;
 	}
-	if (hints)
+	if (ctx->hints)
 	{
-		fi_freeinfo(hints);
-		hints = NULL;
+		fi_freeinfo(ctx->hints);
+		ctx->hints = NULL;
 	}
 
-	ret = ft_hmem_cleanup(opts.iface);
+	ret = ft_hmem_cleanup(ctx->opts.iface);
 	if (ret)
 		FT_PRINTERR("ft_hmem_cleanup", ret);
 }
@@ -1935,14 +1915,14 @@ char *cnt_str(char str[FT_STR_LEN], long long cnt)
 	return str;
 }
 
-int size_to_count(int size)
+int size_to_count(struct ConnectionContext *ctx, int size)
 {
 	if (size >= (1 << 20))
-		return (opts.options & FT_OPT_BW) ? 200 : 100;
+		return (ctx->opts.options & FT_OPT_BW) ? 200 : 100;
 	else if (size >= (1 << 16))
-		return (opts.options & FT_OPT_BW) ? 2000 : 1000;
+		return (ctx->opts.options & FT_OPT_BW) ? 2000 : 1000;
 	else
-		return (opts.options & FT_OPT_BW) ? 20000 : 10000;
+		return (ctx->opts.options & FT_OPT_BW) ? 20000 : 10000;
 }
 
 static const size_t datatype_size_table[] = {
@@ -1967,7 +1947,7 @@ size_t datatype_to_size(enum fi_datatype datatype)
 	return datatype_size_table[datatype];
 }
 
-void init_test(struct ft_opts *opts, char *test_name, size_t test_name_len)
+void init_test(struct ConnectionContext *ctx, struct ft_opts *opts, char *test_name, size_t test_name_len)
 {
 	char sstr[FT_STR_LEN];
 
@@ -1975,15 +1955,15 @@ void init_test(struct ft_opts *opts, char *test_name, size_t test_name_len)
 	if (!strcmp(test_name, "custom"))
 		snprintf(test_name, test_name_len, "%s_lat", sstr);
 	if (!(opts->options & FT_OPT_ITER))
-		opts->iterations = size_to_count(opts->transfer_size);
+		opts->iterations = size_to_count(ctx, opts->transfer_size);
 }
 
-static void ft_force_progress(void)
+static void ft_force_progress(struct ConnectionContext *ctx)
 {
-	if (txcq)
-		fi_cq_read(txcq, NULL, 0);
-	if (rxcq)
-		fi_cq_read(rxcq, NULL, 0);
+	if (ctx->txcq)
+		fi_cq_read(ctx->txcq, NULL, 0);
+	if (ctx->rxcq)
+		fi_cq_read(ctx->rxcq, NULL, 0);
 }
 
 static int ft_progress(struct fid_cq *cq, uint64_t total, uint64_t *cq_cntr)
@@ -2028,149 +2008,149 @@ static int ft_progress(struct fid_cq *cq, uint64_t total, uint64_t *cq_cntr)
 				return ret;                                          \
 			}                                                        \
                                                                      \
-			timeout_save = timeout;                                  \
-			timeout = 0;                                             \
+			timeout_save = ctx->timeout;                             \
+			ctx->timeout = 0;                                        \
 			rc = progress_fn(cq, seq, cq_cntr);                      \
 			if (rc && rc != -FI_EAGAIN)                              \
 			{                                                        \
 				FT_ERR("Failed to get " op_str " completion");       \
 				return rc;                                           \
 			}                                                        \
-			timeout = timeout_save;                                  \
+			ctx->timeout = timeout_save;                             \
 		}                                                            \
 		seq++;                                                       \
 	} while (0)
 
-ssize_t ft_post_tx_buf(struct fid_ep *ep, fi_addr_t fi_addr, size_t size,
-					   uint64_t data, void *ctx,
+ssize_t ft_post_tx_buf(struct ConnectionContext *ctx, struct fid_ep *ep, fi_addr_t fi_addr, size_t size,
+					   uint64_t data, void *ctxptr,
 					   void *op_buf, void *op_mr_desc, uint64_t op_tag)
 {
-	size += ft_tx_prefix_size();
-	if (hints->caps & FI_TAGGED)
+	size += ft_tx_prefix_size(ctx);
+	if (ctx->hints->caps & FI_TAGGED)
 	{
-		op_tag = op_tag ? op_tag : tx_seq;
+		op_tag = op_tag ? op_tag : ctx->tx_seq;
 		if (data != NO_CQ_DATA)
 		{
-			FT_POST(fi_tsenddata, ft_progress, txcq, tx_seq,
-					&tx_cq_cntr, "transmit", ep, op_buf, size,
-					op_mr_desc, data, fi_addr, op_tag, ctx);
+			FT_POST(fi_tsenddata, ft_progress, ctx->txcq, ctx->tx_seq,
+					&ctx->tx_cq_cntr, "transmit", ep, op_buf, size,
+					op_mr_desc, data, fi_addr, op_tag, ctxptr);
 		}
 		else
 		{
-			FT_POST(fi_tsend, ft_progress, txcq, tx_seq,
-					&tx_cq_cntr, "transmit", ep, op_buf, size,
-					op_mr_desc, fi_addr, op_tag, ctx);
+			FT_POST(fi_tsend, ft_progress, ctx->txcq, ctx->tx_seq,
+					&ctx->tx_cq_cntr, "transmit", ep, op_buf, size,
+					op_mr_desc, fi_addr, op_tag, ctxptr);
 		}
 	}
 	else
 	{
 		if (data != NO_CQ_DATA)
 		{
-			FT_POST(fi_senddata, ft_progress, txcq, tx_seq,
-					&tx_cq_cntr, "transmit", ep, op_buf, size,
-					op_mr_desc, data, fi_addr, ctx);
+			FT_POST(fi_senddata, ft_progress, ctx->txcq, ctx->tx_seq,
+					&ctx->tx_cq_cntr, "transmit", ep, op_buf, size,
+					op_mr_desc, data, fi_addr, ctxptr);
 		}
 		else
 		{
-			FT_POST(fi_send, ft_progress, txcq, tx_seq,
-					&tx_cq_cntr, "transmit", ep, op_buf, size,
-					op_mr_desc, fi_addr, ctx);
+			FT_POST(fi_send, ft_progress, ctx->txcq, ctx->tx_seq,
+					&ctx->tx_cq_cntr, "transmit", ep, op_buf, size,
+					op_mr_desc, fi_addr, ctxptr);
 		}
 	}
 	return 0;
 }
 
-ssize_t ft_post_tx(struct fid_ep *ep, fi_addr_t fi_addr, size_t size,
-				   uint64_t data, void *ctx)
+ssize_t ft_post_tx(struct ConnectionContext *ctx, struct fid_ep *ep, fi_addr_t fi_addr, size_t size,
+				   uint64_t data, void *ctxptr)
 {
-	if (ft_check_opts(FT_OPT_SELECTIVE_COMP))
+	if (ft_check_opts(ctx, FT_OPT_SELECTIVE_COMP))
 	{
-		size += ft_tx_prefix_size();
-		return ft_sendmsg(ep, fi_addr, size, ctx, FI_COMPLETION);
+		size += ft_tx_prefix_size(ctx);
+		return ft_sendmsg(ctx, ep, fi_addr, size, ctxptr, FI_COMPLETION);
 	}
 	else
 	{
-		return ft_post_tx_buf(ep, fi_addr, size, data,
-							  ctx, tx_buf, mr_desc, ft_tag);
+		return ft_post_tx_buf(ctx, ep, fi_addr, size, data,
+							  ctxptr, ctx->tx_buf, ctx->mr_desc, ctx->ft_tag);
 	}
 }
 
-ssize_t ft_tx(struct fid_ep *ep, fi_addr_t fi_addr, size_t size, void *ctx)
+ssize_t ft_tx(struct ConnectionContext *ctx, struct fid_ep *ep, fi_addr_t fi_addr, size_t size, void *ctxptr)
 {
 	ssize_t ret;
 
-	if (ft_check_opts(FT_OPT_VERIFY_DATA | FT_OPT_ACTIVE))
+	if (ft_check_opts(ctx, FT_OPT_VERIFY_DATA | FT_OPT_ACTIVE))
 	{
-		ret = ft_fill_buf((char *)tx_buf + ft_tx_prefix_size(), size);
+		ret = ft_fill_buf(ctx, (char *)ctx->tx_buf + ft_tx_prefix_size(ctx), size);
 		if (ret)
 			return ret;
 	}
 
-	ret = ft_post_tx(ep, fi_addr, size, NO_CQ_DATA, ctx);
+	ret = ft_post_tx(ctx, ep, fi_addr, size, NO_CQ_DATA, ctxptr);
 	if (ret)
 		return ret;
 
-	ret = ft_get_tx_comp(tx_seq);
+	ret = ft_get_tx_comp(ctx, ctx->tx_seq);
 	return ret;
 }
 
-ssize_t ft_post_inject(struct fid_ep *ep, fi_addr_t fi_addr, size_t size)
+ssize_t ft_post_inject(struct ConnectionContext *ctx, struct fid_ep *ep, fi_addr_t fi_addr, size_t size)
 {
-	if (hints->caps & FI_TAGGED)
+	if (ctx->hints->caps & FI_TAGGED)
 	{
-		FT_POST(fi_tinject, ft_progress, txcq, tx_seq, &tx_cq_cntr,
-				"inject", ep, tx_buf, size + ft_tx_prefix_size(),
-				fi_addr, tx_seq);
+		FT_POST(fi_tinject, ft_progress, ctx->txcq, ctx->tx_seq, &ctx->tx_cq_cntr,
+				"inject", ep, ctx->tx_buf, size + ft_tx_prefix_size(ctx),
+				fi_addr, ctx->tx_seq);
 	}
 	else
 	{
-		FT_POST(fi_inject, ft_progress, txcq, tx_seq, &tx_cq_cntr,
-				"inject", ep, tx_buf, size + ft_tx_prefix_size(),
+		FT_POST(fi_inject, ft_progress, ctx->txcq, ctx->tx_seq, &ctx->tx_cq_cntr,
+				"inject", ep, ctx->tx_buf, size + ft_tx_prefix_size(ctx),
 				fi_addr);
 	}
 
-	tx_cq_cntr++;
+	ctx->tx_cq_cntr++;
 	return 0;
 }
 
-ssize_t ft_inject(struct fid_ep *ep, fi_addr_t fi_addr, size_t size)
+ssize_t ft_inject(struct ConnectionContext *ctx, struct fid_ep *ep, fi_addr_t fi_addr, size_t size)
 {
 	ssize_t ret;
 
-	if (ft_check_opts(FT_OPT_VERIFY_DATA | FT_OPT_ACTIVE))
+	if (ft_check_opts(ctx, FT_OPT_VERIFY_DATA | FT_OPT_ACTIVE))
 	{
-		ret = ft_fill_buf((char *)tx_buf + ft_tx_prefix_size(), size);
+		ret = ft_fill_buf(ctx, (char *)ctx->tx_buf + ft_tx_prefix_size(ctx), size);
 		if (ret)
 			return ret;
 	}
 
-	ret = ft_post_inject(ep, fi_addr, size);
+	ret = ft_post_inject(ctx, ep, fi_addr, size);
 	if (ret)
 		return ret;
 
 	return ret;
 }
 
-ssize_t ft_post_rma(enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
+ssize_t ft_post_rma(struct ConnectionContext *ctx, enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
 					struct fi_rma_iov *remote, void *context)
 {
 	switch (op)
 	{
 	case FT_RMA_WRITE:
-		FT_POST(fi_write, ft_progress, txcq, tx_seq, &tx_cq_cntr,
-				"fi_write", ep, tx_buf, opts.transfer_size, mr_desc,
-				remote_fi_addr, remote->addr, remote->key, context);
+		FT_POST(fi_write, ft_progress, ctx->txcq, ctx->tx_seq, &ctx->tx_cq_cntr,
+				"fi_write", ep, ctx->tx_buf, ctx->opts.transfer_size, ctx->mr_desc,
+				ctx->remote_fi_addr, remote->addr, remote->key, context);
 		break;
 	case FT_RMA_WRITEDATA:
-		FT_POST(fi_writedata, ft_progress, txcq, tx_seq, &tx_cq_cntr,
-				"fi_writedata", ep, tx_buf, opts.transfer_size, mr_desc,
-				remote_cq_data, remote_fi_addr, remote->addr,
+		FT_POST(fi_writedata, ft_progress, ctx->txcq, ctx->tx_seq, &ctx->tx_cq_cntr,
+				"fi_writedata", ep, ctx->tx_buf, ctx->opts.transfer_size, ctx->mr_desc,
+				ctx->remote_cq_data, ctx->remote_fi_addr, remote->addr,
 				remote->key, context);
 		break;
 	case FT_RMA_READ:
-		FT_POST(fi_read, ft_progress, txcq, tx_seq, &tx_cq_cntr,
-				"fi_read", ep, rx_buf, opts.transfer_size, mr_desc,
-				remote_fi_addr, remote->addr, remote->key, context);
+		FT_POST(fi_read, ft_progress, ctx->txcq, ctx->tx_seq, &ctx->tx_cq_cntr,
+				"fi_read", ep, ctx->rx_buf, ctx->opts.transfer_size, ctx->mr_desc,
+				ctx->remote_fi_addr, remote->addr, remote->key, context);
 		break;
 	default:
 		FT_ERR("Unknown RMA op type\n");
@@ -2180,54 +2160,54 @@ ssize_t ft_post_rma(enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
 	return 0;
 }
 
-ssize_t ft_rma(enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
+ssize_t ft_rma(struct ConnectionContext *ctx, enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
 			   struct fi_rma_iov *remote, void *context)
 {
 	int ret;
 
-	ret = ft_post_rma(op, ep, size, remote, context);
+	ret = ft_post_rma(ctx, op, ep, size, remote, context);
 	if (ret)
 		return ret;
 
 	if (op == FT_RMA_WRITEDATA)
 	{
-		if (fi->rx_attr->mode & FI_RX_CQ_DATA)
+		if (ctx->fi->rx_attr->mode & FI_RX_CQ_DATA)
 		{
-			ret = ft_rx(ep, 0);
+			ret = ft_rx(ctx, ep, 0);
 		}
 		else
 		{
-			ret = ft_get_rx_comp(rx_seq);
+			ret = ft_get_rx_comp(ctx, ctx->rx_seq);
 			/* Just increment the seq # instead of posting recv so
 			 * that we wait for remote write completion on the next
 			 * iteration. */
-			rx_seq++;
+			ctx->rx_seq++;
 		}
 		if (ret)
 			return ret;
 	}
 
-	ret = ft_get_tx_comp(tx_seq);
+	ret = ft_get_tx_comp(ctx, ctx->tx_seq);
 	if (ret)
 		return ret;
 
 	return 0;
 }
 
-ssize_t ft_post_rma_inject(enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
+ssize_t ft_post_rma_inject(struct ConnectionContext *ctx, enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
 						   struct fi_rma_iov *remote)
 {
 	switch (op)
 	{
 	case FT_RMA_WRITE:
-		FT_POST(fi_inject_write, ft_progress, txcq, tx_seq, &tx_cq_cntr,
-				"fi_inject_write", ep, tx_buf, opts.transfer_size,
-				remote_fi_addr, remote->addr, remote->key + 1);
+		FT_POST(fi_inject_write, ft_progress, ctx->txcq, ctx->tx_seq, &ctx->tx_cq_cntr,
+				"fi_inject_write", ep, ctx->tx_buf, ctx->opts.transfer_size,
+				ctx->remote_fi_addr, remote->addr, remote->key + 1);
 		break;
 	case FT_RMA_WRITEDATA:
-		FT_POST(fi_inject_writedata, ft_progress, txcq, tx_seq,
-				&tx_cq_cntr, "fi_inject_writedata", ep, tx_buf,
-				opts.transfer_size, remote_cq_data, remote_fi_addr,
+		FT_POST(fi_inject_writedata, ft_progress, ctx->txcq, ctx->tx_seq,
+				&ctx->tx_cq_cntr, "fi_inject_writedata", ep, ctx->tx_buf,
+				ctx->opts.transfer_size, ctx->remote_cq_data, ctx->remote_fi_addr,
 				remote->addr, remote->key);
 		break;
 	default:
@@ -2235,11 +2215,11 @@ ssize_t ft_post_rma_inject(enum ft_rma_opcodes op, struct fid_ep *ep, size_t siz
 		return EXIT_FAILURE;
 	}
 
-	tx_cq_cntr++;
+	ctx->tx_cq_cntr++;
 	return 0;
 }
 
-ssize_t ft_post_atomic(enum ft_atomic_opcodes opcode, struct fid_ep *ep,
+ssize_t ft_post_atomic(struct ConnectionContext *ctx, enum ft_atomic_opcodes opcode, struct fid_ep *ep,
 					   void *compare, void *compare_desc, void *result,
 					   void *result_desc, struct fi_rma_iov *remote,
 					   enum fi_datatype datatype, enum fi_op atomic_op,
@@ -2253,26 +2233,26 @@ ssize_t ft_post_atomic(enum ft_atomic_opcodes opcode, struct fid_ep *ep,
 		FT_ERR("Unknown datatype\n");
 		return EXIT_FAILURE;
 	}
-	count = opts.transfer_size / size;
+	count = ctx->opts.transfer_size / size;
 
 	switch (opcode)
 	{
 	case FT_ATOMIC_BASE:
-		FT_POST(fi_atomic, ft_progress, txcq, tx_seq, &tx_cq_cntr,
-				"fi_atomic", ep, buf, count, mr_desc, remote_fi_addr,
+		FT_POST(fi_atomic, ft_progress, ctx->txcq, ctx->tx_seq, &ctx->tx_cq_cntr,
+				"fi_atomic", ep, ctx->buf, count, ctx->mr_desc, ctx->remote_fi_addr,
 				remote->addr, remote->key, datatype, atomic_op, context);
 		break;
 	case FT_ATOMIC_FETCH:
-		FT_POST(fi_fetch_atomic, ft_progress, txcq, tx_seq, &tx_cq_cntr,
-				"fi_fetch_atomic", ep, buf, count, mr_desc, result,
-				result_desc, remote_fi_addr, remote->addr, remote->key,
+		FT_POST(fi_fetch_atomic, ft_progress, ctx->txcq, ctx->tx_seq, &ctx->tx_cq_cntr,
+				"fi_fetch_atomic", ep, ctx->buf, count, ctx->mr_desc, result,
+				result_desc, ctx->remote_fi_addr, remote->addr, remote->key,
 				datatype, atomic_op, context);
 		break;
 	case FT_ATOMIC_COMPARE:
-		FT_POST(fi_compare_atomic, ft_progress, txcq, tx_seq,
-				&tx_cq_cntr, "fi_compare_atomic", ep, buf, count,
-				mr_desc, compare, compare_desc, result, result_desc,
-				remote_fi_addr, remote->addr, remote->key, datatype,
+		FT_POST(fi_compare_atomic, ft_progress, ctx->txcq, ctx->tx_seq,
+				&ctx->tx_cq_cntr, "fi_compare_atomic", ep, ctx->buf, count,
+				ctx->mr_desc, compare, compare_desc, result, result_desc,
+				ctx->remote_fi_addr, remote->addr, remote->key, datatype,
 				atomic_op, context);
 		break;
 	default:
@@ -2283,13 +2263,13 @@ ssize_t ft_post_atomic(enum ft_atomic_opcodes opcode, struct fid_ep *ep,
 	return 0;
 }
 
-static int check_atomic_attr(enum fi_op op, enum fi_datatype datatype,
+static int check_atomic_attr(struct ConnectionContext *ctx, enum fi_op op, enum fi_datatype datatype,
 							 uint64_t flags)
 {
 	struct fi_atomic_attr attr;
 	int ret;
 
-	ret = fi_query_atomic(domain, datatype, op, &attr, flags);
+	ret = fi_query_atomic(ctx->domain, datatype, op, &attr, flags);
 	if (ret)
 	{
 		FT_PRINTERR("fi_query_atomic", ret);
@@ -2305,7 +2285,7 @@ static int check_atomic_attr(enum fi_op op, enum fi_datatype datatype,
 	return 0;
 }
 
-int check_base_atomic_op(struct fid_ep *endpoint, enum fi_op op,
+int check_base_atomic_op(struct ConnectionContext *ctx, struct fid_ep *endpoint, enum fi_op op,
 						 enum fi_datatype datatype, size_t *count)
 {
 	int ret;
@@ -2314,10 +2294,10 @@ int check_base_atomic_op(struct fid_ep *endpoint, enum fi_op op,
 	if (ret)
 		return ret;
 
-	return check_atomic_attr(op, datatype, 0);
+	return check_atomic_attr(ctx, op, datatype, 0);
 }
 
-int check_fetch_atomic_op(struct fid_ep *endpoint, enum fi_op op,
+int check_fetch_atomic_op(struct ConnectionContext *ctx, struct fid_ep *endpoint, enum fi_op op,
 						  enum fi_datatype datatype, size_t *count)
 {
 	int ret;
@@ -2326,10 +2306,10 @@ int check_fetch_atomic_op(struct fid_ep *endpoint, enum fi_op op,
 	if (ret)
 		return ret;
 
-	return check_atomic_attr(op, datatype, FI_FETCH_ATOMIC);
+	return check_atomic_attr(ctx, op, datatype, FI_FETCH_ATOMIC);
 }
 
-int check_compare_atomic_op(struct fid_ep *endpoint, enum fi_op op,
+int check_compare_atomic_op(struct ConnectionContext *ctx, struct fid_ep *endpoint, enum fi_op op,
 							enum fi_datatype datatype, size_t *count)
 {
 	int ret;
@@ -2338,44 +2318,44 @@ int check_compare_atomic_op(struct fid_ep *endpoint, enum fi_op op,
 	if (ret)
 		return ret;
 
-	return check_atomic_attr(op, datatype, FI_COMPARE_ATOMIC);
+	return check_atomic_attr(ctx, op, datatype, FI_COMPARE_ATOMIC);
 }
 
-ssize_t ft_post_rx_buf(struct fid_ep *ep, size_t size, void *ctx,
+ssize_t ft_post_rx_buf(struct ConnectionContext *ctx, struct fid_ep *ep, size_t size, void *ctxptr,
 					   void *op_buf, void *op_mr_desc, uint64_t op_tag)
 {
-	size = MAX(size, FT_MAX_CTRL_MSG) + ft_rx_prefix_size();
-	if (hints->caps & FI_TAGGED)
+	size = MAX(size, FT_MAX_CTRL_MSG) + ft_rx_prefix_size(ctx);
+	if (ctx->hints->caps & FI_TAGGED)
 	{
-		op_tag = op_tag ? op_tag : rx_seq;
-		FT_POST(fi_trecv, ft_progress, rxcq, rx_seq, &rx_cq_cntr,
+		op_tag = op_tag ? op_tag : ctx->rx_seq;
+		FT_POST(fi_trecv, ft_progress, ctx->rxcq, ctx->rx_seq, &ctx->rx_cq_cntr,
 				"receive", ep, op_buf, size, op_mr_desc,
-				remote_fi_addr, op_tag, 0, ctx);
+				ctx->remote_fi_addr, op_tag, 0, ctx);
 	}
 	else
 	{
-		FT_POST(fi_recv, ft_progress, rxcq, rx_seq, &rx_cq_cntr,
+		FT_POST(fi_recv, ft_progress, ctx->rxcq, ctx->rx_seq, &ctx->rx_cq_cntr,
 				"receive", ep, op_buf, size, op_mr_desc, 0, ctx);
 	}
 	return 0;
 }
 
-ssize_t ft_post_rx(struct fid_ep *ep, size_t size, void *ctx)
+ssize_t ft_post_rx(struct ConnectionContext *ctx, struct fid_ep *ep, size_t size, void *ctxptr)
 {
-	return ft_post_rx_buf(ep, size, ctx, rx_buf, mr_desc, ft_tag);
+	return ft_post_rx_buf(ctx, ep, size, ctxptr, ctx->rx_buf, ctx->mr_desc, ctx->ft_tag);
 }
 
-ssize_t ft_rx(struct fid_ep *ep, size_t size)
+ssize_t ft_rx(struct ConnectionContext *ctx, struct fid_ep *ep, size_t size)
 {
 	ssize_t ret;
 
-	ret = ft_get_rx_comp(rx_seq);
+	ret = ft_get_rx_comp(ctx, ctx->rx_seq);
 	if (ret)
 		return ret;
 
-	if (ft_check_opts(FT_OPT_VERIFY_DATA | FT_OPT_ACTIVE))
+	if (ft_check_opts(ctx, FT_OPT_VERIFY_DATA | FT_OPT_ACTIVE))
 	{
-		ret = ft_check_buf((char *)rx_buf + ft_rx_prefix_size(), size);
+		ret = ft_check_buf(ctx, (char *)ctx->rx_buf + ft_rx_prefix_size(ctx), size);
 		if (ret)
 			return ret;
 	}
@@ -2385,7 +2365,7 @@ ssize_t ft_rx(struct fid_ep *ep, size_t size)
 	 * sizes. ft_sync() makes use of ft_rx() and gets called in tests just before
 	 * message size is updated. The recvs posted are always for the next incoming
 	 * message */
-	ret = ft_post_rx(ep, rx_size, &rx_ctx);
+	ret = ft_post_rx(ctx, ep, ctx->rx_size, &ctx->rx_ctx);
 	return ret;
 }
 
@@ -2394,17 +2374,17 @@ ssize_t ft_rx(struct fid_ep *ep, size_t size)
  * reported out of order.  A tag is valid if it's within the current window.
  */
 static inline int
-ft_tag_is_valid(struct fid_cq *cq, struct fi_cq_err_entry *comp, uint64_t tag)
+ft_tag_is_valid(struct ConnectionContext *ctx, struct fid_cq *cq, struct fi_cq_err_entry *comp, uint64_t tag)
 {
 	int valid = 1;
 
-	if ((hints->caps & FI_TAGGED) && (cq == rxcq))
+	if ((ctx->hints->caps & FI_TAGGED) && (cq == ctx->rxcq))
 	{
-		if (opts.options & FT_OPT_BW)
+		if (ctx->opts.options & FT_OPT_BW)
 		{
 			/* valid: (tag - window) < comp->tag < (tag + window) */
-			valid = (tag < comp->tag + opts.window_size) &&
-					(comp->tag < tag + opts.window_size);
+			valid = (tag < comp->tag + ctx->opts.window_size) &&
+					(comp->tag < tag + ctx->opts.window_size);
 		}
 		else
 		{
@@ -2422,7 +2402,7 @@ ft_tag_is_valid(struct fid_cq *cq, struct fi_cq_err_entry *comp, uint64_t tag)
 /*
  * fi_cq_err_entry can be cast to any CQ entry format.
  */
-static int ft_spin_for_comp(struct fid_cq *cq, uint64_t *cur,
+static int ft_spin_for_comp(struct ConnectionContext *ctx, struct fid_cq *cq, uint64_t *cur,
 							uint64_t total, int timeout)
 {
 	struct fi_cq_err_entry comp;
@@ -2439,7 +2419,7 @@ static int ft_spin_for_comp(struct fid_cq *cq, uint64_t *cur,
 		{
 			if (timeout >= 0)
 				clock_gettime(CLOCK_MONOTONIC, &a);
-			if (!ft_tag_is_valid(cq, &comp, ft_tag ? ft_tag : rx_cq_cntr))
+			if (!ft_tag_is_valid(ctx, cq, &comp, ctx->ft_tag ? ctx->ft_tag : ctx->rx_cq_cntr))
 				return -FI_EOTHER;
 			(*cur)++;
 		}
@@ -2464,7 +2444,7 @@ static int ft_spin_for_comp(struct fid_cq *cq, uint64_t *cur,
 /*
  * fi_cq_err_entry can be cast to any CQ entry format.
  */
-static int ft_wait_for_comp(struct fid_cq *cq, uint64_t *cur,
+static int ft_wait_for_comp(struct ConnectionContext *ctx, struct fid_cq *cq, uint64_t *cur,
 							uint64_t total, int timeout)
 {
 	struct fi_cq_err_entry comp;
@@ -2475,7 +2455,7 @@ static int ft_wait_for_comp(struct fid_cq *cq, uint64_t *cur,
 		ret = fi_cq_sread(cq, &comp, 1, NULL, timeout);
 		if (ret > 0)
 		{
-			if (!ft_tag_is_valid(cq, &comp, ft_tag ? ft_tag : rx_cq_cntr))
+			if (!ft_tag_is_valid(ctx, cq, &comp, ctx->ft_tag ? ctx->ft_tag : ctx->rx_cq_cntr))
 				return -FI_EOTHER;
 			(*cur)++;
 		}
@@ -2491,19 +2471,19 @@ static int ft_wait_for_comp(struct fid_cq *cq, uint64_t *cur,
 /*
  * fi_cq_err_entry can be cast to any CQ entry format.
  */
-static int ft_fdwait_for_comp(struct fid_cq *cq, uint64_t *cur,
+static int ft_fdwait_for_comp(struct ConnectionContext *ctx, struct fid_cq *cq, uint64_t *cur,
 							  uint64_t total, int timeout)
 {
 	struct fi_cq_err_entry comp;
 	struct fid *fids[1];
 	int fd, ret;
 
-	fd = cq == txcq ? tx_fd : rx_fd;
+	fd = cq == ctx->txcq ? ctx->tx_fd : ctx->rx_fd;
 	fids[0] = &cq->fid;
 
 	while (total - *cur > 0)
 	{
-		ret = fi_trywait(fabric, fids, 1);
+		ret = fi_trywait(ctx->fabric, fids, 1);
 		if (ret == FI_SUCCESS)
 		{
 			ret = ft_poll_fd(fd, timeout);
@@ -2514,7 +2494,7 @@ static int ft_fdwait_for_comp(struct fid_cq *cq, uint64_t *cur,
 		ret = fi_cq_read(cq, &comp, 1);
 		if (ret > 0)
 		{
-			if (!ft_tag_is_valid(cq, &comp, ft_tag ? ft_tag : rx_cq_cntr))
+			if (!ft_tag_is_valid(ctx, cq, &comp, ctx->ft_tag ? ctx->ft_tag : ctx->rx_cq_cntr))
 				return -FI_EOTHER;
 			(*cur)++;
 		}
@@ -2527,22 +2507,22 @@ static int ft_fdwait_for_comp(struct fid_cq *cq, uint64_t *cur,
 	return 0;
 }
 
-static int ft_get_cq_comp(struct fid_cq *cq, uint64_t *cur,
+static int ft_get_cq_comp(struct ConnectionContext *ctx, struct fid_cq *cq, uint64_t *cur,
 						  uint64_t total, int timeout)
 {
 	int ret;
 
-	switch (opts.comp_method)
+	switch (ctx->opts.comp_method)
 	{
 	case FT_COMP_SREAD:
 	case FT_COMP_YIELD:
-		ret = ft_wait_for_comp(cq, cur, total, timeout);
+		ret = ft_wait_for_comp(ctx, cq, cur, total, timeout);
 		break;
 	case FT_COMP_WAIT_FD:
-		ret = ft_fdwait_for_comp(cq, cur, total, timeout);
+		ret = ft_fdwait_for_comp(ctx, cq, cur, total, timeout);
 		break;
 	default:
-		ret = ft_spin_for_comp(cq, cur, total, timeout);
+		ret = ft_spin_for_comp(ctx, cq, cur, total, timeout);
 		break;
 	}
 
@@ -2602,11 +2582,11 @@ static int ft_wait_for_cntr(struct fid_cntr *cntr, uint64_t total, int timeout)
 	return 0;
 }
 
-static int ft_get_cntr_comp(struct fid_cntr *cntr, uint64_t total, int timeout)
+static int ft_get_cntr_comp(struct ConnectionContext *ctx, struct fid_cntr *cntr, uint64_t total, int timeout)
 {
 	int ret = 0;
 
-	switch (opts.comp_method)
+	switch (ctx->opts.comp_method)
 	{
 	case FT_COMP_SREAD:
 	case FT_COMP_WAITSET:
@@ -2625,17 +2605,17 @@ static int ft_get_cntr_comp(struct fid_cntr *cntr, uint64_t total, int timeout)
 	return ret;
 }
 
-int ft_get_rx_comp(uint64_t total)
+int ft_get_rx_comp(struct ConnectionContext *ctx, uint64_t total)
 {
 	int ret = FI_SUCCESS;
 
-	if (opts.options & FT_OPT_RX_CQ)
+	if (ctx->opts.options & FT_OPT_RX_CQ)
 	{
-		ret = ft_get_cq_comp(rxcq, &rx_cq_cntr, total, timeout);
+		ret = ft_get_cq_comp(ctx, ctx->rxcq, &ctx->rx_cq_cntr, total, ctx->timeout);
 	}
-	else if (rxcntr)
+	else if (ctx->rxcntr)
 	{
-		ret = ft_get_cntr_comp(rxcntr, total, timeout);
+		ret = ft_get_cntr_comp(ctx, ctx->rxcntr, total, ctx->timeout);
 	}
 	else
 	{
@@ -2645,17 +2625,17 @@ int ft_get_rx_comp(uint64_t total)
 	return ret;
 }
 
-int ft_get_tx_comp(uint64_t total)
+int ft_get_tx_comp(struct ConnectionContext *ctx, uint64_t total)
 {
 	int ret;
 
-	if (opts.options & FT_OPT_TX_CQ)
+	if (ctx->opts.options & FT_OPT_TX_CQ)
 	{
-		ret = ft_get_cq_comp(txcq, &tx_cq_cntr, total, -1);
+		ret = ft_get_cq_comp(ctx, ctx->txcq, &ctx->tx_cq_cntr, total, -1);
 	}
-	else if (txcntr)
+	else if (ctx->txcntr)
 	{
-		ret = ft_get_cntr_comp(txcntr, total, -1);
+		ret = ft_get_cntr_comp(ctx, ctx->txcntr, total, -1);
 	}
 	else
 	{
@@ -2665,26 +2645,26 @@ int ft_get_tx_comp(uint64_t total)
 	return ret;
 }
 
-int ft_sendmsg(struct fid_ep *ep, fi_addr_t fi_addr,
-			   size_t size, void *ctx, int flags)
+int ft_sendmsg(struct ConnectionContext *ctx, struct fid_ep *ep, fi_addr_t fi_addr,
+			   size_t size, void *ctxptr, int flags)
 {
 	int ret;
 	struct fi_msg msg;
 	struct fi_msg_tagged tagged_msg;
 	struct iovec msg_iov;
 
-	msg_iov.iov_base = tx_buf;
+	msg_iov.iov_base = ctx->tx_buf;
 	msg_iov.iov_len = size;
 
-	if (hints->caps & FI_TAGGED)
+	if (ctx->hints->caps & FI_TAGGED)
 	{
 		tagged_msg.msg_iov = &msg_iov;
-		tagged_msg.desc = &mr_desc;
+		tagged_msg.desc = &ctx->mr_desc;
 		tagged_msg.iov_count = 1;
 		tagged_msg.addr = fi_addr;
 		tagged_msg.data = NO_CQ_DATA;
-		tagged_msg.context = ctx;
-		tagged_msg.tag = ft_tag ? ft_tag : tx_seq;
+		tagged_msg.context = ctxptr;
+		tagged_msg.tag = ctx->ft_tag ? ctx->ft_tag : ctx->tx_seq;
 		tagged_msg.ignore = 0;
 
 		ret = fi_tsendmsg(ep, &tagged_msg, flags);
@@ -2697,11 +2677,11 @@ int ft_sendmsg(struct fid_ep *ep, fi_addr_t fi_addr,
 	else
 	{
 		msg.msg_iov = &msg_iov;
-		msg.desc = &mr_desc;
+		msg.desc = &ctx->mr_desc;
 		msg.iov_count = 1;
 		msg.addr = fi_addr;
 		msg.data = NO_CQ_DATA;
-		msg.context = ctx;
+		msg.context = ctxptr;
 
 		ret = fi_sendmsg(ep, &msg, flags);
 		if (ret)
@@ -2710,30 +2690,30 @@ int ft_sendmsg(struct fid_ep *ep, fi_addr_t fi_addr,
 			return ret;
 		}
 	}
-	tx_seq++;
+	ctx->tx_seq++;
 	return 0;
 }
 
-int ft_recvmsg(struct fid_ep *ep, fi_addr_t fi_addr,
-			   size_t size, void *ctx, int flags)
+int ft_recvmsg(struct ConnectionContext *ctx, struct fid_ep *ep, fi_addr_t fi_addr,
+			   size_t size, void *ctxptr, int flags)
 {
 	int ret;
 	struct fi_msg msg;
 	struct fi_msg_tagged tagged_msg;
 	struct iovec msg_iov;
 
-	msg_iov.iov_base = rx_buf;
+	msg_iov.iov_base = ctx->rx_buf;
 	msg_iov.iov_len = size;
 
-	if (hints->caps & FI_TAGGED)
+	if (ctx->hints->caps & FI_TAGGED)
 	{
 		tagged_msg.msg_iov = &msg_iov;
-		tagged_msg.desc = &mr_desc;
+		tagged_msg.desc = &ctx->mr_desc;
 		tagged_msg.iov_count = 1;
 		tagged_msg.addr = fi_addr;
 		tagged_msg.data = NO_CQ_DATA;
-		tagged_msg.context = ctx;
-		tagged_msg.tag = ft_tag ? ft_tag : tx_seq;
+		tagged_msg.context = ctxptr;
+		tagged_msg.tag = ctx->ft_tag ? ctx->ft_tag : ctx->tx_seq;
 		tagged_msg.ignore = 0;
 
 		ret = fi_trecvmsg(ep, &tagged_msg, flags);
@@ -2746,11 +2726,11 @@ int ft_recvmsg(struct fid_ep *ep, fi_addr_t fi_addr,
 	else
 	{
 		msg.msg_iov = &msg_iov;
-		msg.desc = &mr_desc;
+		msg.desc = &ctx->mr_desc;
 		msg.iov_count = 1;
 		msg.addr = fi_addr;
 		msg.data = NO_CQ_DATA;
-		msg.context = ctx;
+		msg.context = ctxptr;
 
 		ret = fi_recvmsg(ep, &msg, flags);
 		if (ret)
@@ -2763,7 +2743,7 @@ int ft_recvmsg(struct fid_ep *ep, fi_addr_t fi_addr,
 	return 0;
 }
 
-int ft_cq_read_verify(struct fid_cq *cq, void *op_context)
+int ft_cq_read_verify(struct ConnectionContext *ctx, struct fid_cq *cq, void *op_context)
 {
 	int ret;
 	struct fi_cq_err_entry completion;
@@ -2781,8 +2761,8 @@ int ft_cq_read_verify(struct fid_cq *cq, void *op_context)
 						op_context, completion.op_context);
 				return -FI_EOTHER;
 			}
-			if (!ft_tag_is_valid(cq, &completion,
-								 ft_tag ? ft_tag : rx_cq_cntr))
+			if (!ft_tag_is_valid(ctx, cq, &completion,
+								 ctx->ft_tag ? ctx->ft_tag : ctx->rx_cq_cntr))
 				return -FI_EOTHER;
 		}
 		else if ((ret <= 0) && (ret != -FI_EAGAIN))
@@ -2833,49 +2813,49 @@ void eq_readerr(struct fid_eq *eq, const char *eq_str)
 	}
 }
 
-int ft_sync()
+int ft_sync(struct ConnectionContext *ctx)
 {
 	char buf;
 	int ret;
 
-	if (opts.dst_addr)
+	if (ctx->opts.dst_addr)
 	{
-		if (!(opts.options & FT_OPT_OOB_SYNC))
+		if (!(ctx->opts.options & FT_OPT_OOB_SYNC))
 		{
-			ret = ft_tx(ep, remote_fi_addr, 1, &tx_ctx);
+			ret = ft_tx(ctx, ctx->ep, ctx->remote_fi_addr, 1, &ctx->tx_ctx);
 			if (ret)
 				return ret;
 
-			ret = ft_rx(ep, 1);
+			ret = ft_rx(ctx, ctx->ep, 1);
 		}
 		else
 		{
-			ret = ft_sock_send(oob_sock, &buf, 1);
+			ret = ft_sock_send(ctx, ctx->oob_sock, &buf, 1);
 			if (ret)
 				return ret;
 
-			ret = ft_sock_recv(oob_sock, &buf, 1);
+			ret = ft_sock_recv(ctx, ctx->oob_sock, &buf, 1);
 			if (ret)
 				return ret;
 		}
 	}
 	else
 	{
-		if (!(opts.options & FT_OPT_OOB_SYNC))
+		if (!(ctx->opts.options & FT_OPT_OOB_SYNC))
 		{
-			ret = ft_rx(ep, 1);
+			ret = ft_rx(ctx, ctx->ep, 1);
 			if (ret)
 				return ret;
 
-			ret = ft_tx(ep, remote_fi_addr, 1, &tx_ctx);
+			ret = ft_tx(ctx, ctx->ep, ctx->remote_fi_addr, 1, &ctx->tx_ctx);
 		}
 		else
 		{
-			ret = ft_sock_recv(oob_sock, &buf, 1);
+			ret = ft_sock_recv(ctx, ctx->oob_sock, &buf, 1);
 			if (ret)
 				return ret;
 
-			ret = ft_sock_send(oob_sock, &buf, 1);
+			ret = ft_sock_send(ctx, ctx->oob_sock, &buf, 1);
 			if (ret)
 				return ret;
 		}
@@ -2996,30 +2976,30 @@ int ft_wait_child(void)
 	return 0;
 }
 
-int ft_finalize_ep(struct fid_ep *ep)
+int ft_finalize_ep(struct ConnectionContext *ctx, struct fid_ep *ep)
 {
 	struct iovec iov;
 	int ret;
-	struct fi_context ctx;
+	struct fi_context ctxptr;
 
-	iov.iov_base = tx_buf;
-	iov.iov_len = 4 + ft_tx_prefix_size();
+	iov.iov_base = ctx->tx_buf;
+	iov.iov_len = 4 + ft_tx_prefix_size(ctx);
 
-	if (hints->caps & FI_TAGGED)
+	if (ctx->hints->caps & FI_TAGGED)
 	{
 		struct fi_msg_tagged tmsg;
 
 		memset(&tmsg, 0, sizeof tmsg);
 		tmsg.msg_iov = &iov;
-		tmsg.desc = &mr_desc;
+		tmsg.desc = &ctx->mr_desc;
 		tmsg.iov_count = 1;
-		tmsg.addr = remote_fi_addr;
-		tmsg.tag = tx_seq;
+		tmsg.addr = ctx->remote_fi_addr;
+		tmsg.tag = ctx->tx_seq;
 		tmsg.ignore = 0;
-		tmsg.context = &ctx;
+		tmsg.context = &ctxptr;
 
-		FT_POST(fi_tsendmsg, ft_progress, txcq, tx_seq,
-				&tx_cq_cntr, "tsendmsg", ep, &tmsg,
+		FT_POST(fi_tsendmsg, ft_progress, ctx->txcq, ctx->tx_seq,
+				&ctx->tx_cq_cntr, "tsendmsg", ep, &tmsg,
 				FI_TRANSMIT_COMPLETE);
 	}
 	else
@@ -3028,39 +3008,39 @@ int ft_finalize_ep(struct fid_ep *ep)
 
 		memset(&msg, 0, sizeof msg);
 		msg.msg_iov = &iov;
-		msg.desc = &mr_desc;
+		msg.desc = &ctx->mr_desc;
 		msg.iov_count = 1;
-		msg.addr = remote_fi_addr;
-		msg.context = &ctx;
+		msg.addr = ctx->remote_fi_addr;
+		msg.context = &ctxptr;
 
-		FT_POST(fi_sendmsg, ft_progress, txcq, tx_seq,
-				&tx_cq_cntr, "sendmsg", ep, &msg,
+		FT_POST(fi_sendmsg, ft_progress, ctx->txcq, ctx->tx_seq,
+				&ctx->tx_cq_cntr, "sendmsg", ep, &msg,
 				FI_TRANSMIT_COMPLETE);
 	}
 
-	ret = ft_get_tx_comp(tx_seq);
+	ret = ft_get_tx_comp(ctx, ctx->tx_seq);
 	if (ret)
 		return ret;
 
-	ret = ft_get_rx_comp(rx_seq);
+	ret = ft_get_rx_comp(ctx, ctx->rx_seq);
 	if (ret)
 		return ret;
 
 	return 0;
 }
 
-int ft_finalize(void)
+int ft_finalize(struct ConnectionContext *ctx)
 {
 	int ret;
 
-	if (fi->domain_attr->mr_mode & FI_MR_RAW)
+	if (ctx->fi->domain_attr->mr_mode & FI_MR_RAW)
 	{
-		ret = fi_mr_unmap_key(domain, remote.key);
+		ret = fi_mr_unmap_key(ctx->domain, ctx->remote.key);
 		if (ret)
 			return ret;
 	}
 
-	return ft_finalize_ep(ep);
+	return ft_finalize_ep(ctx, ctx->ep);
 }
 
 int64_t get_elapsed(const struct timespec *b, const struct timespec *a,
@@ -3428,7 +3408,7 @@ void ft_parsecsopts(int op, char *optarg, struct ft_opts *opts)
 	}
 }
 
-int ft_parse_rma_opts(int op, char *optarg, struct fi_info *hints,
+int ft_parse_rma_opts(struct ConnectionContext *ctx, int op, char *optarg, struct fi_info *hints,
 					  struct ft_opts *opts)
 {
 	switch (op)
@@ -3445,7 +3425,7 @@ int ft_parse_rma_opts(int op, char *optarg, struct fi_info *hints,
 			hints->mode |= FI_RX_CQ_DATA;
 			hints->domain_attr->cq_data_size = 4;
 			opts->rma_op = FT_RMA_WRITEDATA;
-			cq_attr.format = FI_CQ_FORMAT_DATA;
+			ctx->cq_attr.format = FI_CQ_FORMAT_DATA;
 		}
 		else if (!strcmp(optarg, "write"))
 		{
@@ -3468,14 +3448,14 @@ int ft_parse_rma_opts(int op, char *optarg, struct fi_info *hints,
 	return 0;
 }
 
-int ft_fill_buf(void *buf, size_t size)
+int ft_fill_buf(struct ConnectionContext *ctx, void *buf, size_t size)
 {
 	char *msg_buf;
 	int msg_index = 0;
 	size_t i;
 	int ret = 0;
 
-	if (opts.iface != FI_HMEM_SYSTEM)
+	if (ctx->opts.iface != FI_HMEM_SYSTEM)
 	{
 		msg_buf = malloc(size);
 		if (!msg_buf)
@@ -3493,19 +3473,19 @@ int ft_fill_buf(void *buf, size_t size)
 			msg_index = 0;
 	}
 
-	if (opts.iface != FI_HMEM_SYSTEM)
+	if (ctx->opts.iface != FI_HMEM_SYSTEM)
 	{
-		ret = ft_hmem_copy_to(opts.iface, opts.device, buf, msg_buf, size);
+		ret = ft_hmem_copy_to(ctx->opts.iface, ctx->opts.device, buf, msg_buf, size);
 		if (ret)
 			goto out;
 	}
 out:
-	if (opts.iface != FI_HMEM_SYSTEM)
+	if (ctx->opts.iface != FI_HMEM_SYSTEM)
 		free(msg_buf);
 	return ret;
 }
 
-int ft_check_buf(void *buf, size_t size)
+int ft_check_buf(struct ConnectionContext *ctx, void *buf, size_t size)
 {
 	char *recv_data;
 	char c;
@@ -3513,13 +3493,13 @@ int ft_check_buf(void *buf, size_t size)
 	size_t i;
 	int ret = 0;
 
-	if (opts.iface != FI_HMEM_SYSTEM)
+	if (ctx->opts.iface != FI_HMEM_SYSTEM)
 	{
 		recv_data = malloc(size);
 		if (!recv_data)
 			return -FI_ENOMEM;
 
-		ret = ft_hmem_copy_from(opts.iface, opts.device,
+		ret = ft_hmem_copy_from(ctx->opts.iface, ctx->opts.device,
 								recv_data, buf, size);
 		if (ret)
 			goto out;
@@ -3546,7 +3526,7 @@ int ft_check_buf(void *buf, size_t size)
 	}
 
 out:
-	if (opts.iface != FI_HMEM_SYSTEM)
+	if (ctx->opts.iface != FI_HMEM_SYSTEM)
 		free(recv_data);
 	return ret;
 }
@@ -3564,12 +3544,12 @@ uint64_t ft_init_cq_data(struct fi_info *info)
 	}
 }
 
-int check_recv_msg(const char *message)
+int check_recv_msg(struct ConnectionContext *ctx, const char *message)
 {
 	size_t recv_len;
 	size_t message_len = strlen(message) + 1;
 	/* Account for null terminated byte. */
-	recv_len = strlen(rx_buf) + 1;
+	recv_len = strlen(ctx->rx_buf) + 1;
 
 	if (recv_len != message_len)
 	{
@@ -3577,7 +3557,7 @@ int check_recv_msg(const char *message)
 		return -1;
 	}
 
-	if (strncmp(rx_buf, message, message_len))
+	if (strncmp(ctx->rx_buf, message, message_len))
 	{
 		fprintf(stderr, "Received message does not match expected message.\n");
 		return -1;
@@ -3586,19 +3566,19 @@ int check_recv_msg(const char *message)
 	return 0;
 }
 
-int ft_send_greeting(struct fid_ep *ep)
+int ft_send_greeting(struct ConnectionContext *ctx, struct fid_ep *ep)
 {
 	size_t message_len = strlen(greeting) + 1;
 	int ret;
 
 	fprintf(stdout, "Sending message...\n");
-	if (snprintf(tx_buf, tx_size, "%s", greeting) >= tx_size)
+	if (snprintf(ctx->tx_buf, ctx->tx_size, "%s", greeting) >= ctx->tx_size)
 	{
 		fprintf(stderr, "Transmit buffer too small.\n");
 		return -FI_ETOOSMALL;
 	}
 
-	ret = ft_tx(ep, remote_fi_addr, message_len, &tx_ctx);
+	ret = ft_tx(ctx, ep, ctx->remote_fi_addr, message_len, &ctx->tx_ctx);
 	if (ret)
 		return ret;
 
@@ -3606,29 +3586,29 @@ int ft_send_greeting(struct fid_ep *ep)
 	return 0;
 }
 
-int ft_recv_greeting(struct fid_ep *ep)
+int ft_recv_greeting(struct ConnectionContext *ctx, struct fid_ep *ep)
 {
 	int ret;
 
 	fprintf(stdout, "Waiting for message from client...\n");
-	ret = ft_get_rx_comp(rx_seq);
+	ret = ft_get_rx_comp(ctx, ctx->rx_seq);
 	if (ret)
 		return ret;
 
-	ret = check_recv_msg(greeting);
+	ret = check_recv_msg(ctx, greeting);
 	if (ret)
 		return ret;
 
-	fprintf(stdout, "Received data from client: %s\n", (char *)rx_buf);
+	fprintf(stdout, "Received data from client: %s\n", (char *)ctx->rx_buf);
 	return 0;
 }
 
-int ft_send_recv_greeting(struct fid_ep *ep)
+int ft_send_recv_greeting(struct ConnectionContext *ctx, struct fid_ep *ep)
 {
-	return opts.dst_addr ? ft_send_greeting(ep) : ft_recv_greeting(ep);
+	return ctx->opts.dst_addr ? ft_send_greeting(ctx, ep) : ft_recv_greeting(ctx, ep);
 }
 
-int ft_sock_listen(char *node, char *service)
+int ft_sock_listen(struct ConnectionContext *ctx, char *node, char *service)
 {
 	struct addrinfo *ai, hints;
 	int val, ret;
@@ -3643,16 +3623,16 @@ int ft_sock_listen(char *node, char *service)
 		return ret;
 	}
 
-	listen_sock = socket(ai->ai_family, SOCK_STREAM, 0);
-	if (listen_sock < 0)
+	ctx->listen_sock = socket(ai->ai_family, SOCK_STREAM, 0);
+	if (ctx->listen_sock < 0)
 	{
 		perror("socket");
-		ret = listen_sock;
+		ret = ctx->listen_sock;
 		goto out;
 	}
 
 	val = 1;
-	ret = setsockopt(listen_sock, SOL_SOCKET, SO_REUSEADDR,
+	ret = setsockopt(ctx->listen_sock, SOL_SOCKET, SO_REUSEADDR,
 					 (void *)&val, sizeof val);
 	if (ret)
 	{
@@ -3660,25 +3640,25 @@ int ft_sock_listen(char *node, char *service)
 		goto out;
 	}
 
-	ret = bind(listen_sock, ai->ai_addr, ai->ai_addrlen);
+	ret = bind(ctx->listen_sock, ai->ai_addr, ai->ai_addrlen);
 	if (ret)
 	{
 		perror("bind");
 		goto out;
 	}
 
-	ret = listen(listen_sock, 0);
+	ret = listen(ctx->listen_sock, 0);
 	if (ret)
 		perror("listen");
 
 out:
-	if (ret && listen_sock >= 0)
-		close(listen_sock);
+	if (ret && ctx->listen_sock >= 0)
+		close(ctx->listen_sock);
 	freeaddrinfo(ai);
 	return ret;
 }
 
-int ft_sock_connect(char *node, char *service)
+int ft_sock_connect(struct ConnectionContext *ctx, char *node, char *service)
 {
 	struct addrinfo *ai;
 	int ret;
@@ -3690,45 +3670,45 @@ int ft_sock_connect(char *node, char *service)
 		return ret;
 	}
 
-	sock = socket(ai->ai_family, SOCK_STREAM, 0);
-	if (sock < 0)
+	ctx->sock = socket(ai->ai_family, SOCK_STREAM, 0);
+	if (ctx->sock < 0)
 	{
 		perror("socket");
-		ret = sock;
+		ret = ctx->sock;
 		goto free;
 	}
 
-	ret = connect(sock, ai->ai_addr, ai->ai_addrlen);
+	ret = connect(ctx->sock, ai->ai_addr, ai->ai_addrlen);
 	if (ret)
 	{
 		perror("connect");
-		close(sock);
+		close(ctx->sock);
 		goto free;
 	}
 
-	ret = ft_sock_setup(sock);
+	ret = ft_sock_setup(ctx->sock);
 free:
 	freeaddrinfo(ai);
 	return ret;
 }
 
-int ft_sock_accept()
+int ft_sock_accept(struct ConnectionContext *ctx)
 {
 	int ret;
 
-	sock = accept(listen_sock, NULL, 0);
-	if (sock < 0)
+	ctx->sock = accept(ctx->listen_sock, NULL, 0);
+	if (ctx->sock < 0)
 	{
-		ret = sock;
+		ret = ctx->sock;
 		perror("accept");
 		return ret;
 	}
 
-	ret = ft_sock_setup(sock);
+	ret = ft_sock_setup(ctx->sock);
 	return ret;
 }
 
-int ft_sock_send(int fd, void *msg, size_t len)
+int ft_sock_send(struct ConnectionContext *ctx, int fd, void *msg, size_t len)
 {
 	size_t sent;
 	ssize_t ret, err = 0;
@@ -3742,7 +3722,7 @@ int ft_sock_send(int fd, void *msg, size_t len)
 		}
 		else if (errno == EAGAIN || errno == EWOULDBLOCK)
 		{
-			ft_force_progress();
+			ft_force_progress(ctx);
 		}
 		else
 		{
@@ -3754,7 +3734,7 @@ int ft_sock_send(int fd, void *msg, size_t len)
 	return err ? err : 0;
 }
 
-int ft_sock_recv(int fd, void *msg, size_t len)
+int ft_sock_recv(struct ConnectionContext *ctx, int fd, void *msg, size_t len)
 {
 	size_t rcvd;
 	ssize_t ret, err = 0;
@@ -3773,7 +3753,7 @@ int ft_sock_recv(int fd, void *msg, size_t len)
 		}
 		else if (errno == EAGAIN || errno == EWOULDBLOCK)
 		{
-			ft_force_progress();
+			ft_force_progress(ctx);
 		}
 		else
 		{
@@ -3785,19 +3765,19 @@ int ft_sock_recv(int fd, void *msg, size_t len)
 	return err ? err : 0;
 }
 
-int ft_sock_sync(int value)
+int ft_sock_sync(struct ConnectionContext *ctx, int value)
 {
 	int result = -FI_EOTHER;
 
-	if (listen_sock < 0)
+	if (ctx->listen_sock < 0)
 	{
-		ft_sock_send(sock, &value, sizeof value);
-		ft_sock_recv(sock, &result, sizeof result);
+		ft_sock_send(ctx, ctx->sock, &value, sizeof value);
+		ft_sock_recv(ctx, ctx->sock, &result, sizeof result);
 	}
 	else
 	{
-		ft_sock_recv(sock, &result, sizeof result);
-		ft_sock_send(sock, &value, sizeof value);
+		ft_sock_recv(ctx, ctx->sock, &result, sizeof result);
+		ft_sock_send(ctx, ctx->sock, &value, sizeof value);
 	}
 
 	return result;
@@ -3937,23 +3917,23 @@ void ft_free_string_array(char **s)
 	free(s);
 }
 
-ssize_t ft_post_rma_selective_comp(enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
+ssize_t ft_post_rma_selective_comp(struct ConnectionContext *ctx, enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
 								   struct fi_rma_iov *remote, void *context, bool enable_completion)
 {
 	struct fi_msg_rma rma_msg;
 	memset(&rma_msg, 0, sizeof(rma_msg));
 
 	struct iovec iov;
-	iov.iov_base = (void *)tx_buf;
-	iov.iov_len = opts.transfer_size;
+	iov.iov_base = (void *)ctx->tx_buf;
+	iov.iov_len = ctx->opts.transfer_size;
 
 	struct fi_rma_iov rma_iov;
 	rma_iov.addr = remote->addr;
 	rma_iov.len = iov.iov_len;
 	rma_iov.key = remote->key;
 
-	rma_msg.addr = remote_fi_addr;
-	rma_msg.desc = &mr_desc;
+	rma_msg.addr = ctx->remote_fi_addr;
+	rma_msg.desc = &ctx->mr_desc;
 	rma_msg.context = context;
 	rma_msg.msg_iov = &iov;
 	rma_msg.iov_count = 1;
@@ -3964,12 +3944,12 @@ ssize_t ft_post_rma_selective_comp(enum ft_rma_opcodes op, struct fid_ep *ep, si
 
 	if (op == FT_RMA_WRITE)
 	{
-		FT_POST(fi_writemsg, ft_progress, txcq, tx_seq, &tx_cq_cntr,
+		FT_POST(fi_writemsg, ft_progress, ctx->txcq, ctx->tx_seq, &ctx->tx_cq_cntr,
 				"fi_writemsg", ep, &rma_msg, flags);
 	}
 	else if (op == FT_RMA_READ)
 	{
-		FT_POST(fi_readmsg, ft_progress, txcq, tx_seq, &tx_cq_cntr,
+		FT_POST(fi_readmsg, ft_progress, ctx->txcq, ctx->tx_seq, &ctx->tx_cq_cntr,
 				"fi_readmsg", ep, &rma_msg, flags);
 	}
 	else
@@ -3980,7 +3960,7 @@ ssize_t ft_post_rma_selective_comp(enum ft_rma_opcodes op, struct fid_ep *ep, si
 	if (!enable_completion)
 	{
 		// No completion will be generated for this request. Manually increment completion cntr
-		tx_cq_cntr++;
+		ctx->tx_cq_cntr++;
 	}
 	return EXIT_SUCCESS;
 }

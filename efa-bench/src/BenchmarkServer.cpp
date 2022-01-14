@@ -3,32 +3,18 @@
 using namespace std;
 using namespace libefa;
 
-void startPingPongServer()
+void pingPongServer(std::string port)
 {
     int ret;
-    BenchmarkContext context;
-    context.experimentName = FLAGS_benchmark_type;
-    context.endpoint = FLAGS_endpoint;
-    context.provider = FLAGS_provider;
-    context.msgSize = FLAGS_payload;
-    context.nodeType = FLAGS_mode;
-    context.operationType = "send";
-    context.batchSize = 1;
-    context.numThreads = 1;
-
-    CsvLogger logger = CsvLogger(context);
-
     fi_info *hints = fi_allocinfo();
     common::setBaseFabricHints(hints);
 
-    Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
+    Server server = Server(FLAGS_provider, FLAGS_endpoint, port, hints);
     server.init();
     server.sync();
-
     server.initTxBuffer(FLAGS_payload);
 
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-    logger.start();
     server.startTimer();
     while (true)
     {
@@ -43,9 +29,35 @@ void startPingPongServer()
             break;
     }
     server.stopTimer();
-    logger.stop();
-
     server.showTransferStatistics(common::operationCounter / 2, 2);
+}
+
+void startPingPongServer()
+{
+    BenchmarkContext context;
+    context.experimentName = FLAGS_benchmark_type;
+    context.endpoint = FLAGS_endpoint;
+    context.provider = FLAGS_provider;
+    context.msgSize = FLAGS_payload;
+    context.nodeType = FLAGS_mode;
+    context.operationType = "send";
+    context.batchSize = 1;
+    context.numThreads = 1;
+
+    CsvLogger logger = CsvLogger(context);
+
+    logger.start();
+
+    std::thread worker0(pingPongServer, "10000");
+    std::thread worker1(pingPongServer, "10001");
+    std::thread worker2(pingPongServer, "10002");
+    std::thread worker3(pingPongServer, "10003");
+    worker0.join();
+    worker1.join();
+    worker2.join();
+    worker3.join();
+
+    logger.stop();
 }
 
 void startPingPongInjectServer()
@@ -66,7 +78,7 @@ void startPingPongInjectServer()
     fi_info *hints = fi_allocinfo();
     common::setBaseFabricHints(hints);
 
-    Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
+    Server server = Server(FLAGS_provider, FLAGS_endpoint, "10000", hints);
     server.init();
     server.sync();
 
@@ -111,7 +123,7 @@ void startTaggedBatchServer()
     fi_info *hints = fi_allocinfo();
     common::setBaseFabricHints(hints);
 
-    Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
+    Server server = Server(FLAGS_provider, FLAGS_endpoint, "10000", hints);
     server.init();
     server.sync();
 
@@ -180,7 +192,7 @@ void startLatencyTestServer()
     fi_info *hints = fi_allocinfo();
     common::setBaseFabricHints(hints);
 
-    Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
+    Server server = Server(FLAGS_provider, FLAGS_endpoint, "10000", hints);
     server.init();
     server.sync();
 
@@ -220,7 +232,7 @@ void startRmaServer()
     fi_info *hints = fi_allocinfo();
     common::setRmaFabricHints(hints);
 
-    Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
+    Server server = Server(FLAGS_provider, FLAGS_endpoint, "10000", hints);
     server.initRmaOp(FLAGS_rma_op);
 
     server.init();
@@ -265,7 +277,7 @@ void startRmaBatchServer()
     fi_info *hints = fi_allocinfo();
     common::setRmaFabricHints(hints);
 
-    Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
+    Server server = Server(FLAGS_provider, FLAGS_endpoint, "10000", hints);
     server.initRmaOp(FLAGS_rma_op);
 
     server.init();
@@ -350,7 +362,7 @@ void startRmaInjectServer()
     fi_info *hints = fi_allocinfo();
     common::setRmaFabricHints(hints);
 
-    Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
+    Server server = Server(FLAGS_provider, FLAGS_endpoint, "10000", hints);
     server.initRmaOp(FLAGS_rma_op);
 
     server.init();
@@ -398,7 +410,7 @@ void startRmaSelectiveCompletionServer()
     fi_info *hints = fi_allocinfo();
     common::setRmaFabricHints(hints);
 
-    Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
+    Server server = Server(FLAGS_provider, FLAGS_endpoint, "10000", hints);
     server.enableSelectiveCompletion();
     server.initRmaOp(FLAGS_rma_op);
 

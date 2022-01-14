@@ -3,13 +3,13 @@
 using namespace std;
 using namespace libefa;
 
-void startPingPongClient()
+void pingPongClient(std::string port)
 {
 	int ret;
 	fi_info *hints = fi_allocinfo();
 	common::setBaseFabricHints(hints);
 
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, hints, FLAGS_dst_addr);
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, port, hints, FLAGS_dst_addr);
 	client.init();
 	client.sync();
 
@@ -34,13 +34,25 @@ void startPingPongClient()
 	client.showTransferStatistics(common::operationCounter / 2, 2);
 }
 
+void startPingPongClient()
+{
+    std::thread worker0(pingPongClient, "10000");
+    std::thread worker1(pingPongClient, "10001");
+    std::thread worker2(pingPongClient, "10002");
+    std::thread worker3(pingPongClient, "10003");
+    worker0.join();
+    worker1.join();
+    worker2.join();
+    worker3.join();
+}
+
 void startPingPongInjectClient()
 {
 	int ret;
 	fi_info *hints = fi_allocinfo();
 	common::setBaseFabricHints(hints);
 
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, hints, FLAGS_dst_addr);
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", hints, FLAGS_dst_addr);
 	client.init();
 	client.sync();
 
@@ -71,7 +83,7 @@ void defaultClient()
 	fi_info *hints = fi_allocinfo();
 	common::setBaseFabricHints(hints);
 
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, hints, FLAGS_dst_addr);
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", hints, FLAGS_dst_addr);
 	client.init();
 	client.sync();
 
@@ -114,7 +126,7 @@ void startRmaClient()
 	fi_info *hints = fi_allocinfo();
 	common::setRmaFabricHints(hints);
 
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, hints, FLAGS_dst_addr);
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", hints, FLAGS_dst_addr);
 	client.initRmaOp(FLAGS_rma_op);
 
 	client.init();

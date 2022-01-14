@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 	{
 		fi_info *hints = fi_allocinfo();
 		common::setBaseFabricHints(hints);
-		Server server = Server(FLAGS_provider, FLAGS_endpoint, hints);
+		Server server = Server(FLAGS_provider, FLAGS_endpoint, "10000", hints);
 		server.printFabricInfo();
 		return 0;
 	}

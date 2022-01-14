@@ -2,64 +2,67 @@
 
 libefa::Node::Node(std::string provider, std::string endpoint, fi_info *userHints)
 {
-    hints = userHints;
-    init_opts(&opts);
+    ctx = {0};
+    init_connection_context(&ctx);
 
-    opts.options |= FT_OPT_BW;
+    ctx.hints = userHints;
+    init_opts(&ctx.opts);
 
-    hints->addr_format = opts.address_format;
-    hints->domain_attr->mr_mode = opts.mr_mode;
+    ctx.opts.options |= FT_OPT_BW;
 
-    ft_parseinfo('p', strdup(provider.c_str()), hints, &opts);
-    ft_parseinfo('e', strdup(endpoint.c_str()), hints, &opts);
+    ctx.hints->addr_format = ctx.opts.address_format;
+    ctx.hints->domain_attr->mr_mode = ctx.opts.mr_mode;
+
+    ft_parseinfo('p', strdup(provider.c_str()), ctx.hints, &ctx.opts);
+    ft_parseinfo('e', strdup(endpoint.c_str()), ctx.hints, &ctx.opts);
 
     // Enable out-of-band address exchange for the EFA provider
     if (provider == "efa")
     {
-        opts.options |= FT_OPT_OOB_SYNC;
-        opts.options |= FT_OPT_OOB_ADDR_EXCH;
+        ctx.opts.options |= FT_OPT_OOB_SYNC;
+        ctx.opts.options |= FT_OPT_OOB_ADDR_EXCH;
     }
 }
 
 int libefa::Node::enableSelectiveCompletion()
 {
-    opts.options |= FT_OPT_SELECTIVE_COMP;
+    ctx.opts.options |= FT_OPT_SELECTIVE_COMP;
 }
 
 int libefa::Node::init()
 {
-    return ft_init_fabric();
+    return ft_init_fabric(&ctx);
 }
 
 int libefa::Node::sync()
 {
-    return ft_sync();
+    return ft_sync(&ctx);
 }
 
 libefa::Node::~Node()
 {
-    ft_free_res();
+    ft_free_res(&ctx);
 }
 
 int libefa::Node::initTxBuffer(size_t size)
 {
-    opts.transfer_size = size;
-    return ft_fill_buf((char *)tx_buf + ft_tx_prefix_size(),  opts.transfer_size);
+    ctx.opts.transfer_size = size;
+    return ft_fill_buf(&ctx, (char *)ctx.tx_buf + ft_tx_prefix_size(&ctx),  ctx.opts.transfer_size);
 }
 
 int libefa::Node::postTx()
 {
-    return ft_post_tx(ep, remote_fi_addr,  opts.transfer_size, NO_CQ_DATA, &tx_ctx);
+    return ft_post_tx(&ctx, ctx.ep, ctx.remote_fi_addr,  ctx.opts.transfer_size, NO_CQ_DATA, &ctx.tx_ctx);
 }
 
 int libefa::Node::getTxCompletion()
 {
-    return ft_get_tx_comp(tx_seq);
+    return ft_get_tx_comp(&ctx, ctx.tx_seq);
 }
 
 int libefa::Node::getNTxCompletion(int n)
 {
-    return ft_get_tx_comp(tx_cq_cntr + n);
+    return ft_get_tx_comp(&ctx, ctx.tx_cq_cntr + n);
 }
 
 int libefa::Node::tx()
@@ -73,46 +76,46 @@ int libefa::Node::tx()
 
 int libefa::Node::inject()
 {
-    return ft_inject(ep, remote_fi_addr,  opts.transfer_size);
+    return ft_inject(&ctx, ctx.ep, ctx.remote_fi_addr,  ctx.opts.transfer_size);
 }
 
 int libefa::Node::rx()
 {
     int ret;
-    ret = ft_get_rx_comp(rx_seq);
+    ret = ft_get_rx_comp(&ctx, ctx.rx_seq);
     if (ret)
         return ret;
-    return ft_post_rx(ep, rx_size, &rx_ctx);
+    return ft_post_rx(&ctx, ctx.ep, ctx.rx_size, &ctx.rx_ctx);
 }
 
 void libefa::Node::startTimer()
 {
-    ft_start();
+    ft_start(&ctx);
 }
 
 void libefa::Node::stopTimer()
 {
-    ft_stop();
+    ft_stop(&ctx);
 }
 
 void libefa::Node::showTransferStatistics(int iterations, int transfersPerIterations)
 {
-    show_perf(NULL,  opts.transfer_size, iterations, &start, &end, transfersPerIterations);
+    show_perf(NULL,  ctx.opts.transfer_size, iterations, &(ctx.start), &(ctx.end), transfersPerIterations);
 }
 
 int libefa::Node::postRma()
 {
-    return ft_post_rma(opts.rma_op, ep,  opts.transfer_size, &remote, NULL);
+    return ft_post_rma(&ctx, ctx.opts.rma_op, ctx.ep,  ctx.opts.transfer_size, &ctx.remote, NULL);
 }
 
 int libefa::Node::postRmaInject()
 {
-    return ft_post_rma_inject(opts.rma_op, ep,  opts.transfer_size, &remote);
+    return ft_post_rma_inject(&ctx, ctx.opts.rma_op, ctx.ep,  ctx.opts.transfer_size, &ctx.remote);
 }
 
 int libefa::Node::postRmaSelectiveComp(bool enableCompletion)
 {
-    return ft_post_rma_selective_comp(opts.rma_op, ep,  opts.transfer_size, &remote, NULL, enableCompletion);
+    return ft_post_rma_selective_comp(&ctx, ctx.opts.rma_op, ctx.ep,  ctx.opts.transfer_size, &ctx.remote, NULL, enableCompletion);
 }
 
 int libefa::Node::rma()
@@ -126,15 +129,15 @@ int libefa::Node::rma()
 
 int libefa::Node::exchangeKeys()
 {
-    return ft_exchange_keys(&remote);
+    return ft_exchange_keys(&ctx, &ctx.remote);
 }
 
 int libefa::Node::initRmaOp(std::string operation)
 {
-    return ft_parse_rma_opts('o', strdup(operation.c_str()), hints, &opts);
+    return ft_parse_rma_opts(&ctx, 'o', strdup(operation.c_str()), ctx.hints, &ctx.opts);
 }
 
-void printFabricInfoShort()
+void printFabricInfoShort(fi_info *fi)
 {
     struct fi_info *cur;
     for (cur = fi; cur; cur = cur->next)
@@ -149,7 +152,7 @@ void printFabricInfoShort()
     }
 }
 
-void printFabricInfoLong()
+void printFabricInfoLong(fi_info *fi)
 {
     struct fi_info *cur;
     for (cur = fi; cur; cur = cur->next)
@@ -161,10 +164,10 @@ void printFabricInfoLong()
 
 int libefa::Node::printFabricInfo()
 {
-    int	ret = ft_getinfo(hints, &fi);
+    int	ret = ft_getinfo(&ctx, ctx.hints, &ctx.fi);
 	if (ret)
 		return ret;
     
-    printFabricInfoShort();
+    printFabricInfoShort(ctx.fi);
     return EXIT_SUCCESS;
 }

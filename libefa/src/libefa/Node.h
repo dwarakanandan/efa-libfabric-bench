@@ -12,6 +12,8 @@ namespace libefa
 
         ~Node();
 
+        struct ConnectionContext ctx;
+
     public:
         int init();
 

@@ -184,72 +184,79 @@ extern "C"
 		char **argv;
 	};
 
-	extern struct fi_info *fi_pep, *fi, *hints;
-	extern struct fid_fabric *fabric;
-	extern struct fid_wait *waitset;
-	extern struct fid_domain *domain;
-	extern struct fid_poll *pollset;
-	extern struct fid_pep *pep;
-	extern struct fid_ep *ep, *alias_ep;
-	extern struct fid_cq *txcq, *rxcq;
-	extern struct fid_cntr *txcntr, *rxcntr;
-	extern struct fid_mr *mr, no_mr;
-	extern void *mr_desc;
-	extern struct fid_av *av;
-	extern struct fid_eq *eq;
-	extern struct fid_mc *mc;
+	struct ConnectionContext
+	{
+		struct fi_info *fi_pep, *fi, *hints;
+		struct fid_fabric *fabric;
+		struct fid_wait *waitset;
+		struct fid_domain *domain;
+		struct fid_poll *pollset;
+		struct fid_pep *pep;
+		struct fid_ep *ep, *alias_ep;
+		struct fid_cq *txcq, *rxcq;
+		struct fid_cntr *txcntr, *rxcntr;
+		struct fid_mr *mr, no_mr;
+		void *mr_desc;
+		struct fid_av *av;
+		struct fid_eq *eq;
+		struct fid_mc *mc;
 
-	extern fi_addr_t remote_fi_addr;
-	extern char *buf, *tx_buf, *rx_buf;
-	extern struct ft_context *tx_ctx_arr, *rx_ctx_arr;
-	extern char **tx_mr_bufs, **rx_mr_bufs;
-	extern size_t buf_size, tx_size, rx_size, tx_mr_size, rx_mr_size;
-	extern int tx_fd, rx_fd;
-	extern int timeout;
+		fi_addr_t remote_fi_addr;
+		char *buf, *tx_buf, *rx_buf;
+		struct ft_context *tx_ctx_arr, *rx_ctx_arr;
+		char **tx_mr_bufs, **rx_mr_bufs;
+		size_t buf_size, tx_size, rx_size, tx_mr_size, rx_mr_size;
+		int tx_fd, rx_fd;
+		int timeout;
 
-	extern struct fi_context tx_ctx, rx_ctx;
-	extern uint64_t remote_cq_data;
+		struct fi_context tx_ctx, rx_ctx;
+		uint64_t remote_cq_data;
 
-	extern uint64_t tx_seq, rx_seq, tx_cq_cntr, rx_cq_cntr;
-	extern struct fi_av_attr av_attr;
-	extern struct fi_eq_attr eq_attr;
-	extern struct fi_cq_attr cq_attr;
-	extern struct fi_cntr_attr cntr_attr;
+		uint64_t tx_seq, rx_seq, tx_cq_cntr, rx_cq_cntr;
+		struct fi_av_attr av_attr;
+		struct fi_eq_attr eq_attr;
+		struct fi_cq_attr cq_attr;
+		struct fi_cntr_attr cntr_attr;
 
-	extern struct fi_rma_iov remote;
+		struct fi_rma_iov remote;
 
-	extern char test_name[50];
-	extern struct timespec start, end;
-	extern struct ft_opts opts;
+		char test_name[50];
+		struct timespec start, end;
+		struct ft_opts opts;
+
+		int listen_sock;
+		int sock;
+		int oob_sock;
+		uint64_t ft_tag;
+	};
+
+	void init_connection_context(struct ConnectionContext *ctx);
 
 	void ft_parseinfo(int op, char *optarg, struct fi_info *hints,
 					  struct ft_opts *opts);
 	void ft_parse_addr_opts(int op, char *optarg, struct ft_opts *opts);
 	void ft_parsecsopts(int op, char *optarg, struct ft_opts *opts);
-	int ft_parse_rma_opts(int op, char *optarg, struct fi_info *hints,
+	int ft_parse_rma_opts(struct ConnectionContext *ctx, int op, char *optarg, struct fi_info *hints,
 						  struct ft_opts *opts);
 	void ft_addr_usage();
 	void ft_usage(char *name, char *desc);
 	void ft_mcusage(char *name, char *desc);
 	void ft_csusage(char *name, char *desc);
 
-	int ft_fill_buf(void *buf, size_t size);
-	int ft_check_buf(void *buf, size_t size);
-	int ft_check_opts(uint64_t flags);
+	int ft_fill_buf(struct ConnectionContext *ctx, void *buf, size_t size);
+	int ft_check_buf(struct ConnectionContext *ctx, void *buf, size_t size);
+	int ft_check_opts(struct ConnectionContext *ctx, uint64_t flags);
 	uint64_t ft_init_cq_data(struct fi_info *info);
-	int ft_sock_listen(char *node, char *service);
-	int ft_sock_connect(char *node, char *service);
+	int ft_sock_listen(struct ConnectionContext *ctx, char *node, char *service);
+	int ft_sock_connect(struct ConnectionContext *ctx, char *node, char *service);
 	int ft_sock_accept();
-	int ft_sock_send(int fd, void *msg, size_t len);
-	int ft_sock_recv(int fd, void *msg, size_t len);
-	int ft_sock_sync(int value);
+	int ft_sock_send(struct ConnectionContext *ctx, int fd, void *msg, size_t len);
+	int ft_sock_recv(struct ConnectionContext *ctx, int fd, void *msg, size_t len);
+	int ft_sock_sync(struct ConnectionContext *ctx, int value);
 	void ft_sock_shutdown(int fd);
 	extern int (*ft_mr_alloc_func)(void);
-	extern uint64_t ft_tag;
 	extern int ft_parent_proc;
 	extern int ft_socket_pair[2];
-	extern int sock;
-	extern int listen_sock;
 #define ADDR_OPTS "B:P:s:a:b::E::C:F:"
 #define FAB_OPTS "f:d:p:D:i:HK"
 #define INFO_OPTS FAB_OPTS "e:M:"
@@ -271,12 +278,12 @@ extern "C"
 						  uint64_t *flags, struct ft_opts *opts);
 	char *size_str(char str[FT_STR_LEN], long long size);
 	char *cnt_str(char str[FT_STR_LEN], long long cnt);
-	int size_to_count(int size);
+	int size_to_count(struct ConnectionContext *ctx, int size);
 	size_t datatype_to_size(enum fi_datatype datatype);
 
-	static inline int ft_use_size(int index, int enable_flags)
+	static inline int ft_use_size(struct ConnectionContext *ctx, int index, int enable_flags)
 	{
-		return test_size[index].size <= fi->ep_attr->max_msg_size &&
+		return test_size[index].size <= ctx->fi->ep_attr->max_msg_size &&
 			   ((enable_flags == FT_ENABLE_ALL) ||
 				(enable_flags & test_size[index].enable_flags));
 	}
@@ -357,47 +364,47 @@ extern "C"
 
 	void init_opts(struct ft_opts *init_opts);
 	int ft_alloc_bufs();
-	int ft_open_fabric_res();
-	int ft_getinfo(struct fi_info *hints, struct fi_info **info);
-	int ft_init_fabric();
-	int ft_init_oob();
-	int ft_start_server();
-	int ft_server_connect();
-	int ft_client_connect();
-	int ft_init_fabric_cm(void);
+	int ft_open_fabric_res(struct ConnectionContext *ctx);
+	int ft_getinfo(struct ConnectionContext *ctx, struct fi_info *hints, struct fi_info **info);
+	int ft_init_fabric(struct ConnectionContext *ctx);
+	int ft_init_oob(struct ConnectionContext *ctx);
+	int ft_start_server(struct ConnectionContext *ctx);
+	int ft_server_connect(struct ConnectionContext *ctx);
+	int ft_client_connect(struct ConnectionContext *ctx);
+	int ft_init_fabric_cm(struct ConnectionContext *ctx);
 	int ft_complete_connect(struct fid_ep *ep, struct fid_eq *eq);
 	int ft_retrieve_conn_req(struct fid_eq *eq, struct fi_info **fi);
 	int ft_accept_connection(struct fid_ep *ep, struct fid_eq *eq);
 	int ft_connect_ep(struct fid_ep *ep,
 					  struct fid_eq *eq, fi_addr_t *remote_addr);
-	int ft_alloc_ep_res(struct fi_info *fi);
-	int ft_alloc_active_res(struct fi_info *fi);
-	int ft_enable_ep_recv(void);
-	int ft_enable_ep(struct fid_ep *ep, struct fid_eq *eq, struct fid_av *av,
+	int ft_alloc_ep_res(struct ConnectionContext *ctx, struct fi_info *fi);
+	int ft_alloc_active_res(struct ConnectionContext *ctx, struct fi_info *fi);
+	int ft_enable_ep_recv(struct ConnectionContext *ctx);
+	int ft_enable_ep(struct ConnectionContext *ctx, struct fid_ep *ep, struct fid_eq *eq, struct fid_av *av,
 					 struct fid_cq *txcq, struct fid_cq *rxcq,
 					 struct fid_cntr *txcntr, struct fid_cntr *rxcntr);
-	int ft_init_alias_ep(uint64_t flags);
+	int ft_init_alias_ep(struct ConnectionContext *ctx, uint64_t flags);
 	int ft_av_insert(struct fid_av *av, void *addr, size_t count, fi_addr_t *fi_addr,
 					 uint64_t flags, void *context);
-	int ft_init_av(void);
-	int ft_join_mc(void);
-	int ft_init_av_dst_addr(struct fid_av *av_ptr, struct fid_ep *ep_ptr,
+	int ft_init_av(struct ConnectionContext *ctx);
+	int ft_join_mc(struct ConnectionContext *ctx);
+	int ft_init_av_dst_addr(struct ConnectionContext *ctx, struct fid_av *av_ptr, struct fid_ep *ep_ptr,
 							fi_addr_t *remote_addr);
-	int ft_init_av_addr(struct fid_av *av, struct fid_ep *ep,
+	int ft_init_av_addr(struct ConnectionContext *ctx, struct fid_av *av, struct fid_ep *ep,
 						fi_addr_t *addr);
-	int ft_exchange_keys(struct fi_rma_iov *peer_iov);
-	void ft_free_res();
-	void init_test(struct ft_opts *opts, char *test_name, size_t test_name_len);
+	int ft_exchange_keys(struct ConnectionContext *ctx, struct fi_rma_iov *peer_iov);
+	void ft_free_res(struct ConnectionContext *ctx);
+	void init_test(struct ConnectionContext *ctx, struct ft_opts *opts, char *test_name, size_t test_name_len);
 
-	static inline void ft_start(void)
+	static inline void ft_start(struct ConnectionContext *ctx)
 	{
-		opts.options |= FT_OPT_ACTIVE;
-		clock_gettime(CLOCK_MONOTONIC, &start);
+		ctx->opts.options |= FT_OPT_ACTIVE;
+		clock_gettime(CLOCK_MONOTONIC, &ctx->start);
 	}
-	static inline void ft_stop(void)
+	static inline void ft_stop(struct ConnectionContext *ctx)
 	{
-		clock_gettime(CLOCK_MONOTONIC, &end);
-		opts.options &= ~FT_OPT_ACTIVE;
+		clock_gettime(CLOCK_MONOTONIC, &ctx->end);
+		ctx->opts.options &= ~FT_OPT_ACTIVE;
 	}
 
 	/* Set the FI_MSG_PREFIX mode bit in the given fi_info structure and also set
@@ -426,54 +433,54 @@ extern "C"
 		return true;
 	}
 
-	int ft_sync(void);
+	int ft_sync(struct ConnectionContext *ctx);
 	int ft_sync_pair(int status);
 	int ft_fork_and_pair(void);
 	int ft_fork_child(void);
 	int ft_wait_child(void);
-	int ft_finalize(void);
-	int ft_finalize_ep(struct fid_ep *ep);
+	int ft_finalize(struct ConnectionContext *ctx);
+	int ft_finalize_ep(struct ConnectionContext *ctx, struct fid_ep *ep);
 
-	size_t ft_rx_prefix_size(void);
-	size_t ft_tx_prefix_size(void);
-	ssize_t ft_post_rx(struct fid_ep *ep, size_t size, void *ctx);
-	ssize_t ft_post_rx_buf(struct fid_ep *ep, size_t size, void *ctx,
+	size_t ft_rx_prefix_size(struct ConnectionContext *ctx);
+	size_t ft_tx_prefix_size(struct ConnectionContext *ctx);
+	ssize_t ft_post_rx(struct ConnectionContext *ctx, struct fid_ep *ep, size_t size, void *ctxptr);
+	ssize_t ft_post_rx_buf(struct ConnectionContext *ctx, struct fid_ep *ep, size_t size, void *ctxptr,
 						   void *op_buf, void *op_mr_desc, uint64_t op_tag);
-	ssize_t ft_post_tx(struct fid_ep *ep, fi_addr_t fi_addr, size_t size,
-					   uint64_t data, void *ctx);
-	ssize_t ft_post_tx_buf(struct fid_ep *ep, fi_addr_t fi_addr, size_t size,
-						   uint64_t data, void *ctx,
+	ssize_t ft_post_tx(struct ConnectionContext *ctx, struct fid_ep *ep, fi_addr_t fi_addr, size_t size,
+					   uint64_t data, void *ctxptr);
+	ssize_t ft_post_tx_buf(struct ConnectionContext *ctx, struct fid_ep *ep, fi_addr_t fi_addr, size_t size,
+						   uint64_t data, void *ctxptr,
 						   void *op_buf, void *op_mr_desc, uint64_t op_tag);
-	ssize_t ft_rx(struct fid_ep *ep, size_t size);
-	ssize_t ft_tx(struct fid_ep *ep, fi_addr_t fi_addr, size_t size, void *ctx);
-	ssize_t ft_inject(struct fid_ep *ep, fi_addr_t fi_addr, size_t size);
-	ssize_t ft_post_rma(enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
+	ssize_t ft_rx(struct ConnectionContext *ctx, struct fid_ep *ep, size_t size);
+	ssize_t ft_tx(struct ConnectionContext *ctx, struct fid_ep *ep, fi_addr_t fi_addr, size_t size, void *ctxptr);
+	ssize_t ft_inject(struct ConnectionContext *ctx, struct fid_ep *ep, fi_addr_t fi_addr, size_t size);
+	ssize_t ft_post_rma(struct ConnectionContext *ctx, enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
 						struct fi_rma_iov *remote, void *context);
-	ssize_t ft_rma(enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
+	ssize_t ft_rma(struct ConnectionContext *ctx, enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
 				   struct fi_rma_iov *remote, void *context);
-	ssize_t ft_post_rma_inject(enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
+	ssize_t ft_post_rma_inject(struct ConnectionContext *ctx, enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
 							   struct fi_rma_iov *remote);
 
-	ssize_t ft_post_atomic(enum ft_atomic_opcodes opcode, struct fid_ep *ep,
+	ssize_t ft_post_atomic(struct ConnectionContext *ctx, enum ft_atomic_opcodes opcode, struct fid_ep *ep,
 						   void *compare, void *compare_desc, void *result,
 						   void *result_desc, struct fi_rma_iov *remote,
 						   enum fi_datatype datatype, enum fi_op atomic_op,
 						   void *context);
-	int check_base_atomic_op(struct fid_ep *endpoint, enum fi_op op,
+	int check_base_atomic_op(struct ConnectionContext *ctx, struct fid_ep *endpoint, enum fi_op op,
 							 enum fi_datatype datatype, size_t *count);
-	int check_fetch_atomic_op(struct fid_ep *endpoint, enum fi_op op,
+	int check_fetch_atomic_op(struct ConnectionContext *ctx, struct fid_ep *endpoint, enum fi_op op,
 							  enum fi_datatype datatype, size_t *count);
-	int check_compare_atomic_op(struct fid_ep *endpoint, enum fi_op op,
+	int check_compare_atomic_op(struct ConnectionContext *ctx, struct fid_ep *endpoint, enum fi_op op,
 								enum fi_datatype datatype, size_t *count);
 
 	int ft_cq_readerr(struct fid_cq *cq);
-	int ft_get_rx_comp(uint64_t total);
-	int ft_get_tx_comp(uint64_t total);
-	int ft_recvmsg(struct fid_ep *ep, fi_addr_t fi_addr,
-				   size_t size, void *ctx, int flags);
-	int ft_sendmsg(struct fid_ep *ep, fi_addr_t fi_addr,
-				   size_t size, void *ctx, int flags);
-	int ft_cq_read_verify(struct fid_cq *cq, void *op_context);
+	int ft_get_rx_comp(struct ConnectionContext *ctx, uint64_t total);
+	int ft_get_tx_comp(struct ConnectionContext *ctx, uint64_t total);
+	int ft_recvmsg(struct ConnectionContext *ctx, struct fid_ep *ep, fi_addr_t fi_addr,
+				   size_t size, void *ctxptr, int flags);
+	int ft_sendmsg(struct ConnectionContext *ctx, struct fid_ep *ep, fi_addr_t fi_addr,
+				   size_t size, void *ctxptr, int flags);
+	int ft_cq_read_verify(struct ConnectionContext *ctx, struct fid_cq *cq, void *op_context);
 
 	void eq_readerr(struct fid_eq *eq, const char *eq_str);
 
@@ -484,24 +491,24 @@ extern "C"
 	void show_perf_mr(size_t tsize, int iters, struct timespec *start,
 					  struct timespec *end, int xfers_per_iter, int argc, char *argv[]);
 
-	int ft_send_recv_greeting(struct fid_ep *ep);
-	int ft_send_greeting(struct fid_ep *ep);
-	int ft_recv_greeting(struct fid_ep *ep);
+	int ft_send_recv_greeting(struct ConnectionContext *ctx, struct fid_ep *ep);
+	int ft_send_greeting(struct ConnectionContext *ctx, struct fid_ep *ep);
+	int ft_recv_greeting(struct ConnectionContext *ctx, struct fid_ep *ep);
 
 	int ft_accept_next_client();
 
-	int check_recv_msg(const char *message);
+	int check_recv_msg(struct ConnectionContext *ctx, const char *message);
 	uint64_t ft_info_to_mr_access(struct fi_info *info);
 	int ft_alloc_bit_combo(uint64_t fixed, uint64_t opt, uint64_t **combos, int *len);
 	void ft_free_bit_combo(uint64_t *combo);
-	int ft_cntr_open(struct fid_cntr **cntr);
+	int ft_cntr_open(struct ConnectionContext *ctx, struct fid_cntr **cntr);
 	const char *ft_util_name(const char *str, size_t *len);
 	const char *ft_core_name(const char *str, size_t *len);
 	char **ft_split_and_alloc(const char *s, const char *delim, size_t *count);
 	void ft_free_string_array(char **s);
 
-	ssize_t ft_post_rma_selective_comp(enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
-					struct fi_rma_iov *remote, void *context, bool enable_completion);
+	ssize_t ft_post_rma_selective_comp(struct ConnectionContext *ctx, enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
+									   struct fi_rma_iov *remote, void *context, bool enable_completion);
 
 #define FT_PROCESS_QUEUE_ERR(readerr, rd, queue, fn, str) \
 	do                                                    \

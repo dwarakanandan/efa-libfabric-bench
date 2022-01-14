@@ -5,6 +5,6 @@ namespace libefa
     class Client : public Node
     {
     public:
-        Client(std::string provider, std::string endpoint, fi_info *userHints, std::string destinationAddress);
+        Client(std::string provider, std::string endpoint, std::string port, fi_info *userHints, std::string destinationAddress);
     };
 }
