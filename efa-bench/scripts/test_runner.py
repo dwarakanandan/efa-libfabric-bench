@@ -158,7 +158,7 @@ def runPingPongRDMTagged():
 
 
 def runLatencyDGRAM():
-    print('LatencyDGRAM:')
+    print('latency_dgram')
     for payload in DGRAM_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
         iterations_flag = '--iterations=' + str(PAYLOAD_ITERATION_MAP[payload])
@@ -170,7 +170,7 @@ def runLatencyDGRAM():
 
 
 def runLatencyRDM():
-    print('LatencyRDM:')
+    print('latency_rdm')
     for payload in RDM_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
         iterations_flag = '--iterations=' + str(PAYLOAD_ITERATION_MAP[payload])
@@ -182,7 +182,7 @@ def runLatencyRDM():
 
 
 def runLatencyRDMTagged():
-    print('LatencyRDMTagged:')
+    print('latency_rdm_tagged')
     for payload in RDM_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
         iterations_flag = '--iterations=' + str(PAYLOAD_ITERATION_MAP[payload])
@@ -239,8 +239,9 @@ def runRMABatch(rma_op, batch):
         payload_flag = '--payload=' + str(payload)
         batch_flag = '--batch=' + str(batch)
         rma_flag = '--rma_op=' + rma_op
+        cq_try_flag = '--cq_try=' + str(0.8 if payload < 8192 else 0.9)
         config = ['--benchmark_type=rma_batch',
-                  '--endpoint=rdm', rma_flag, batch_flag, payload_flag]
+                  '--endpoint=rdm', rma_flag, batch_flag, payload_flag, cq_try_flag]
         stats_file = 'rma_batch_' + rma_op + \
             '_' + str(batch) + 'b_' + str(payload)
         runTestWithConfig(config, stats_file, RUNTIME)
@@ -260,20 +261,26 @@ if __name__ == "__main__":
     # runPingPongDGRAM()
     # runPingPongRDM()
     # runPingPongRDMTagged()
-    # runBatchDGRAM(100)
-    # runBatchRDM(100)
-    # runBatchRDMTagged(100)
     # runRMA('write')
     # runRMA('read')
-    # runRMABatch('write', 100)
-    # runRMABatch('read', 100)
     # runRMASelectiveCompletion('write')
     # runRMASelectiveCompletion('read')
+
     # runLatencyDGRAM()
     # runLatencyRDM()
     # runLatencyRDMTagged()
-    runBatchRDMTagged(10)
-    runBatchRDMTagged(50)
-    runBatchRDMTagged(80)
-    runBatchRDMTagged(100)
-    runBatchRDMTagged(200)
+
+    # runBatchRDMTagged(2)
+    # runBatchRDMTagged(10)
+    # runBatchRDMTagged(50)
+    # runBatchRDMTagged(80)
+    # runBatchRDMTagged(100)
+    # runBatchRDMTagged(120)
+
+    # runRMABatch('write', 2)
+    # runRMABatch('write', 10)
+    # runRMABatch('write', 100)
+    # runRMABatch('write', 200)
+    # runRMABatch('write', 300)
+    # runRMABatch('write', 500)
+    pass
