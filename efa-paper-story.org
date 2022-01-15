@@ -25,23 +25,23 @@
      - Where to compare against RDMA?
      - counters?
 
-   1. Primitives / Connection Type (Reliable) vs RDMA 
-      a. Single-threaded
-      for all primitives 
+   1. Primitives / Connection Type (Reliable) vs RDMA
+      a. Single-threaded (for all primitives)
       - BW and msg size 
       - latency and msg size
       - one sided cpu consumption on target server
-         - use perf stat and bind to process id of the receiver -> receiver must sleep
+      - use perf stat and bind to process id of the receiver -> receiver must sleep
 
-         other ideas
-         - overloaded the receiver ?
-            https://github.com/ofiwg/libfabric/blob/main/prov/efa/docs/pkt-processing.md
-         - inject - why do they say it is an optimized version, can we measure that?  
+      other ideas
+      - overloaded the receiver ?
+         https://github.com/ofiwg/libfabric/blob/main/prov/efa/docs/pkt-processing.md
+      - inject - why do they say it is an optimized version, can we measure that?
+
       b. Multi-threaded
       - how many operations can EFA sustain before we are message bound with smaller messages
-         - increase threads and see when it is bound with small messages / EFA counters?
-         - and increase outstanding messages and keep cores fix  
-         - Latency vs target bw curve - fix message size
+      - increase threads and see when it is bound with small messages / EFA counters?
+      - and increase outstanding messages and keep cores fix  
+      - Latency vs target bw curve - fix message size
 
    2. Optimizations?
       - huge pages ?
