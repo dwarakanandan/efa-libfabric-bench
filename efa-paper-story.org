@@ -26,6 +26,7 @@
      - counters?
 
    1. Primitives / Connection Type (Reliable) vs RDMA
+
       a. Single-threaded (for all primitives)
       - BW and msg size 
       - latency and msg size
