@@ -424,32 +424,38 @@ void startRmaSelectiveCompletionServer()
     server.initTxBuffer(FLAGS_payload);
 
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-    //logger.start();
+    logger.start();
     server.startTimer();
     int numPendingRequests = 0;
-    for (int i = 0; i < FLAGS_iterations; i++)
+    int cqTry = FLAGS_batch * FLAGS_cq_try;
+
+    while (true)
     {
-        common::operationCounter += 1;
-        /*
-        if (numPendingRequests == (FLAGS_batch - 1))
+        if ((common::operationCounter - numPendingRequests) > FLAGS_batch)
+        {
+            server.getTxCompletion();
+            numPendingRequests = FLAGS_batch - cqTry;
+        }
+        else if ((common::operationCounter - numPendingRequests) > cqTry)
         {
             server.postRmaSelectiveComp(true);
-            server.getTxCompletion();
-            numPendingRequests = 0;
-            continue;
-        }*/
-        server.postRmaSelectiveComp(false);
-        numPendingRequests++;
-        // if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
-        //     break;
+            numPendingRequests++;
+            common::operationCounter += 1;
+        }
+        else
+        {
+            server.postRmaSelectiveComp(false);
+            numPendingRequests++;
+            common::operationCounter += 1;
+        }
+        if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
+            break;
     }
     server.stopTimer();
-    //logger.stop();
+    logger.stop();
 
-    int numCqs = server.getTxCompletionWithTimeout(2);
-    printf("Num CQs obtained %d\n", numCqs);
     // Sync after RMA ops are complete
     server.sync();
 
-    server.showTransferStatistics(FLAGS_iterations, 1);
+    server.showTransferStatistics(common::operationCounter, 1);
 }
