@@ -431,12 +431,12 @@ void startRmaSelectiveCompletionServer()
 
     while (true)
     {
-        if ((common::operationCounter - numPendingRequests) > FLAGS_batch)
+        if (numPendingRequests > FLAGS_batch)
         {
             server.getTxCompletion();
             numPendingRequests = FLAGS_batch - cqTry;
         }
-        else if ((common::operationCounter - numPendingRequests) > cqTry)
+        else if (numPendingRequests == cqTry)
         {
             server.postRmaSelectiveComp(true);
             numPendingRequests++;
