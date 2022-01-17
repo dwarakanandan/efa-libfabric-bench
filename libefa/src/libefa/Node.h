@@ -25,6 +25,8 @@ namespace libefa
 
         int getTxCompletion();
 
+        int getTxCompletionWithTimeout(int timeout);
+
         int getNTxCompletion(int n);
 
         int tx();

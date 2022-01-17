@@ -56,6 +56,16 @@ int libefa::Node::postTx()
     return ft_post_tx(&ctx, ctx.ep, ctx.remote_fi_addr,  ctx.opts.transfer_size, NO_CQ_DATA, &ctx.tx_ctx);
 }
 
+int libefa::Node::getTxCompletionWithTimeout(int timeout)
+{
+    int ret;
+    int ctxTimeoutBackup = ctx.timeout;
+    ctx.timeout = timeout;
+    ret = ft_get_tx_comp(&ctx, ctx.tx_seq);
+    ctx.timeout = ctxTimeoutBackup;
+    return ret;
+}
+
 int libefa::Node::getTxCompletion()
 {
     return ft_get_tx_comp(&ctx, ctx.tx_seq);
