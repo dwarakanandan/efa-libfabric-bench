@@ -136,12 +136,16 @@ void startBatchServer()
     int numTxRetries = 0;
     int numCqObtained = 0;
     int cqTry = FLAGS_batch * FLAGS_cq_try;
+    if (cqTry < 1)
+    {
+        cqTry = 1;
+    }
 
     while (true)
     {
         common::operationCounter++;
         ret = server.postTx();
-        if ((common::operationCounter - numCqObtained) > FLAGS_batch)
+        if ((common::operationCounter - numCqObtained) >= FLAGS_batch)
         {
             ret = server.getNTxCompletion(cqTry);
             if (ret)
@@ -278,12 +282,16 @@ void startRmaBatchServer()
     int numTxRetries = 0;
     int numCqObtained = 0;
     int cqTry = FLAGS_batch * FLAGS_cq_try;
+    if (cqTry < 1)
+    {
+        cqTry = 1;
+    }
 
     while (true)
     {
         common::operationCounter++;
         ret = server.postRma();
-        if ((common::operationCounter - numCqObtained) > FLAGS_batch)
+        if ((common::operationCounter - numCqObtained) >= FLAGS_batch)
         {
             ret = server.getNTxCompletion(cqTry);
             if (ret)
@@ -394,25 +402,27 @@ void startRmaSelectiveCompletionServer()
     server.startTimer();
     int numPendingRequests = 0;
     int cqTry = FLAGS_batch * FLAGS_cq_try;
+    if (cqTry < 1)
+    {
+        cqTry = 1;
+    }
 
     while (true)
     {
-        if (numPendingRequests > FLAGS_batch)
-        {
-            server.getTxCompletion();
-            numPendingRequests = FLAGS_batch - cqTry;
-        }
-        else if (numPendingRequests == cqTry)
+        if (numPendingRequests == cqTry - 1)
         {
             server.postRmaSelectiveComp(true);
-            numPendingRequests++;
-            common::operationCounter += 1;
         }
         else
         {
             server.postRmaSelectiveComp(false);
-            numPendingRequests++;
-            common::operationCounter += 1;
+        }
+        numPendingRequests++;
+        common::operationCounter += 1;
+        if (numPendingRequests > FLAGS_batch)
+        {
+            server.getTxCompletion();
+            numPendingRequests = FLAGS_batch - cqTry;
         }
         if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
             break;
