@@ -3097,6 +3097,10 @@ void show_perf(char *name, size_t tsize, int iters, struct timespec *start,
 	printf("%8.2fs%10.2f%11.2f%11.2f\n",
 		   elapsed / 1000000.0, bytes / (1.0 * elapsed),
 		   usec_per_xfer, 1.0 / usec_per_xfer);
+	
+	printf("%lld\n", bytes);
+	printf("%ld\n", elapsed);
+	printf("%lf\n", bytes / (1.0 * elapsed));
 }
 
 void show_perf_mr(size_t tsize, int iters, struct timespec *start,

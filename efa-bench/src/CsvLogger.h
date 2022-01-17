@@ -37,5 +37,5 @@ public:
 
     double calculatePktsPsec(uint64_t initial, uint64_t current, int timeElapsed);
 
-    std::stringstream logRow(int timestamp, double opsPerSecond, double txPktsPsec, double rxPktsPsec, double txBw, double rxBw);
+    std::stringstream logRow(int timestamp, double opsPerSecond, double txPktsPsec, double rxPktsPsec, double txBw, double rxBw, double appBw);
 };

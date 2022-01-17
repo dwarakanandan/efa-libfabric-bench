@@ -105,7 +105,7 @@ void defaultClient()
 	client.showTransferStatistics(common::operationCounter, 1);
 }
 
-void startTaggedBatchClient()
+void startBatchClient()
 {
 	defaultClient();
 }

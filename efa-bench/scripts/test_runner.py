@@ -207,8 +207,9 @@ def runBatchRDM(batch):
     for payload in RDM_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
         batch_flag = '--batch=' + str(batch)
+        cq_try_flag = '--cq_try=' + str(0.8 if payload <= 8192 else 0.9)
         config = ['--benchmark_type=batch',
-                  '--endpoint=rdm', batch_flag, payload_flag]
+                  '--endpoint=rdm', batch_flag, cq_try_flag, payload_flag]
         stats_file = 'batch_rdm_' + str(batch) + 'b_' + str(payload)
         runTestWithConfig(config, stats_file, RUNTIME)
 
@@ -247,13 +248,16 @@ def runRMABatch(rma_op, batch):
         runTestWithConfig(config, stats_file, RUNTIME)
 
 
-def runRMASelectiveCompletion(rma_op):
+def runRMASelectiveCompletion(rma_op, batch):
     for payload in RDM_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
+        batch_flag = '--batch=' + str(batch)
         rma_flag = '--rma_op=' + rma_op
+        cq_try_flag = '--cq_try=' + str(0.8 if payload < 8192 else 0.9)
         config = ['--benchmark_type=rma_sel_comp',
-                  '--endpoint=rdm', rma_flag, payload_flag]
-        stats_file = 'rma_sel_comp_' + rma_op + '_' + str(payload)
+                  '--endpoint=rdm', rma_flag, batch_flag, payload_flag, cq_try_flag]
+        stats_file = 'rma_sel_comp_' + rma_op + \
+            '_' + str(batch) + 'b_' + str(payload)
         runTestWithConfig(config, stats_file, RUNTIME)
 
 
@@ -263,24 +267,22 @@ if __name__ == "__main__":
     # runPingPongRDMTagged()
     # runRMA('write')
     # runRMA('read')
-    # runRMASelectiveCompletion('write')
-    # runRMASelectiveCompletion('read')
+    # runRMASelectiveCompletion('write', 100)
+    # runRMASelectiveCompletion('read', 100)
 
     # runLatencyDGRAM()
     # runLatencyRDM()
     # runLatencyRDMTagged()
 
-    # runBatchRDMTagged(2)
-    # runBatchRDMTagged(10)
-    # runBatchRDMTagged(50)
-    # runBatchRDMTagged(80)
-    # runBatchRDMTagged(100)
-    # runBatchRDMTagged(120)
+    for batch in [2, 10, 50, 80, 100, 120]:
+        runBatchDGRAM(batch)
+    
+    for batch in [2, 10, 50, 80, 100, 120]:
+        runBatchRDM(batch)
 
-    # runRMABatch('write', 2)
-    # runRMABatch('write', 10)
-    # runRMABatch('write', 100)
-    # runRMABatch('write', 200)
-    # runRMABatch('write', 300)
-    # runRMABatch('write', 500)
+    # for batch in [2, 10, 100, 200, 300, 500]:
+    #     runRMABatch('write', batch)
+    
+    # for batch in [2, 10, 100, 200, 300, 500]:
+    #     runRMASelectiveCompletion('write', batch)
     pass

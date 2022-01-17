@@ -17,6 +17,7 @@ CsvLogger::CsvLogger(BenchmarkContext context)
     headerFields.push_back("rx_pkts_psec");
     headerFields.push_back("tx_bandwidth");
     headerFields.push_back("rx_bandwidth");
+    headerFields.push_back("app_bandwidth");
 }
 
 void CsvLogger::start()
@@ -43,7 +44,7 @@ uint64_t CsvLogger::getCounter(std::string counter)
 
 double CsvLogger::calculateBandwidthMbps(uint64_t initial, uint64_t current, int timeElapsed)
 {
-    return (current - initial) / (timeElapsed * 1024.0 * 1024.0);
+    return (current - initial) / (timeElapsed * 1000.0 * 1000.0);
 }
 
 double CsvLogger::calculatePktsPsec(uint64_t initial, uint64_t current, int timeElapsed)
@@ -94,9 +95,10 @@ void CsvLogger::loggerTask()
         double txPktsPsec = this->calculatePktsPsec(this->initialTxPkts, this->getCounter(tx_packets), timestamp);
         double rxPktsPsec = this->calculatePktsPsec(this->initialRxPkts, this->getCounter(rx_packets), timestamp);
 
-        double opsPsec = (common::operationCounter * 1.0) / timestamp;
+        double opsPsec = common::operationCounter / (timestamp * 1.0);
+        double appBw = (common::operationCounter * this->context.msgSize) / (timestamp * 1000.0 * 1000.0);
 
-        ss = this->logRow(timestamp, opsPsec, txPktsPsec, rxPktsPsec, txBw, rxBw);
+        ss = this->logRow(timestamp, opsPsec, txPktsPsec, rxPktsPsec, txBw, rxBw, appBw);
         this->statsFile << ss.str();
         std::cout << ss.str();
     }
@@ -116,7 +118,7 @@ std::stringstream CsvLogger::logHeader()
     return ss;
 }
 
-std::stringstream CsvLogger::logRow(int timestamp, double opsPerSecond, double txPktsPsec, double rxPktsPsec, double txBw, double rxBw)
+std::stringstream CsvLogger::logRow(int timestamp, double opsPerSecond, double txPktsPsec, double rxPktsPsec, double txBw, double rxBw, double appBw)
 {
     std::stringstream ss;
     ss << std::fixed << std::setprecision(2);
@@ -133,7 +135,8 @@ std::stringstream CsvLogger::logRow(int timestamp, double opsPerSecond, double t
     ss << txPktsPsec << ",";
     ss << rxPktsPsec << ",";
     ss << txBw << ",";
-    ss << rxBw;
+    ss << rxBw << ",";
+    ss << appBw ;
     ss << std::endl;
     return ss;
 }

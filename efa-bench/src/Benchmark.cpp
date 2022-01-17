@@ -15,7 +15,7 @@ void startNode()
 		else if (is_benchmark(FLAGS_benchmark_type, T::INJECT))
 			startPingPongInjectServer();
 		else if (is_benchmark(FLAGS_benchmark_type, T::BATCH))
-			startTaggedBatchServer();
+			startBatchServer();
 		else if (is_benchmark(FLAGS_benchmark_type, T::CAPS))
 			startCapsTestServer();
 		else if (is_benchmark(FLAGS_benchmark_type, T::RMA))
@@ -37,7 +37,7 @@ void startNode()
 		else if (is_benchmark(FLAGS_benchmark_type, T::INJECT))
 			startPingPongInjectClient();
 		else if (is_benchmark(FLAGS_benchmark_type, T::BATCH))
-			startTaggedBatchClient();
+			startBatchClient();
 		else if (is_benchmark(FLAGS_benchmark_type, T::CAPS))
 			startCapsTestClient();
 		else if (is_benchmark(FLAGS_benchmark_type, T::RMA) || is_benchmark(FLAGS_benchmark_type, T::RMA_BATCH) || is_benchmark(FLAGS_benchmark_type, T::RMA_INJECT) || is_benchmark(FLAGS_benchmark_type, T::RMA_SEL_COMP))

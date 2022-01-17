@@ -105,7 +105,7 @@ void startPingPongInjectServer()
     server.showTransferStatistics(common::operationCounter / 2, 2);
 }
 
-void startTaggedBatchServer()
+void startBatchServer()
 {
     int ret;
     BenchmarkContext context;
@@ -141,23 +141,6 @@ void startTaggedBatchServer()
     {
         common::operationCounter++;
         ret = server.postTx();
-        while (ret == -FI_EAGAIN)
-        {
-            if (numCqObtained < common::operationCounter)
-            {
-                ret = server.getNTxCompletion(1);
-                if (ret)
-                {
-                    printf("SERVER: getCqCompletion failed\n\n");
-                    exit(1);
-                }
-                numCqObtained++;
-            }
-
-            // printf("fi_tsend retry iteration %d\n", i);
-            ret = server.postTx();
-            numTxRetries++;
-        }
         if ((common::operationCounter - numCqObtained) > FLAGS_batch)
         {
             ret = server.getNTxCompletion(cqTry);
