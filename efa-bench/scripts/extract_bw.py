@@ -114,7 +114,9 @@ if __name__ == "__main__":
     # parse_tx_bw_jumbo('rma_sel_comp_write')
 
     parse_batch_tx_bw('batch_dgram', BATCH_SIZES)
+    parse_batch_app_bw('batch_dgram', BATCH_SIZES)
     parse_batch_tx_bw('batch_rdm', BATCH_SIZES)
+    parse_batch_app_bw('batch_rdm', BATCH_SIZES)
 
     parse_batch_tx_bw('rma_batch_write', RMA_BATCH_SIZES)
     parse_batch_rx_bw('rma_batch_read', RMA_BATCH_SIZES)
