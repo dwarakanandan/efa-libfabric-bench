@@ -6,6 +6,7 @@ JUMBO_PAYLOADS = [4, 64, 512, 1024, 4096, 8192, 16384, 65536]
 BATCH_SIZES = [2, 10, 50, 80, 100, 120]
 RMA_BATCH_SIZES = [2, 10, 100, 200, 300, 500]
 
+
 def average(l):
     return round(sum(l) / len(l), 2)
 
@@ -52,12 +53,14 @@ def parse_rx_bw_jumbo(benchmark):
         print(payload, ret)
     print()
 
+
 def parse_batch_tx_bw(benchmark, BATCH_LIST):
     print(benchmark)
     for batch in BATCH_LIST:
         bw_for_batch = []
         for payload in JUMBO_PAYLOADS:
-            f_name = DIR_PREFIX + '/' + benchmark + '_' + str(batch) + 'b_' + str(payload) + '.csv'
+            f_name = DIR_PREFIX + '/' + benchmark + '_' + \
+                str(batch) + 'b_' + str(payload) + '.csv'
             ret = parse_file(f_name, 12)
             bw_for_batch.append(ret)
         print(batch, end=' ')
@@ -65,6 +68,39 @@ def parse_batch_tx_bw(benchmark, BATCH_LIST):
             print(bw, end=' ')
         print()
     print()
+
+
+def parse_batch_rx_bw(benchmark, BATCH_LIST):
+    print(benchmark)
+    for batch in BATCH_LIST:
+        bw_for_batch = []
+        for payload in JUMBO_PAYLOADS:
+            f_name = DIR_PREFIX + '/' + benchmark + '_' + \
+                str(batch) + 'b_' + str(payload) + '.csv'
+            ret = parse_file(f_name, 13)
+            bw_for_batch.append(ret)
+        print(batch, end=' ')
+        for bw in bw_for_batch:
+            print(bw, end=' ')
+        print()
+    print()
+
+
+def parse_batch_app_bw(benchmark, BATCH_LIST):
+    print(benchmark)
+    for batch in BATCH_LIST:
+        bw_for_batch = []
+        for payload in JUMBO_PAYLOADS:
+            f_name = DIR_PREFIX + '/' + benchmark + '_' + \
+                str(batch) + 'b_' + str(payload) + '.csv'
+            ret = parse_file(f_name, 14)
+            bw_for_batch.append(ret)
+        print(batch, end=' ')
+        for bw in bw_for_batch:
+            print(bw, end=' ')
+        print()
+    print()
+
 
 if __name__ == "__main__":
     # parse_tx_bw('ping_pong_dgram')
@@ -74,9 +110,11 @@ if __name__ == "__main__":
     # parse_rx_bw_jumbo('rma_read')
     # parse_tx_bw_jumbo('rma_write')
 
-
     # parse_rx_bw_jumbo('rma_sel_comp_read')
     # parse_tx_bw_jumbo('rma_sel_comp_write')
 
-    parse_batch_tx_bw('batch_rdm_tagged', BATCH_SIZES)
+    parse_batch_tx_bw('batch_dgram', BATCH_SIZES)
+    parse_batch_tx_bw('batch_rdm', BATCH_SIZES)
+
     parse_batch_tx_bw('rma_batch_write', RMA_BATCH_SIZES)
+    parse_batch_rx_bw('rma_batch_read', RMA_BATCH_SIZES)
