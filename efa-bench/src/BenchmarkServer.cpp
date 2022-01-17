@@ -300,23 +300,6 @@ void startRmaBatchServer()
     {
         common::operationCounter++;
         ret = server.postRma();
-        while (ret == -FI_EAGAIN)
-        {
-            if (numCqObtained < common::operationCounter)
-            {
-                ret = server.getNTxCompletion(1);
-                if (ret)
-                {
-                    printf("SERVER: getCqCompletion failed\n\n");
-                    exit(1);
-                }
-                numCqObtained++;
-            }
-
-            // printf("fi_tsend retry iteration %d\n", i);
-            ret = server.postRma();
-            numTxRetries++;
-        }
         if ((common::operationCounter - numCqObtained) > FLAGS_batch)
         {
             ret = server.getNTxCompletion(cqTry);
