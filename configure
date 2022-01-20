@@ -14,5 +14,5 @@ mkdir build
 cd build
 
 printf "\nBuilding project...\n"
-cmake ..
+~/cmake-3.22.0-linux-x86_64/bin/cmake ..
 make
