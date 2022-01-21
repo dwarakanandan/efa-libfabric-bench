@@ -112,6 +112,8 @@ void startBatchClient()
 	common::setBaseFabricHints(hints);
 
 	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
+	client.ctx.opts.comp_method = FT_COMP_SREAD;
+	client.ctx.opts.options |= FT_OPT_ALLOC_MULT_MR;
 	client.init();
 	client.sync();
 
@@ -120,29 +122,19 @@ void startBatchClient()
 	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 	client.startTimer();
 
-	int numCqObtained = 0;
-
+	void* rx_buffers[FLAGS_batch];
+	for (size_t i = 0; i < FLAGS_batch; i++)
+	{
+		rx_buffers[i] = malloc(10000);
+	}
+	
 	while (true)
 	{
-		ret = client.getRxCompletion();
-		if (ret)
+		for (size_t i = 0; i < FLAGS_batch; i++)
 		{
-			printf("SERVER: getCqCompletion failed\n\n");
-			exit(1);
+			client.postRx(rx_buffers[i]);
 		}
-		numCqObtained++;
-		// if (numCqObtained >= FLAGS_batch)
-		// {
-		// 	printf("Posting %d Rx\n", numCqObtained);
-		// 	for (size_t i = 0; i < numCqObtained; i++)
-		// 	{
-		// 		ret = client.postRx();
-		// 		if (ret)
-		// 			return;
-		// 		common::operationCounter++;
-		// 	}
-		// 	numCqObtained = 0;
-		// }
+		client.getNRxCompletion(FLAGS_batch);
 
 		if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
 			break;

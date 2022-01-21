@@ -12,9 +12,9 @@ namespace libefa
 
         ~Node();
 
+    public:
         struct ConnectionContext ctx;
 
-    public:
         int init();
 
         int sync();
@@ -33,7 +33,7 @@ namespace libefa
 
         int inject();
 
-        int postRx();
+        int postRx(void *buffer);
 
         int getRxCompletion();
 

@@ -48,12 +48,12 @@ libefa::Node::~Node()
 int libefa::Node::initTxBuffer(size_t size)
 {
     ctx.opts.transfer_size = size;
-    return ft_fill_buf(&ctx, (char *)ctx.tx_buf + ft_tx_prefix_size(&ctx),  ctx.opts.transfer_size);
+    return ft_fill_buf(&ctx, (char *)ctx.tx_buf + ft_tx_prefix_size(&ctx), ctx.opts.transfer_size);
 }
 
 int libefa::Node::postTx()
 {
-    return ft_post_tx(&ctx, ctx.ep, ctx.remote_fi_addr,  ctx.opts.transfer_size, NO_CQ_DATA, &ctx.tx_ctx);
+    return ft_post_tx(&ctx, ctx.ep, ctx.remote_fi_addr, ctx.opts.transfer_size, NO_CQ_DATA, &ctx.tx_ctx);
 }
 
 int libefa::Node::getTxCompletionWithTimeout(int timeout)
@@ -87,7 +87,7 @@ int libefa::Node::tx()
 
 int libefa::Node::inject()
 {
-    return ft_inject(&ctx, ctx.ep, ctx.remote_fi_addr,  ctx.opts.transfer_size);
+    return ft_inject(&ctx, ctx.ep, ctx.remote_fi_addr, ctx.opts.transfer_size);
 }
 
 int libefa::Node::getRxCompletion()
@@ -97,12 +97,23 @@ int libefa::Node::getRxCompletion()
 
 int libefa::Node::getNRxCompletion(int n)
 {
-    return ft_get_rx_comp(&ctx, ctx.rx_cq_cntr + n);
+    int ret;
+    struct fi_cq_err_entry comp;
+
+    int numObtained = 0;
+    while (numObtained < n)
+    {
+        ret = fi_cq_sread(ctx.rxcq, &comp, n - numObtained, NULL, ctx.timeout);
+        if(ret < 0) return ret;
+        numObtained+=ret;
+    }
+    
+    return EXIT_SUCCESS;
 }
 
-int libefa::Node::postRx()
+int libefa::Node::postRx(void *buffer)
 {
-    return ft_post_rx(&ctx, ctx.ep, ctx.rx_size, &ctx.rx_ctx);
+    return ft_post_rx_buf(&ctx, ctx.ep, ctx.rx_size, &ctx.rx_ctx, buffer, ctx.mr_desc, ctx.ft_tag);
 }
 
 int libefa::Node::rx()
@@ -126,22 +137,22 @@ void libefa::Node::stopTimer()
 
 void libefa::Node::showTransferStatistics(int iterations, int transfersPerIterations)
 {
-    show_perf(NULL,  ctx.opts.transfer_size, iterations, &(ctx.start), &(ctx.end), transfersPerIterations);
+    show_perf(NULL, ctx.opts.transfer_size, iterations, &(ctx.start), &(ctx.end), transfersPerIterations);
 }
 
 int libefa::Node::postRma()
 {
-    return ft_post_rma(&ctx, ctx.opts.rma_op, ctx.ep,  ctx.opts.transfer_size, &ctx.remote, NULL);
+    return ft_post_rma(&ctx, ctx.opts.rma_op, ctx.ep, ctx.opts.transfer_size, &ctx.remote, NULL);
 }
 
 int libefa::Node::postRmaInject()
 {
-    return ft_post_rma_inject(&ctx, ctx.opts.rma_op, ctx.ep,  ctx.opts.transfer_size, &ctx.remote);
+    return ft_post_rma_inject(&ctx, ctx.opts.rma_op, ctx.ep, ctx.opts.transfer_size, &ctx.remote);
 }
 
 int libefa::Node::postRmaSelectiveComp(bool enableCompletion)
 {
-    return ft_post_rma_selective_comp(&ctx, ctx.opts.rma_op, ctx.ep,  ctx.opts.transfer_size, &ctx.remote, NULL, enableCompletion);
+    return ft_post_rma_selective_comp(&ctx, ctx.opts.rma_op, ctx.ep, ctx.opts.transfer_size, &ctx.remote, NULL, enableCompletion);
 }
 
 int libefa::Node::rma()
@@ -190,10 +201,10 @@ void printFabricInfoLong(fi_info *fi)
 
 int libefa::Node::printFabricInfo()
 {
-    int	ret = ft_getinfo(&ctx, ctx.hints, &ctx.fi);
-	if (ret)
-		return ret;
-    
+    int ret = ft_getinfo(&ctx, ctx.hints, &ctx.fi);
+    if (ret)
+        return ret;
+
     printFabricInfoShort(ctx.fi);
     return EXIT_SUCCESS;
 }
