@@ -131,17 +131,18 @@ void startBatchClient()
 			exit(1);
 		}
 		numCqObtained++;
-		if (numCqObtained >= FLAGS_batch)
-		{
-			for (size_t i = 0; i < numCqObtained; i++)
-			{
-				ret = client.postRx();
-				if (ret)
-					return;
-				common::operationCounter++;
-			}
-			numCqObtained = 0;
-		}
+		// if (numCqObtained >= FLAGS_batch)
+		// {
+		// 	printf("Posting %d Rx\n", numCqObtained);
+		// 	for (size_t i = 0; i < numCqObtained; i++)
+		// 	{
+		// 		ret = client.postRx();
+		// 		if (ret)
+		// 			return;
+		// 		common::operationCounter++;
+		// 	}
+		// 	numCqObtained = 0;
+		// }
 
 		if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
 			break;

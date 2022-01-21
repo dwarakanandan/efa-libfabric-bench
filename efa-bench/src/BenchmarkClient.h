@@ -6,6 +6,8 @@ void startPingPongInjectClient();
 
 void startBatchClient();
 
+void defaultClient();
+
 void startLatencyTestClient();
 
 void startCapsTestClient();

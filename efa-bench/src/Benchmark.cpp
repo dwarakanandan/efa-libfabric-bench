@@ -35,7 +35,7 @@ void startNode()
 		if (is_benchmark(FLAGS_benchmark_type, T::LATENCY))
 			startLatencyTestClient();
 		else if (is_benchmark(FLAGS_benchmark_type, T::INJECT))
-			startPingPongInjectClient();
+			defaultClient();
 		else if (is_benchmark(FLAGS_benchmark_type, T::BATCH))
 			startBatchClient();
 		else if (is_benchmark(FLAGS_benchmark_type, T::CAPS))
