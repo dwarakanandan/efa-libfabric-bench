@@ -3964,3 +3964,121 @@ ssize_t ft_post_rma_selective_comp(struct ConnectionContext *ctx, enum ft_rma_op
 	}
 	return EXIT_SUCCESS;
 }
+
+int alloc_ep_res_multi_recv(struct ConnectionContext *ctx)
+{
+	int ret;
+
+	ctx->tx_size = ctx->opts.transfer_size;
+	if (ctx->tx_size > ctx->fi->ep_attr->max_msg_size)
+	{
+		fprintf(stderr, "transfer size is larger than the maximum size "
+						"of the data transfer supported by the provider\n");
+		return -1;
+	}
+
+	ctx->tx_buf = malloc(ctx->tx_size);
+	if (!ctx->tx_buf)
+	{
+		fprintf(stderr, "Cannot allocate tx_buf\n");
+		return -1;
+	}
+
+	ret = fi_mr_reg(ctx->domain, ctx->tx_buf, ctx->tx_size, FI_SEND,
+					0, FT_MR_KEY, 0, &ctx->mr, NULL);
+	if (ret)
+	{
+		FT_PRINTERR("fi_mr_reg", ret);
+		return ret;
+	}
+
+	/* We only ues the common code to send messages, so
+	 * set mr_desc to the tx buffer's region.
+	 */
+	ctx->mr_desc = fi_mr_desc(ctx->mr);
+
+	//Each multi recv buffer will be able to hold at least 2 and
+	//up to 64 messages, allowing proper testing of multi recv
+	//completions and reposting
+	ctx->rx_size = MIN(ctx->tx_size * 128, MAX_XFER_SIZE * 4);
+	ctx->comp_per_buf = ctx->rx_size / 2 / ctx->opts.transfer_size;
+	ctx->rx_buf = malloc(ctx->rx_size);
+	if (!ctx->rx_buf)
+	{
+		fprintf(stderr, "Cannot allocate rx_buf\n");
+		return -1;
+	}
+
+	ret = fi_mr_reg(ctx->domain, ctx->rx_buf, ctx->rx_size, FI_RECV, 0, FT_MR_KEY + 1, 0,
+					&ctx->mr_multi_recv, NULL);
+	if (ret)
+	{
+		FT_PRINTERR("fi_mr_reg", ret);
+		return ret;
+	}
+
+	return 0;
+}
+
+int repost_multi_recv(struct ConnectionContext *ctx, int chunk)
+{
+	void *buf_addr;
+	int ret;
+
+	buf_addr = ctx->rx_buf + (ctx->rx_size / 2) * chunk;
+	ret = fi_recv(ctx->ep, buf_addr, ctx->rx_size / 2,
+				  fi_mr_desc(ctx->mr_multi_recv), 0,
+				  &ctx->ctx_multi_recv[chunk]);
+	if (ret)
+	{
+		FT_PRINTERR("fi_recv", ret);
+		return ret;
+	}
+
+	return 0;
+}
+
+int wait_for_multi_recv_completion(struct ConnectionContext *ctx, int num_completions)
+{
+	int i, ret, per_buf_cnt = 0;
+	struct fi_cq_data_entry comp;
+
+	while (num_completions > 0) {
+		ret = fi_cq_read(ctx->rxcq, &comp, 1);
+		if (ret == -FI_EAGAIN)
+			continue;
+
+		if (ret < 0) {
+			FT_PRINTERR("fi_cq_read", ret);
+			return ret;
+		}
+
+		if (comp.flags & FI_RECV) {
+			if (comp.len != ctx->opts.transfer_size) {
+				FT_ERR("completion length %lu, expected %lu",
+					comp.len, ctx->opts.transfer_size);
+				return -FI_EIO;
+			}
+			if (ft_check_opts(ctx, FT_OPT_VERIFY_DATA | FT_OPT_ACTIVE) &&
+			    ft_check_buf(ctx, comp.buf, ctx->opts.transfer_size))
+				return -FI_EIO;
+			per_buf_cnt++;
+			num_completions--;
+		}
+
+		if (comp.flags & FI_MULTI_RECV) {
+			if (per_buf_cnt != ctx->comp_per_buf) {
+				FT_ERR("Received %d completions per buffer, expected %d",
+					per_buf_cnt, ctx->comp_per_buf);
+				return -FI_EIO;
+			}
+			per_buf_cnt = 0;
+			i = comp.op_context == &ctx->ctx_multi_recv[1];
+
+			ret = repost_multi_recv(ctx, i);
+			if (ret)
+				return ret;
+		}
+	}
+	return 0;
+}

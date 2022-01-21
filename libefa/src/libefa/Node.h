@@ -17,6 +17,10 @@ namespace libefa
 
         int init();
 
+        int initMultiRecv();
+
+        int postMultiRecv(int n);
+
         int sync();
 
         int initTxBuffer(size_t size);

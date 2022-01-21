@@ -35,6 +35,33 @@ int libefa::Node::init()
     return ft_init_fabric(&ctx);
 }
 
+int libefa::Node::initMultiRecv()
+{
+    int ret, chunk;
+    ret = alloc_ep_res_multi_recv(&ctx);
+    if (ret)
+        return ret;
+
+    ret = fi_setopt(&ctx.ep->fid, FI_OPT_ENDPOINT, FI_OPT_MIN_MULTI_RECV,
+                    &ctx.tx_size, sizeof(ctx.tx_size));
+    if (ret)
+        return ret;
+
+    for (chunk = 0; chunk < 2; chunk++)
+    {
+        ret = repost_multi_recv(&ctx, chunk);
+        if (ret)
+            return ret;
+    }
+
+    return ret;
+}
+
+int libefa::Node::postMultiRecv(int n)
+{
+    return wait_for_multi_recv_completion(&ctx, n);
+}
+
 int libefa::Node::sync()
 {
     return ft_sync(&ctx);
@@ -104,10 +131,11 @@ int libefa::Node::getNRxCompletion(int n)
     while (numObtained < n)
     {
         ret = fi_cq_sread(ctx.rxcq, &comp, n - numObtained, NULL, ctx.timeout);
-        if(ret < 0) return ret;
-        numObtained+=ret;
+        if (ret < 0)
+            return ret;
+        numObtained += ret;
     }
-    
+
     return EXIT_SUCCESS;
 }
 

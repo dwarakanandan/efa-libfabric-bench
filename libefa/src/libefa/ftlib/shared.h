@@ -76,6 +76,8 @@ extern "C"
 #define FT_ENABLE_ALL (~0)
 #define FT_DEFAULT_SIZE (1 << 0)
 
+#define MAX_XFER_SIZE (1 << 20)
+
 	enum precision
 	{
 		NANO = 1,
@@ -228,6 +230,10 @@ extern "C"
 		int sock;
 		int oob_sock;
 		uint64_t ft_tag;
+
+		struct fid_mr *mr_multi_recv;
+		struct fi_context ctx_multi_recv[2];
+		int comp_per_buf;
 	};
 
 	void init_connection_context(struct ConnectionContext *ctx);
@@ -509,6 +515,10 @@ extern "C"
 
 	ssize_t ft_post_rma_selective_comp(struct ConnectionContext *ctx, enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
 									   struct fi_rma_iov *remote, void *context, bool enable_completion);
+
+	int alloc_ep_res_multi_recv(struct ConnectionContext *ctx);
+	int repost_multi_recv(struct ConnectionContext *ctx, int chunk);
+	int wait_for_multi_recv_completion(struct ConnectionContext *ctx, int num_completions);
 
 #define FT_PROCESS_QUEUE_ERR(readerr, rd, queue, fn, str) \
 	do                                                    \

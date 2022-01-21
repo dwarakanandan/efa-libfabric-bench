@@ -110,11 +110,15 @@ void startBatchClient()
 	int ret;
 	fi_info *hints = fi_allocinfo();
 	common::setBaseFabricHints(hints);
+	hints->caps = FI_MSG | FI_MULTI_RECV;
+	hints->rx_attr->op_flags = FI_MULTI_RECV;
 
 	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
-	client.ctx.opts.comp_method = FT_COMP_SREAD;
-	client.ctx.opts.options |= FT_OPT_ALLOC_MULT_MR;
+	client.ctx.cq_attr.format = FI_CQ_FORMAT_DATA;
+	client.ctx.opts.options |= FT_OPT_SIZE | FT_OPT_SKIP_MSG_ALLOC | FT_OPT_OOB_SYNC |
+							   FT_OPT_OOB_ADDR_EXCH;
 	client.init();
+	client.initMultiRecv();
 	client.sync();
 
 	client.initTxBuffer(FLAGS_payload);
@@ -122,19 +126,9 @@ void startBatchClient()
 	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 	client.startTimer();
 
-	void* rx_buffers[FLAGS_batch];
-	for (size_t i = 0; i < FLAGS_batch; i++)
-	{
-		rx_buffers[i] = malloc(10000);
-	}
-	
 	while (true)
 	{
-		for (size_t i = 0; i < FLAGS_batch; i++)
-		{
-			client.postRx(rx_buffers[i]);
-		}
-		client.getNRxCompletion(FLAGS_batch);
+		client.postMultiRecv(FLAGS_batch*10);
 
 		if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
 			break;
