@@ -114,6 +114,7 @@ void startBatchClient()
 	hints->rx_attr->op_flags = FI_MULTI_RECV;
 
 	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
+	client.ctx.opts.transfer_size = FLAGS_payload;
 	client.ctx.cq_attr.format = FI_CQ_FORMAT_DATA;
 	client.ctx.opts.options |= FT_OPT_SIZE | FT_OPT_SKIP_MSG_ALLOC | FT_OPT_OOB_SYNC |
 							   FT_OPT_OOB_ADDR_EXCH;

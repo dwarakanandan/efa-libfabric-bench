@@ -4044,7 +4044,7 @@ int wait_for_multi_recv_completion(struct ConnectionContext *ctx, int num_comple
 	struct fi_cq_data_entry comp;
 
 	while (num_completions > 0) {
-		ret = fi_cq_read(ctx->rxcq, &comp, 1);
+		ret = fi_cq_sread(ctx->rxcq, &comp, 64, NULL, ctx->timeout);
 		if (ret == -FI_EAGAIN)
 			continue;
 
