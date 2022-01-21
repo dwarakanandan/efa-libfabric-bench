@@ -133,7 +133,6 @@ void startBatchServer()
     logger.start();
     server.startTimer();
 
-    int numTxRetries = 0;
     int numCqObtained = 0;
     int cqTry = FLAGS_batch * FLAGS_cq_try;
     if (cqTry < 1)
@@ -145,6 +144,8 @@ void startBatchServer()
     {
         common::operationCounter++;
         ret = server.postTx();
+        if (ret)
+            return;
         if ((common::operationCounter - numCqObtained) >= FLAGS_batch)
         {
             ret = server.getNTxCompletion(cqTry);

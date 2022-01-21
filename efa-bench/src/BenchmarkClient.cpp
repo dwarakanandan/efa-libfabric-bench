@@ -36,14 +36,14 @@ void pingPongClient(std::string port, std::string oobPort)
 
 void startPingPongClient()
 {
-    std::thread worker0(pingPongClient, "10000", "9000");
-    std::thread worker1(pingPongClient, "10001", "9001");
-    std::thread worker2(pingPongClient, "10002", "9002");
-    std::thread worker3(pingPongClient, "10003", "9003");
-    worker0.join();
-    worker1.join();
-    worker2.join();
-    worker3.join();
+	std::thread worker0(pingPongClient, "10000", "9000");
+	std::thread worker1(pingPongClient, "10001", "9001");
+	std::thread worker2(pingPongClient, "10002", "9002");
+	std::thread worker3(pingPongClient, "10003", "9003");
+	worker0.join();
+	worker1.join();
+	worker2.join();
+	worker3.join();
 }
 
 void startPingPongInjectClient()
@@ -107,34 +107,75 @@ void defaultClient()
 
 void startBatchClient()
 {
-	defaultClient();
+	int ret;
+	fi_info *hints = fi_allocinfo();
+	common::setBaseFabricHints(hints);
+
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
+	client.init();
+	client.sync();
+
+	client.initTxBuffer(FLAGS_payload);
+
+	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+	client.startTimer();
+
+	int numCqObtained = 0;
+
+	while (true)
+	{
+		ret = client.getRxCompletion();
+		if (ret)
+		{
+			printf("SERVER: getCqCompletion failed\n\n");
+			exit(1);
+		}
+		numCqObtained++;
+		if (numCqObtained >= FLAGS_batch)
+		{
+			for (size_t i = 0; i < numCqObtained; i++)
+			{
+				ret = client.postRx();
+				if (ret)
+					return;
+				common::operationCounter++;
+			}
+			numCqObtained = 0;
+		}
+
+		if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
+			break;
+	}
+	client.stopTimer();
+
+	client.showTransferStatistics(common::operationCounter, 1);
 }
 
 void startLatencyTestClient()
 {
 	int ret;
-    fi_info *hints = fi_allocinfo();
-    common::setBaseFabricHints(hints);
+	fi_info *hints = fi_allocinfo();
+	common::setBaseFabricHints(hints);
 
-    Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
-    client.init();
-    client.sync();
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
+	client.init();
+	client.sync();
 
-    client.initTxBuffer(FLAGS_payload);
+	client.initTxBuffer(FLAGS_payload);
 
-    client.startTimer();
-    for (int i = 0; i < FLAGS_iterations; i++)
-    {
-        ret = client.tx();
-        if (ret)
-            return;
-        ret = client.rx();
-        if (ret)
-            return;
-    }
-    client.stopTimer();
+	client.startTimer();
+	for (int i = 0; i < FLAGS_iterations; i++)
+	{
+		ret = client.tx();
+		if (ret)
+			return;
+		ret = client.rx();
+		if (ret)
+			return;
+	}
+	client.stopTimer();
 
-    client.showTransferStatistics(FLAGS_iterations, 2);
+	client.showTransferStatistics(FLAGS_iterations, 2);
 }
 
 void startCapsTestClient()

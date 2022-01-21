@@ -90,6 +90,21 @@ int libefa::Node::inject()
     return ft_inject(&ctx, ctx.ep, ctx.remote_fi_addr,  ctx.opts.transfer_size);
 }
 
+int libefa::Node::getRxCompletion()
+{
+    return ft_get_rx_comp(&ctx, ctx.rx_seq);
+}
+
+int libefa::Node::getNRxCompletion(int n)
+{
+    return ft_get_rx_comp(&ctx, ctx.rx_cq_cntr + n);
+}
+
+int libefa::Node::postRx()
+{
+    return ft_post_rx(&ctx, ctx.ep, ctx.rx_size, &ctx.rx_ctx);
+}
+
 int libefa::Node::rx()
 {
     int ret;

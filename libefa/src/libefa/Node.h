@@ -33,6 +33,12 @@ namespace libefa
 
         int inject();
 
+        int postRx();
+
+        int getRxCompletion();
+
+        int getNRxCompletion(int n);
+
         int rx();
 
         void startTimer();
