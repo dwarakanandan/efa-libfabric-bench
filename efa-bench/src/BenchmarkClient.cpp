@@ -189,3 +189,24 @@ void startRmaClient()
 	// Sync after RMA ops are complete
 	client.sync();
 }
+
+void startRmaLargeBufferClient()
+{
+	int ret;
+
+	fi_info *hints = fi_allocinfo();
+	common::setRmaFabricHints(hints);
+
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
+	client.enableLargeBufferInit();
+	client.initRmaOp(FLAGS_rma_op);
+
+	client.init();
+	client.exchangeKeys();
+	client.sync();
+
+	client.initTxBuffer(FLAGS_payload);
+
+	// Sync after RMA ops are complete
+	client.sync();
+}

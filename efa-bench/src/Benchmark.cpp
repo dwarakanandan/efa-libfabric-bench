@@ -28,6 +28,8 @@ void startNode()
 			startRmaInjectServer();
 		else if (is_benchmark(FLAGS_benchmark_type, T::RMA_SEL_COMP))
 			startRmaSelectiveCompletionServer();
+		else if (is_benchmark(FLAGS_benchmark_type, T::RMA_LARGE_BUFFER))
+			startRmaLargeBufferServer();
 	}
 
 	if (is_node(FLAGS_mode, T::CLIENT))
@@ -35,15 +37,20 @@ void startNode()
 		if (is_benchmark(FLAGS_benchmark_type, T::LATENCY))
 			startLatencyTestClient();
 		else if (is_benchmark(FLAGS_benchmark_type, T::INJECT))
-			defaultClient();
+			startPingPongInjectClient();
 		else if (is_benchmark(FLAGS_benchmark_type, T::BATCH))
-			startBatchClient();
+			defaultClient();
 		else if (is_benchmark(FLAGS_benchmark_type, T::CAPS))
 			startCapsTestClient();
-		else if (is_benchmark(FLAGS_benchmark_type, T::RMA) || is_benchmark(FLAGS_benchmark_type, T::RMA_BATCH) || is_benchmark(FLAGS_benchmark_type, T::RMA_INJECT) || is_benchmark(FLAGS_benchmark_type, T::RMA_SEL_COMP))
+		else if (is_benchmark(FLAGS_benchmark_type, T::RMA) ||
+				 is_benchmark(FLAGS_benchmark_type, T::RMA_BATCH) ||
+				 is_benchmark(FLAGS_benchmark_type, T::RMA_INJECT) ||
+				 is_benchmark(FLAGS_benchmark_type, T::RMA_SEL_COMP))
 			startRmaClient();
 		else if (is_benchmark(FLAGS_benchmark_type, T::PING_PONG))
 			startPingPongClient();
+		else if (is_benchmark(FLAGS_benchmark_type, T::RMA_LARGE_BUFFER))
+			startRmaLargeBufferClient();
 	}
 }
 

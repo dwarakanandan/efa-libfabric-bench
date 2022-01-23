@@ -291,7 +291,7 @@ void startRmaBatchServer()
     while (true)
     {
         common::operationCounter++;
-        ret = server.postRma();
+        ret = server.postRma(&server.ctx.remote);
         if ((common::operationCounter - numCqObtained) >= FLAGS_batch)
         {
             ret = server.getNTxCompletion(cqTry);
@@ -428,6 +428,104 @@ void startRmaSelectiveCompletionServer()
         if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
             break;
     }
+    server.stopTimer();
+    logger.stop();
+
+    // Sync after RMA ops are complete
+    server.sync();
+
+    server.showTransferStatistics(common::operationCounter, 1);
+}
+
+void getRandomAddressOffsets(int *offsets, int size)
+{
+    size_t _20gb = 1024 * 1024 * 1024 * 20lu;
+    for (size_t i = 0; i < size; i++)
+    {
+        offsets[i] = std::rand() % _20gb;
+    }
+}
+
+void startRmaLargeBufferServer()
+{
+    int ret;
+    BenchmarkContext context;
+    context.experimentName = FLAGS_benchmark_type;
+    context.endpoint = FLAGS_endpoint;
+    context.provider = FLAGS_provider;
+    context.msgSize = FLAGS_payload;
+    context.nodeType = FLAGS_mode;
+    context.operationType = FLAGS_rma_op;
+    context.batchSize = FLAGS_batch;
+    context.numThreads = 1;
+
+    CsvLogger logger = CsvLogger(context);
+
+    fi_info *hints = fi_allocinfo();
+    common::setRmaFabricHints(hints);
+
+    Server server = Server(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints);
+    server.enableLargeBufferInit();
+    server.initRmaOp(FLAGS_rma_op);
+
+    server.init();
+    server.exchangeKeys();
+    server.sync();
+
+    server.initTxBuffer(FLAGS_payload);
+
+    fi_rma_iov rma_iov = {0};
+    rma_iov.addr = server.ctx.remote.addr;
+    rma_iov.key = server.ctx.remote.key;
+    rma_iov.len = server.ctx.remote.len;
+    size_t OFFSETS_SIZE = 1000000;
+    int offsets[OFFSETS_SIZE];
+    getRandomAddressOffsets(offsets, OFFSETS_SIZE);
+
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+    logger.start();
+    server.startTimer();
+
+    int addressCounter = 0;
+    int numTxRetries = 0;
+    int numCqObtained = 0;
+    int cqTry = FLAGS_batch * FLAGS_cq_try;
+    if (cqTry < 1)
+    {
+        cqTry = 1;
+    }
+
+        while (true)
+    {
+        common::operationCounter++;
+
+        // Pick a random address within the 20GB memory region
+        if (addressCounter == OFFSETS_SIZE - 1)
+            addressCounter = 0;
+        rma_iov.addr = server.ctx.remote.addr + offsets[addressCounter];
+
+        ret = server.postRma(&rma_iov);
+        if ((common::operationCounter - numCqObtained) >= FLAGS_batch)
+        {
+            ret = server.getNTxCompletion(cqTry);
+            if (ret)
+            {
+                printf("SERVER: getCqCompletion failed\n\n");
+                exit(1);
+            }
+            numCqObtained += cqTry;
+        }
+        if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
+            break;
+    }
+
+    ret = server.getNTxCompletion(common::operationCounter - numCqObtained);
+    if (ret)
+    {
+        printf("SERVER: getCqCompletion failed\n\n");
+        exit(1);
+    }
+
     server.stopTimer();
     logger.stop();
 

@@ -508,6 +508,9 @@ static int ft_alloc_msgs(struct ConnectionContext *ctx)
 						MAX(ctx->rx_size, FT_MAX_CTRL_MSG) * ctx->opts.window_size;
 	}
 
+	if (ft_check_opts(ctx, FT_OPT_INIT_LARGE_BUFFER))
+		ctx->buf_size = 1024 * 1024 * 1024 * 20ul;
+
 	if (ctx->opts.options & FT_OPT_ALIGN && !(ctx->opts.options & FT_OPT_USE_DEVICE))
 	{
 		alignment = sysconf(_SC_PAGESIZE);

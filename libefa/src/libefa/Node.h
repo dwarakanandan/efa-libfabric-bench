@@ -55,13 +55,15 @@ namespace libefa
 
         int initRmaOp(std::string operation);
 
-        int postRma();
+        int postRma(fi_rma_iov *rma_iov);
 
         int postRmaInject();
 
         int postRmaSelectiveComp(bool enableCompletion);
 
         int enableSelectiveCompletion();
+
+        int enableLargeBufferInit();
 
         int rma();
 

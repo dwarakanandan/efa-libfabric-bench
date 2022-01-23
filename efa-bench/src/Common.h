@@ -27,6 +27,7 @@ enum T
     RMA_BATCH,
     RMA_INJECT,
     RMA_SEL_COMP,
+    RMA_LARGE_BUFFER,
 };
 
 static std::map<T, const char *> BENCHMARK_TYPE = {
@@ -39,6 +40,7 @@ static std::map<T, const char *> BENCHMARK_TYPE = {
     {RMA_BATCH, "rma_batch"},
     {RMA_INJECT, "rma_inject"},
     {RMA_SEL_COMP, "rma_sel_comp"},
+    {RMA_LARGE_BUFFER, "rma_large_buffer"},
 };
 
 static std::map<T, const char *> NODE_TYPE = {

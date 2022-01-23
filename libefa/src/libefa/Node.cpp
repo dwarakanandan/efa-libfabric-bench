@@ -30,6 +30,11 @@ int libefa::Node::enableSelectiveCompletion()
     ctx.opts.options |= FT_OPT_SELECTIVE_COMP;
 }
 
+int libefa::Node::enableLargeBufferInit()
+{
+    ctx.opts.options |= FT_OPT_INIT_LARGE_BUFFER;
+}
+
 int libefa::Node::init()
 {
     return ft_init_fabric(&ctx);
@@ -168,9 +173,9 @@ void libefa::Node::showTransferStatistics(int iterations, int transfersPerIterat
     show_perf(NULL, ctx.opts.transfer_size, iterations, &(ctx.start), &(ctx.end), transfersPerIterations);
 }
 
-int libefa::Node::postRma()
+int libefa::Node::postRma(fi_rma_iov *rma_iov)
 {
-    return ft_post_rma(&ctx, ctx.opts.rma_op, ctx.ep, ctx.opts.transfer_size, &ctx.remote, NULL);
+    return ft_post_rma(&ctx, ctx.opts.rma_op, ctx.ep, ctx.opts.transfer_size, rma_iov, NULL);
 }
 
 int libefa::Node::postRmaInject()
@@ -186,7 +191,7 @@ int libefa::Node::postRmaSelectiveComp(bool enableCompletion)
 int libefa::Node::rma()
 {
     int ret;
-    ret = postRma();
+    ret = postRma(&ctx.remote);
     if (ret)
         return ret;
     return getTxCompletion();
