@@ -483,7 +483,7 @@ void startRmaLargeBufferServer()
     logger.start();
     server.startTimer();
 
-    int addressCounter = 0;
+    int addressIndex = 0;
     int numTxRetries = 0;
     int numCqObtained = 0;
     int cqTry = FLAGS_batch * FLAGS_cq_try;
@@ -497,9 +497,9 @@ void startRmaLargeBufferServer()
         common::operationCounter++;
 
         // Pick a random address within the 20GB memory region
-        if (addressCounter == common::NUM_OFFSET_ADDRS - 1)
-            addressCounter = 0;
-        rma_iov.addr = addresses[addressCounter];
+        if (addressIndex == common::NUM_OFFSET_ADDRS - 1)
+            addressIndex = 0;
+        rma_iov.addr = addresses[addressIndex];
 
         ret = server.postRma(&rma_iov);
         if ((common::operationCounter - numCqObtained) >= FLAGS_batch)
@@ -571,7 +571,7 @@ void startBatchLargeBufferServer()
     server.startTimer();
 
     int numCqObtained = 0;
-    int addressCounter = 0;
+    int addressIndex = 0;
     int cqTry = FLAGS_batch * FLAGS_cq_try;
     if (cqTry < 1)
     {
@@ -581,10 +581,10 @@ void startBatchLargeBufferServer()
     while (true)
     {
         common::operationCounter++;
-        if (addressCounter == common::NUM_OFFSET_ADDRS - 1)
-            addressCounter = 0;
+        if (addressIndex == common::NUM_OFFSET_ADDRS - 1)
+            addressIndex = 0;
 
-        ret = server.postTxBuffer(addresses[addressCounter]);
+        ret = server.postTxBuffer(addresses[addressIndex]);
         if (ret)
             return;
         if ((common::operationCounter - numCqObtained) >= FLAGS_batch)

@@ -233,20 +233,20 @@ void startBatchLargeBufferClient()
 		addresses[i] = (char *)client.ctx.rx_buf + offsets[i];
 	}
 
-	int addressCounter = 0;
+	int addressIndex = 0;
 
 	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 	client.startTimer();
 	while (true)
 	{
 		common::operationCounter++;
-		if (addressCounter == common::NUM_OFFSET_ADDRS - 1)
-			addressCounter = 0;
+		if (addressIndex == common::NUM_OFFSET_ADDRS - 1)
+			addressIndex = 0;
 
 		ret = client.getRxCompletion();
 		if (ret)
 			return;
-		ret = client.postRxBuffer(addresses[addressCounter]);
+		ret = client.postRxBuffer(addresses[addressIndex]);
 		if (ret)
 			return;
 		if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
