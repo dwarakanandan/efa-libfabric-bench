@@ -6,7 +6,9 @@ void startPingPongInjectClient();
 
 void startBatchClient();
 
-void defaultClient();
+void startBatchLargeBufferClient();
+
+void startMultiRecvBatchClient();
 
 void startLatencyTestClient();
 

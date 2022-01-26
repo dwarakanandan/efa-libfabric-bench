@@ -437,15 +437,6 @@ void startRmaSelectiveCompletionServer()
     server.showTransferStatistics(common::operationCounter, 1);
 }
 
-void getRandomAddressOffsets(int *offsets, int size)
-{
-    size_t _20gb = 1024 * 1024 * 1024 * 20lu;
-    for (size_t i = 0; i < size; i++)
-    {
-        offsets[i] = std::rand() % _20gb;
-    }
-}
-
 void startRmaLargeBufferServer()
 {
     int ret;
@@ -465,7 +456,7 @@ void startRmaLargeBufferServer()
     common::setRmaFabricHints(hints);
 
     Server server = Server(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints);
-    server.enableLargeBufferInit();
+    server.enableLargeBufferInit(common::LARGE_BUFFER_SIZE_GBS);
     server.initRmaOp(FLAGS_rma_op);
 
     server.init();
@@ -478,9 +469,15 @@ void startRmaLargeBufferServer()
     rma_iov.addr = server.ctx.remote.addr;
     rma_iov.key = server.ctx.remote.key;
     rma_iov.len = server.ctx.remote.len;
-    size_t OFFSETS_SIZE = 1000000;
-    int offsets[OFFSETS_SIZE];
-    getRandomAddressOffsets(offsets, OFFSETS_SIZE);
+
+    uint64_t offsets[common::NUM_OFFSET_ADDRS];
+    common::generateRandomOffsets(offsets);
+    uint64_t addresses[common::NUM_OFFSET_ADDRS];
+
+    for (size_t i = 0; i < common::NUM_OFFSET_ADDRS; i++)
+    {
+        addresses[i] = server.ctx.remote.addr + offsets[i];
+    }
 
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
     logger.start();
@@ -495,14 +492,14 @@ void startRmaLargeBufferServer()
         cqTry = 1;
     }
 
-        while (true)
+    while (true)
     {
         common::operationCounter++;
 
         // Pick a random address within the 20GB memory region
-        if (addressCounter == OFFSETS_SIZE - 1)
+        if (addressCounter == common::NUM_OFFSET_ADDRS - 1)
             addressCounter = 0;
-        rma_iov.addr = server.ctx.remote.addr + offsets[addressCounter];
+        rma_iov.addr = addresses[addressCounter];
 
         ret = server.postRma(&rma_iov);
         if ((common::operationCounter - numCqObtained) >= FLAGS_batch)
@@ -531,6 +528,89 @@ void startRmaLargeBufferServer()
 
     // Sync after RMA ops are complete
     server.sync();
+
+    server.showTransferStatistics(common::operationCounter, 1);
+}
+
+void startBatchLargeBufferServer()
+{
+    int ret;
+    BenchmarkContext context;
+    context.experimentName = FLAGS_benchmark_type;
+    context.endpoint = FLAGS_endpoint;
+    context.provider = FLAGS_provider;
+    context.msgSize = FLAGS_payload;
+    context.nodeType = FLAGS_mode;
+    context.operationType = "send";
+    context.batchSize = FLAGS_batch;
+    context.numThreads = 1;
+
+    CsvLogger logger = CsvLogger(context);
+
+    fi_info *hints = fi_allocinfo();
+    common::setBaseFabricHints(hints);
+
+    Server server = Server(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints);
+    server.enableLargeBufferInit(common::LARGE_BUFFER_SIZE_GBS);
+    server.init();
+    server.sync();
+
+    server.initTxBuffer(FLAGS_payload);
+
+    uint64_t offsets[common::NUM_OFFSET_ADDRS];
+    common::generateRandomOffsets(offsets);
+    char *addresses[common::NUM_OFFSET_ADDRS];
+
+    for (size_t i = 0; i < common::NUM_OFFSET_ADDRS; i++)
+    {
+        addresses[i] = (char*) server.ctx.tx_buf + offsets[i];
+    }
+
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+    logger.start();
+    server.startTimer();
+
+    int numCqObtained = 0;
+    int addressCounter = 0;
+    int cqTry = FLAGS_batch * FLAGS_cq_try;
+    if (cqTry < 1)
+    {
+        cqTry = 1;
+    }
+
+    while (true)
+    {
+        common::operationCounter++;
+        if (addressCounter == common::NUM_OFFSET_ADDRS - 1)
+            addressCounter = 0;
+
+        ret = server.postTxBuffer(addresses[addressCounter]);
+        if (ret)
+            return;
+        if ((common::operationCounter - numCqObtained) >= FLAGS_batch)
+        {
+            ret = server.getNTxCompletion(cqTry);
+            if (ret)
+            {
+                printf("SERVER: getCqCompletion failed\n\n");
+                exit(1);
+            }
+            numCqObtained += cqTry;
+        }
+
+        if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
+            break;
+    }
+
+    ret = server.getNTxCompletion(common::operationCounter - numCqObtained);
+    if (ret)
+    {
+        printf("SERVER: getCqCompletion failed\n\n");
+        exit(1);
+    }
+
+    server.stopTimer();
+    logger.stop();
 
     server.showTransferStatistics(common::operationCounter, 1);
 }

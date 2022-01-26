@@ -77,7 +77,7 @@ void startPingPongInjectClient()
 	client.showTransferStatistics(common::operationCounter / 2, 2);
 }
 
-void defaultClient()
+void startBatchClient()
 {
 	int ret;
 	fi_info *hints = fi_allocinfo();
@@ -105,7 +105,7 @@ void defaultClient()
 	client.showTransferStatistics(common::operationCounter, 1);
 }
 
-void startBatchClient()
+void startMultiRecvBatchClient()
 {
 	int ret;
 	fi_info *hints = fi_allocinfo();
@@ -129,7 +129,7 @@ void startBatchClient()
 
 	while (true)
 	{
-		client.postMultiRecv(FLAGS_batch*10);
+		client.postMultiRecv(FLAGS_batch * 10);
 
 		if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
 			break;
@@ -198,7 +198,7 @@ void startRmaLargeBufferClient()
 	common::setRmaFabricHints(hints);
 
 	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
-	client.enableLargeBufferInit();
+	client.enableLargeBufferInit(common::LARGE_BUFFER_SIZE_GBS);
 	client.initRmaOp(FLAGS_rma_op);
 
 	client.init();
@@ -209,4 +209,50 @@ void startRmaLargeBufferClient()
 
 	// Sync after RMA ops are complete
 	client.sync();
+}
+
+void startBatchLargeBufferClient()
+{
+	int ret;
+	fi_info *hints = fi_allocinfo();
+	common::setBaseFabricHints(hints);
+
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
+	client.enableLargeBufferInit(common::LARGE_BUFFER_SIZE_GBS);
+	client.init();
+	client.sync();
+
+	client.initTxBuffer(FLAGS_payload);
+
+	uint64_t offsets[common::NUM_OFFSET_ADDRS];
+	common::generateRandomOffsets(offsets);
+	char *addresses[common::NUM_OFFSET_ADDRS];
+
+	for (size_t i = 0; i < common::NUM_OFFSET_ADDRS; i++)
+	{
+		addresses[i] = (char *)client.ctx.rx_buf + offsets[i];
+	}
+
+	int addressCounter = 0;
+
+	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+	client.startTimer();
+	while (true)
+	{
+		common::operationCounter++;
+		if (addressCounter == common::NUM_OFFSET_ADDRS - 1)
+			addressCounter = 0;
+
+		ret = client.getRxCompletion();
+		if (ret)
+			return;
+		ret = client.postRxBuffer(addresses[addressCounter]);
+		if (ret)
+			return;
+		if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
+			break;
+	}
+	client.stopTimer();
+
+	client.showTransferStatistics(common::operationCounter, 1);
 }

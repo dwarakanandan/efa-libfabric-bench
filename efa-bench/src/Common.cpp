@@ -40,3 +40,12 @@ void common::setRmaFabricHints(fi_info *hints)
     hints->domain_attr->threading = FI_THREAD_DOMAIN;
     hints->tx_attr->tclass = FI_TC_BULK_DATA;
 }
+
+void common::generateRandomOffsets(uint64_t *offsets)
+{
+    size_t _buffer_size_bytes = (1024 * 1024 * 1024 * common::LARGE_BUFFER_SIZE_GBS) / 8;
+    for (size_t i = 0; i < common::NUM_OFFSET_ADDRS; i++)
+    {
+        offsets[i] = std::rand() % _buffer_size_bytes;
+    }
+}

@@ -27,6 +27,8 @@ namespace libefa
 
         int postTx();
 
+        int postTxBuffer(void *buffer);
+
         int getTxCompletion();
 
         int getTxCompletionWithTimeout(int timeout);
@@ -37,7 +39,7 @@ namespace libefa
 
         int inject();
 
-        int postRx(void *buffer);
+        int postRxBuffer(void *buffer);
 
         int getRxCompletion();
 
@@ -63,7 +65,7 @@ namespace libefa
 
         int enableSelectiveCompletion();
 
-        int enableLargeBufferInit();
+        int enableLargeBufferInit(size_t buffer_size_gbs);
 
         int rma();
 

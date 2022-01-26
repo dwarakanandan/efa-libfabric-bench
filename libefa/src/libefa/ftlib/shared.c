@@ -509,7 +509,7 @@ static int ft_alloc_msgs(struct ConnectionContext *ctx)
 	}
 
 	if (ft_check_opts(ctx, FT_OPT_INIT_LARGE_BUFFER))
-		ctx->buf_size = 1024 * 1024 * 1024 * 20ul;
+		ctx->buf_size = 1024 * 1024 * 1024 * ctx->opts.large_bufffer_size_gbs;
 
 	if (ctx->opts.options & FT_OPT_ALIGN && !(ctx->opts.options & FT_OPT_USE_DEVICE))
 	{

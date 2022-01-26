@@ -185,6 +185,8 @@ extern "C"
 		uint64_t device;
 
 		char **argv;
+
+		size_t large_bufffer_size_gbs;
 	};
 
 	struct ConnectionContext

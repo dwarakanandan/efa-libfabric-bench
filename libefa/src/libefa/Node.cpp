@@ -30,9 +30,10 @@ int libefa::Node::enableSelectiveCompletion()
     ctx.opts.options |= FT_OPT_SELECTIVE_COMP;
 }
 
-int libefa::Node::enableLargeBufferInit()
+int libefa::Node::enableLargeBufferInit(size_t buffer_size_gbs)
 {
     ctx.opts.options |= FT_OPT_INIT_LARGE_BUFFER;
+    ctx.opts.large_bufffer_size_gbs = buffer_size_gbs;
 }
 
 int libefa::Node::init()
@@ -86,6 +87,12 @@ int libefa::Node::initTxBuffer(size_t size)
 int libefa::Node::postTx()
 {
     return ft_post_tx(&ctx, ctx.ep, ctx.remote_fi_addr, ctx.opts.transfer_size, NO_CQ_DATA, &ctx.tx_ctx);
+}
+
+int libefa::Node::postTxBuffer(void *buffer)
+{
+    return ft_post_tx_buf(&ctx, ctx.ep, ctx.remote_fi_addr, ctx.opts.transfer_size, NO_CQ_DATA,
+                          &ctx.tx_ctx, buffer, ctx.mr_desc, ctx.ft_tag);
 }
 
 int libefa::Node::getTxCompletionWithTimeout(int timeout)
@@ -144,7 +151,7 @@ int libefa::Node::getNRxCompletion(int n)
     return EXIT_SUCCESS;
 }
 
-int libefa::Node::postRx(void *buffer)
+int libefa::Node::postRxBuffer(void *buffer)
 {
     return ft_post_rx_buf(&ctx, ctx.ep, ctx.rx_size, &ctx.rx_ctx, buffer, ctx.mr_desc, ctx.ft_tag);
 }

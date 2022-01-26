@@ -28,6 +28,7 @@ enum T
     RMA_INJECT,
     RMA_SEL_COMP,
     RMA_LARGE_BUFFER,
+    BATCH_LARGE_BUFFER,
 };
 
 static std::map<T, const char *> BENCHMARK_TYPE = {
@@ -41,6 +42,7 @@ static std::map<T, const char *> BENCHMARK_TYPE = {
     {RMA_INJECT, "rma_inject"},
     {RMA_SEL_COMP, "rma_sel_comp"},
     {RMA_LARGE_BUFFER, "rma_large_buffer"},
+    {BATCH_LARGE_BUFFER, "batch_large_buffer"},
 };
 
 static std::map<T, const char *> NODE_TYPE = {
@@ -73,4 +75,10 @@ namespace common
     std::map<int, int> getPayloadIterMap();
 
     inline uint64_t operationCounter = 0;
+
+    inline size_t NUM_OFFSET_ADDRS = 1000000;
+
+    inline size_t LARGE_BUFFER_SIZE_GBS = 20; 
+
+    void generateRandomOffsets(uint64_t *offsets);
 }
