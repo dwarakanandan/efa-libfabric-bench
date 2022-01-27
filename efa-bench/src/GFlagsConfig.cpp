@@ -33,3 +33,4 @@ DEFINE_bool(tagged, false, "Use Tagged message transfer");
 DEFINE_string(rma_op, "write", "RMA Operation Eg: read/write");
 DEFINE_string(hw_counters, "/sys/class/infiniband/rdmap0s6/ports/1/hw_counters/", "Path to network interface HW Counters");
 DEFINE_string(stat_file, "stat-file", "Output stats file name");
+DEFINE_uint32(threads, 1, "Thread count / Num of connection streams");

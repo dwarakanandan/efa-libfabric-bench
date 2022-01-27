@@ -3,17 +3,30 @@
 using namespace std;
 using namespace libefa;
 
-void pingPongServer(std::string port, std::string oobPort)
+void startPingPongServer()
 {
+    BenchmarkContext context;
+    context.experimentName = FLAGS_benchmark_type;
+    context.endpoint = FLAGS_endpoint;
+    context.provider = FLAGS_provider;
+    context.msgSize = FLAGS_payload;
+    context.nodeType = FLAGS_mode;
+    context.operationType = "send";
+    context.batchSize = 1;
+    context.numThreads = FLAGS_threads;
+
+    CsvLogger logger = CsvLogger(context);
+
     int ret;
     fi_info *hints = fi_allocinfo();
     common::setBaseFabricHints(hints);
 
-    Server server = Server(FLAGS_provider, FLAGS_endpoint, port, oobPort, hints);
+    Server server = Server(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints);
     server.init();
     server.sync();
     server.initTxBuffer(FLAGS_payload);
 
+    logger.start();
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
     server.startTimer();
     while (true)
@@ -29,35 +42,9 @@ void pingPongServer(std::string port, std::string oobPort)
             break;
     }
     server.stopTimer();
-    server.showTransferStatistics(common::operationCounter / 2, 2);
-}
-
-void startPingPongServer()
-{
-    BenchmarkContext context;
-    context.experimentName = FLAGS_benchmark_type;
-    context.endpoint = FLAGS_endpoint;
-    context.provider = FLAGS_provider;
-    context.msgSize = FLAGS_payload;
-    context.nodeType = FLAGS_mode;
-    context.operationType = "send";
-    context.batchSize = 1;
-    context.numThreads = 1;
-
-    CsvLogger logger = CsvLogger(context);
-
-    logger.start();
-
-    std::thread worker0(pingPongServer, "10000", "9000");
-    std::thread worker1(pingPongServer, "10001", "9001");
-    std::thread worker2(pingPongServer, "10002", "9002");
-    std::thread worker3(pingPongServer, "10003", "9003");
-    worker0.join();
-    worker1.join();
-    worker2.join();
-    worker3.join();
-
     logger.stop();
+
+    server.showTransferStatistics(common::operationCounter / 2, 2);
 }
 
 void startPingPongInjectServer()
@@ -71,7 +58,7 @@ void startPingPongInjectServer()
     context.nodeType = FLAGS_mode;
     context.operationType = "inject";
     context.batchSize = 1;
-    context.numThreads = 1;
+    context.numThreads = FLAGS_threads;
 
     CsvLogger logger = CsvLogger(context);
 
@@ -105,32 +92,19 @@ void startPingPongInjectServer()
     server.showTransferStatistics(common::operationCounter / 2, 2);
 }
 
-void startBatchServer()
+void batchServerWorker(std::string port, std::string oobPort)
 {
     int ret;
-    BenchmarkContext context;
-    context.experimentName = FLAGS_benchmark_type;
-    context.endpoint = FLAGS_endpoint;
-    context.provider = FLAGS_provider;
-    context.msgSize = FLAGS_payload;
-    context.nodeType = FLAGS_mode;
-    context.operationType = "send";
-    context.batchSize = FLAGS_batch;
-    context.numThreads = 1;
-
-    CsvLogger logger = CsvLogger(context);
-
     fi_info *hints = fi_allocinfo();
     common::setBaseFabricHints(hints);
 
-    Server server = Server(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints);
+    Server server = Server(FLAGS_provider, FLAGS_endpoint, port, oobPort, hints);
     server.init();
     server.sync();
 
     server.initTxBuffer(FLAGS_payload);
 
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-    logger.start();
     server.startTimer();
 
     int numCqObtained = 0;
@@ -139,14 +113,15 @@ void startBatchServer()
     {
         cqTry = 1;
     }
-
+    uint64_t localcounter = 0;
     while (true)
     {
         common::operationCounter++;
+        localcounter++;
         ret = server.postTx();
         if (ret)
             return;
-        if ((common::operationCounter - numCqObtained) >= FLAGS_batch)
+        if ((localcounter - numCqObtained) >= FLAGS_batch)
         {
             ret = server.getNTxCompletion(cqTry);
             if (ret)
@@ -161,7 +136,7 @@ void startBatchServer()
             break;
     }
 
-    ret = server.getNTxCompletion(common::operationCounter - numCqObtained);
+    ret = server.getNTxCompletion(localcounter - numCqObtained);
     if (ret)
     {
         printf("SERVER: getCqCompletion failed\n\n");
@@ -169,9 +144,39 @@ void startBatchServer()
     }
 
     server.stopTimer();
-    logger.stop();
 
-    server.showTransferStatistics(common::operationCounter, 1);
+    server.showTransferStatistics(localcounter, 1);
+}
+
+void startBatchServer()
+{
+
+    BenchmarkContext context;
+    context.experimentName = FLAGS_benchmark_type;
+    context.endpoint = FLAGS_endpoint;
+    context.provider = FLAGS_provider;
+    context.msgSize = FLAGS_payload;
+    context.nodeType = FLAGS_mode;
+    context.operationType = "send";
+    context.batchSize = FLAGS_batch;
+    context.numThreads = FLAGS_threads;
+
+    std::vector<std::thread> workers;
+
+    for (size_t i = 0; i < FLAGS_threads; i++)
+    {
+        workers.push_back(std::thread(batchServerWorker, std::to_string(10000 + i), std::to_string(9000 + i)));
+    }
+
+    CsvLogger logger = CsvLogger(context);
+    logger.start();
+
+    for (std::thread &worker : workers)
+    {
+        worker.join();
+    }
+
+    logger.stop();
 }
 
 void startLatencyTestServer()
@@ -216,7 +221,7 @@ void startRmaServer()
     context.nodeType = FLAGS_mode;
     context.operationType = FLAGS_rma_op;
     context.batchSize = 1;
-    context.numThreads = 1;
+    context.numThreads = FLAGS_threads;
 
     CsvLogger logger = CsvLogger(context);
 
@@ -261,7 +266,7 @@ void startRmaBatchServer()
     context.nodeType = FLAGS_mode;
     context.operationType = FLAGS_rma_op;
     context.batchSize = FLAGS_batch;
-    context.numThreads = 1;
+    context.numThreads = FLAGS_threads;
 
     CsvLogger logger = CsvLogger(context);
 
@@ -333,7 +338,7 @@ void startRmaInjectServer()
     context.nodeType = FLAGS_mode;
     context.operationType = FLAGS_rma_op;
     context.batchSize = 1;
-    context.numThreads = 1;
+    context.numThreads = FLAGS_threads;
 
     CsvLogger logger = CsvLogger(context);
 
@@ -381,7 +386,7 @@ void startRmaSelectiveCompletionServer()
     context.nodeType = FLAGS_mode;
     context.operationType = FLAGS_rma_op;
     context.batchSize = FLAGS_batch;
-    context.numThreads = 1;
+    context.numThreads = FLAGS_threads;
 
     CsvLogger logger = CsvLogger(context);
 
@@ -448,7 +453,7 @@ void startRmaLargeBufferServer()
     context.nodeType = FLAGS_mode;
     context.operationType = FLAGS_rma_op;
     context.batchSize = FLAGS_batch;
-    context.numThreads = 1;
+    context.numThreads = FLAGS_threads;
 
     CsvLogger logger = CsvLogger(context);
 
@@ -543,7 +548,7 @@ void startBatchLargeBufferServer()
     context.nodeType = FLAGS_mode;
     context.operationType = "send";
     context.batchSize = FLAGS_batch;
-    context.numThreads = 1;
+    context.numThreads = FLAGS_threads;
 
     CsvLogger logger = CsvLogger(context);
 
@@ -563,7 +568,7 @@ void startBatchLargeBufferServer()
 
     for (size_t i = 0; i < common::NUM_OFFSET_ADDRS; i++)
     {
-        addresses[i] = (char*) server.ctx.tx_buf + offsets[i];
+        addresses[i] = (char *)server.ctx.tx_buf + offsets[i];
     }
 
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();

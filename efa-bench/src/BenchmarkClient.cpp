@@ -3,13 +3,13 @@
 using namespace std;
 using namespace libefa;
 
-void pingPongClient(std::string port, std::string oobPort)
+void startPingPongClient()
 {
 	int ret;
 	fi_info *hints = fi_allocinfo();
 	common::setBaseFabricHints(hints);
 
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, port, oobPort, hints, FLAGS_dst_addr);
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
 	client.init();
 	client.sync();
 
@@ -32,18 +32,6 @@ void pingPongClient(std::string port, std::string oobPort)
 	client.stopTimer();
 
 	client.showTransferStatistics(common::operationCounter / 2, 2);
-}
-
-void startPingPongClient()
-{
-	std::thread worker0(pingPongClient, "10000", "9000");
-	std::thread worker1(pingPongClient, "10001", "9001");
-	std::thread worker2(pingPongClient, "10002", "9002");
-	std::thread worker3(pingPongClient, "10003", "9003");
-	worker0.join();
-	worker1.join();
-	worker2.join();
-	worker3.join();
 }
 
 void startPingPongInjectClient()
@@ -77,13 +65,13 @@ void startPingPongInjectClient()
 	client.showTransferStatistics(common::operationCounter / 2, 2);
 }
 
-void startBatchClient()
+void batchClientWorker(std::string port, std::string oobPort)
 {
 	int ret;
 	fi_info *hints = fi_allocinfo();
 	common::setBaseFabricHints(hints);
 
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, port, oobPort, hints, FLAGS_dst_addr);
 	client.init();
 	client.sync();
 
@@ -103,6 +91,21 @@ void startBatchClient()
 	client.stopTimer();
 
 	client.showTransferStatistics(common::operationCounter, 1);
+}
+
+void startBatchClient()
+{
+	std::vector<std::thread> workers;
+
+	for (size_t i = 0; i < FLAGS_threads; i++)
+	{
+		workers.push_back(std::thread(batchClientWorker, std::to_string(10000 + i), std::to_string(9000 + i)));
+	}
+
+	for (std::thread &worker : workers)
+	{
+		worker.join();
+	}
 }
 
 void startMultiRecvBatchClient()
