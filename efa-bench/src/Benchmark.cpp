@@ -1,6 +1,8 @@
 #include "Common.h"
-#include "BenchmarkClient.h"
-#include "BenchmarkServer.h"
+#include "SendRecvServer.h"
+#include "SendRecvClient.h"
+#include "RmaServer.h"
+#include "RmaClient.h"
 
 using namespace std;
 using namespace libefa;
@@ -45,10 +47,11 @@ void startNode()
 		else if (is_benchmark(FLAGS_benchmark_type, T::CAPS))
 			startCapsTestClient();
 		else if (is_benchmark(FLAGS_benchmark_type, T::RMA) ||
-				 is_benchmark(FLAGS_benchmark_type, T::RMA_BATCH) ||
 				 is_benchmark(FLAGS_benchmark_type, T::RMA_INJECT) ||
 				 is_benchmark(FLAGS_benchmark_type, T::RMA_SEL_COMP))
 			startRmaClient();
+		else if (is_benchmark(FLAGS_benchmark_type, T::RMA_BATCH))
+			startRmaBatchClient();
 		else if (is_benchmark(FLAGS_benchmark_type, T::PING_PONG))
 			startPingPongClient();
 		else if (is_benchmark(FLAGS_benchmark_type, T::RMA_LARGE_BUFFER))
@@ -66,7 +69,8 @@ int main(int argc, char *argv[])
 	{
 		fi_info *hints = fi_allocinfo();
 		common::setBaseFabricHints(hints);
-		Server server = Server(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints);
+		Server server = Server(FLAGS_provider, FLAGS_endpoint, std::to_string(FLAGS_port),
+							   std::to_string(FLAGS_oob_port), hints);
 		server.printFabricInfo();
 		return 0;
 	}

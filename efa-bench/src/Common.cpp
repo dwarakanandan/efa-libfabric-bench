@@ -49,3 +49,14 @@ void common::generateRandomOffsets(uint64_t *offsets)
         offsets[i] = std::rand() % _buffer_size_bytes;
     }
 }
+
+void common::initBenchmarkContext(BenchmarkContext *context)
+{
+    context->experimentName = FLAGS_benchmark_type;
+    context->endpoint = FLAGS_endpoint;
+    context->provider = FLAGS_provider;
+    context->msgSize = FLAGS_payload;
+    context->nodeType = FLAGS_mode;
+    context->batchSize = FLAGS_batch;
+    context->numThreads = FLAGS_threads;
+}

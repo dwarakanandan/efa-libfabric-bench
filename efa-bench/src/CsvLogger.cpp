@@ -22,13 +22,11 @@ CsvLogger::CsvLogger(BenchmarkContext context)
 
 void CsvLogger::start()
 {
-    this->benchmarkRunning = true;
     this->lThread = std::thread(&CsvLogger::loggerTask, this);
 }
 
 void CsvLogger::stop()
 {
-    this->benchmarkRunning = false;
     this->lThread.join();
 }
 
@@ -52,8 +50,32 @@ double CsvLogger::calculatePktsPsec(uint64_t initial, uint64_t current, int time
     return (current - initial) * 1.0 / (timeElapsed);
 }
 
+bool CsvLogger::getAggregateConnectionStatus()
+{
+    bool aggregateState = true;
+    for (bool workerState : common::workerConnectionStatus)
+    {
+        aggregateState = aggregateState && workerState;
+    }
+    return aggregateState;
+}
+
+uint64_t CsvLogger::getAggregateOpsCounter()
+{
+    uint64_t aggregateOps = 0;
+    for (uint64_t workerOps : common::workerOperationCounter)
+    {
+        aggregateOps += workerOps;
+    }
+    return aggregateOps;
+}
+
 void CsvLogger::loggerTask()
 {
+    while (this->getAggregateConnectionStatus() == false)
+    {
+    }
+
     std::stringstream ss;
     this->statsFile.open(FLAGS_stat_file + ".csv");
 
@@ -84,7 +106,7 @@ void CsvLogger::loggerTask()
     this->initialTxPkts = this->getCounter(tx_packets);
     this->initialRxPkts = this->getCounter(rx_packets);
 
-    while (this->benchmarkRunning)
+    while (this->getAggregateConnectionStatus() == true)
     {
         std::this_thread::sleep_for(std::chrono::seconds(1));
         timestamp++;
@@ -95,8 +117,9 @@ void CsvLogger::loggerTask()
         double txPktsPsec = this->calculatePktsPsec(this->initialTxPkts, this->getCounter(tx_packets), timestamp);
         double rxPktsPsec = this->calculatePktsPsec(this->initialRxPkts, this->getCounter(rx_packets), timestamp);
 
-        double opsPsec = common::operationCounter / (timestamp * 1.0);
-        double appBw = (common::operationCounter * this->context.msgSize) / (timestamp * 1000.0 * 1000.0);
+        uint64_t aggregateOps = this->getAggregateOpsCounter();
+        double opsPsec = aggregateOps / (timestamp * 1.0);
+        double appBw = (aggregateOps * this->context.msgSize) / (timestamp * 1000.0 * 1000.0);
 
         ss = this->logRow(timestamp, opsPsec, txPktsPsec, rxPktsPsec, txBw, rxBw, appBw);
         this->statsFile << ss.str();
@@ -136,7 +159,7 @@ std::stringstream CsvLogger::logRow(int timestamp, double opsPerSecond, double t
     ss << rxPktsPsec << ",";
     ss << txBw << ",";
     ss << rxBw << ",";
-    ss << appBw ;
+    ss << appBw;
     ss << std::endl;
     return ss;
 }

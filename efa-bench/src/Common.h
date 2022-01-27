@@ -72,13 +72,19 @@ namespace common
 
     void setRmaFabricHints(fi_info *hints);
 
-    std::map<int, int> getPayloadIterMap();
+    void initBenchmarkContext(BenchmarkContext *context);
 
-    inline uint64_t operationCounter = 0;
+    std::map<int, int> getPayloadIterMap();
 
     inline size_t NUM_OFFSET_ADDRS = 1000000;
 
-    inline size_t LARGE_BUFFER_SIZE_GBS = 20; 
+    inline size_t LARGE_BUFFER_SIZE_GBS = 20;
+
+    inline std::vector<std::thread> workers;
+
+    inline std::vector<uint64_t> workerOperationCounter;
+
+    inline std::vector<bool> workerConnectionStatus;
 
     void generateRandomOffsets(uint64_t *offsets);
 }

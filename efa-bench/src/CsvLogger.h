@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Common.h"
 
 class CsvLogger
@@ -5,8 +7,6 @@ class CsvLogger
     BenchmarkContext context;
 
     std::thread lThread;
-
-    bool benchmarkRunning;
 
     std::vector<std::string> headerFields;
 
@@ -32,6 +32,10 @@ public:
     std::stringstream logHeader();
 
     uint64_t getCounter(std::string counter);
+
+    bool getAggregateConnectionStatus();
+
+    uint64_t getAggregateOpsCounter();
 
     double calculateBandwidthMbps(uint64_t initial, uint64_t current, int timeElapsed);
 

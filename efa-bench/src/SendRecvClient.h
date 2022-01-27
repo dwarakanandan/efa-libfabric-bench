@@ -14,6 +14,3 @@ void startLatencyTestClient();
 
 void startCapsTestClient();
 
-void startRmaClient();
-
-void startRmaLargeBufferClient();

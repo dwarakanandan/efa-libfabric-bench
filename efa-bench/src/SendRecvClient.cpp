@@ -1,4 +1,4 @@
-#include "BenchmarkClient.h"
+#include "SendRecvClient.h"
 
 using namespace std;
 using namespace libefa;
@@ -9,7 +9,12 @@ void startPingPongClient()
 	fi_info *hints = fi_allocinfo();
 	common::setBaseFabricHints(hints);
 
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
+	size_t workerId = 0;
+	common::workerConnectionStatus.push_back(false);
+	common::workerOperationCounter.push_back(0);
+
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, std::to_string(FLAGS_port + workerId),
+						   std::to_string(FLAGS_oob_port + workerId), hints, FLAGS_dst_addr);
 	client.init();
 	client.sync();
 
@@ -19,7 +24,7 @@ void startPingPongClient()
 	client.startTimer();
 	while (true)
 	{
-		common::operationCounter += 2;
+		common::workerOperationCounter[workerId] += 2;
 		ret = client.tx();
 		if (ret)
 			return;
@@ -31,7 +36,7 @@ void startPingPongClient()
 	}
 	client.stopTimer();
 
-	client.showTransferStatistics(common::operationCounter / 2, 2);
+	client.showTransferStatistics(common::workerOperationCounter[workerId] / 2, 2);
 }
 
 void startPingPongInjectClient()
@@ -40,7 +45,12 @@ void startPingPongInjectClient()
 	fi_info *hints = fi_allocinfo();
 	common::setBaseFabricHints(hints);
 
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
+	size_t workerId = 0;
+	common::workerConnectionStatus.push_back(false);
+	common::workerOperationCounter.push_back(0);
+
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, std::to_string(FLAGS_port + workerId),
+						   std::to_string(FLAGS_oob_port + workerId), hints, FLAGS_dst_addr);
 	client.init();
 	client.sync();
 
@@ -50,7 +60,7 @@ void startPingPongInjectClient()
 	client.startTimer();
 	while (true)
 	{
-		common::operationCounter += 2;
+		common::workerOperationCounter[workerId] += 2;
 		ret = client.inject();
 		if (ret)
 			return;
@@ -62,16 +72,19 @@ void startPingPongInjectClient()
 	}
 	client.stopTimer();
 
-	client.showTransferStatistics(common::operationCounter / 2, 2);
+	client.showTransferStatistics(common::workerOperationCounter[workerId] / 2, 2);
 }
 
-void batchClientWorker(std::string port, std::string oobPort)
+void _batchClientWorker(size_t workerId)
 {
 	int ret;
 	fi_info *hints = fi_allocinfo();
 	common::setBaseFabricHints(hints);
 
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, port, oobPort, hints, FLAGS_dst_addr);
+	Client client = Client(FLAGS_provider, FLAGS_endpoint,
+						   std::to_string(FLAGS_port + workerId),
+						   std::to_string(FLAGS_oob_port + workerId),
+						   hints, FLAGS_dst_addr);
 	client.init();
 	client.sync();
 
@@ -81,7 +94,7 @@ void batchClientWorker(std::string port, std::string oobPort)
 	client.startTimer();
 	while (true)
 	{
-		common::operationCounter++;
+		common::workerOperationCounter[workerId]++;
 		ret = client.rx();
 		if (ret)
 			return;
@@ -90,19 +103,19 @@ void batchClientWorker(std::string port, std::string oobPort)
 	}
 	client.stopTimer();
 
-	client.showTransferStatistics(common::operationCounter, 1);
+	client.showTransferStatistics(common::workerOperationCounter[workerId], 1);
 }
 
 void startBatchClient()
 {
-	std::vector<std::thread> workers;
-
 	for (size_t i = 0; i < FLAGS_threads; i++)
 	{
-		workers.push_back(std::thread(batchClientWorker, std::to_string(10000 + i), std::to_string(9000 + i)));
+		common::workerConnectionStatus.push_back(false);
+		common::workerOperationCounter.push_back(0);
+		common::workers.push_back(std::thread(_batchClientWorker, i));
 	}
 
-	for (std::thread &worker : workers)
+	for (std::thread &worker : common::workers)
 	{
 		worker.join();
 	}
@@ -116,7 +129,12 @@ void startMultiRecvBatchClient()
 	hints->caps = FI_MSG | FI_MULTI_RECV;
 	hints->rx_attr->op_flags = FI_MULTI_RECV;
 
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
+	size_t workerId = 0;
+	common::workerConnectionStatus.push_back(false);
+	common::workerOperationCounter.push_back(0);
+
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, std::to_string(FLAGS_port + workerId),
+						   std::to_string(FLAGS_oob_port + workerId), hints, FLAGS_dst_addr);
 	client.ctx.opts.transfer_size = FLAGS_payload;
 	client.ctx.cq_attr.format = FI_CQ_FORMAT_DATA;
 	client.ctx.opts.options |= FT_OPT_SIZE | FT_OPT_SKIP_MSG_ALLOC | FT_OPT_OOB_SYNC |
@@ -139,7 +157,7 @@ void startMultiRecvBatchClient()
 	}
 	client.stopTimer();
 
-	client.showTransferStatistics(common::operationCounter, 1);
+	client.showTransferStatistics(common::workerOperationCounter[workerId], 1);
 }
 
 void startLatencyTestClient()
@@ -148,7 +166,12 @@ void startLatencyTestClient()
 	fi_info *hints = fi_allocinfo();
 	common::setBaseFabricHints(hints);
 
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
+	size_t workerId = 0;
+	common::workerConnectionStatus.push_back(false);
+	common::workerOperationCounter.push_back(0);
+
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, std::to_string(FLAGS_port + workerId),
+						   std::to_string(FLAGS_oob_port + workerId), hints, FLAGS_dst_addr);
 	client.init();
 	client.sync();
 
@@ -173,54 +196,18 @@ void startCapsTestClient()
 {
 }
 
-void startRmaClient()
-{
-	int ret;
-
-	fi_info *hints = fi_allocinfo();
-	common::setRmaFabricHints(hints);
-
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
-	client.initRmaOp(FLAGS_rma_op);
-
-	client.init();
-	client.exchangeKeys();
-	client.sync();
-
-	client.initTxBuffer(FLAGS_payload);
-
-	// Sync after RMA ops are complete
-	client.sync();
-}
-
-void startRmaLargeBufferClient()
-{
-	int ret;
-
-	fi_info *hints = fi_allocinfo();
-	common::setRmaFabricHints(hints);
-
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
-	client.enableLargeBufferInit(common::LARGE_BUFFER_SIZE_GBS);
-	client.initRmaOp(FLAGS_rma_op);
-
-	client.init();
-	client.exchangeKeys();
-	client.sync();
-
-	client.initTxBuffer(FLAGS_payload);
-
-	// Sync after RMA ops are complete
-	client.sync();
-}
-
 void startBatchLargeBufferClient()
 {
 	int ret;
 	fi_info *hints = fi_allocinfo();
 	common::setBaseFabricHints(hints);
 
-	Client client = Client(FLAGS_provider, FLAGS_endpoint, "10000", "9000", hints, FLAGS_dst_addr);
+	size_t workerId = 0;
+	common::workerConnectionStatus.push_back(false);
+	common::workerOperationCounter.push_back(0);
+
+	Client client = Client(FLAGS_provider, FLAGS_endpoint, std::to_string(FLAGS_port + workerId),
+						   std::to_string(FLAGS_oob_port + workerId), hints, FLAGS_dst_addr);
 	client.enableLargeBufferInit(common::LARGE_BUFFER_SIZE_GBS);
 	client.init();
 	client.sync();
@@ -242,7 +229,7 @@ void startBatchLargeBufferClient()
 	client.startTimer();
 	while (true)
 	{
-		common::operationCounter++;
+		common::workerOperationCounter[workerId]++;
 		if (addressIndex == common::NUM_OFFSET_ADDRS - 1)
 			addressIndex = 0;
 
@@ -257,5 +244,5 @@ void startBatchLargeBufferClient()
 	}
 	client.stopTimer();
 
-	client.showTransferStatistics(common::operationCounter, 1);
+	client.showTransferStatistics(common::workerOperationCounter[workerId], 1);
 }
