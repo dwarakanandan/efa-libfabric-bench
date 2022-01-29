@@ -111,7 +111,7 @@ def parse_mt_tx_bw_latency(benchmark, THREAD_LIST):
         for payload in MT_DGRAM_PAYLOADS:
             f_name = DIR_PREFIX + '/' + benchmark + '_' + \
                 str(thread_count) + 't_' + str(payload) + '.csv'
-            ret = parse_file(f_name, 14)
+            ret = parse_file(f_name, 12)
             bw_for_thread_count.append(ret)
             ret = parse_file(f_name, 15)
             latency_for_thread_count.append(ret)
@@ -131,7 +131,7 @@ def parse_mt_tx_bw_latency_jumbo(benchmark, THREAD_LIST):
         for payload in MT_JUMBO_PAYLOADS:
             f_name = DIR_PREFIX + '/' + benchmark + '_' + \
                 str(thread_count) + 't_' + str(payload) + '.csv'
-            ret = parse_file(f_name, 14)
+            ret = parse_file(f_name, 12)
             bw_for_thread_count.append(ret)
             ret = parse_file(f_name, 15)
             latency_for_thread_count.append(ret)

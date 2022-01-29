@@ -128,7 +128,6 @@ def runTestWithConfig(config, stat_file, runtime, kill_timeout=True, print_cmd=T
     finally:
         if not timer.is_alive():
             print('Server process killed due to timeout...')
-            exit_status = -1
         timer.cancel()
     if server.returncode != 0:
         print('Server exited with code:', server.returncode)
