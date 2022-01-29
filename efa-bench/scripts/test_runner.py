@@ -274,11 +274,11 @@ if __name__ == "__main__":
     # runLatencyRDM()
     # runLatencyRDMTagged()
 
-    for batch in [2, 10, 50, 80, 100, 120]:
-        runBatchDGRAM(batch)
+    # for batch in [2, 10, 50, 80, 100, 120]:
+    #     runBatchDGRAM(batch)
     
-    for batch in [2, 10, 50, 80, 100, 120]:
-        runBatchRDM(batch)
+    # for batch in [2, 10, 50, 80, 100, 120]:
+    #     runBatchRDM(batch)
 
     # for batch in [2, 10, 100, 200, 300, 500]:
     #     runRMABatch('write', batch)

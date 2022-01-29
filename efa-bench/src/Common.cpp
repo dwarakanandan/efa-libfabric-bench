@@ -1,11 +1,30 @@
 #include "Common.h"
 
-bool common::is_benchmark(std::string t1, T t2)
+bool common::isBenchmark(std::string t1, T t2)
 {
     return t1.compare(BENCHMARK_TYPE[t2]) == 0;
 }
 
-bool common::is_node(std::string t1, T t2)
+bool common::isBenchmarkClassSendRecv(std::string t1)
+{
+    return t1.compare(BENCHMARK_TYPE[T::PING_PONG]) == 0 ||
+           t1.compare(BENCHMARK_TYPE[T::INJECT]) == 0 ||
+           t1.compare(BENCHMARK_TYPE[T::LATENCY]) == 0 ||
+           t1.compare(BENCHMARK_TYPE[T::BATCH]) == 0 ||
+           t1.compare(BENCHMARK_TYPE[T::BATCH_LARGE_BUFFER]) == 0 ||
+           t1.compare(BENCHMARK_TYPE[T::CAPABILITY_TEST]) == 0;
+}
+
+bool common::isBenchmarkClassRma(std::string t1)
+{
+    return t1.compare(BENCHMARK_TYPE[T::RMA]) == 0 ||
+           t1.compare(BENCHMARK_TYPE[T::RMA_BATCH]) == 0 ||
+           t1.compare(BENCHMARK_TYPE[T::RMA_INJECT]) == 0 ||
+           t1.compare(BENCHMARK_TYPE[T::RMA_SEL_COMP]) == 0 ||
+           t1.compare(BENCHMARK_TYPE[T::RMA_LARGE_BUFFER]) == 0;
+}
+
+bool common::isNode(std::string t1, T t2)
 {
     return t1.compare(NODE_TYPE[t2]) == 0;
 }

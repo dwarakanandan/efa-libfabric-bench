@@ -3,19 +3,9 @@
 using namespace std;
 using namespace libefa;
 
-void startRmaServer()
+void RmaServer::_rmaWorker(size_t workerId)
 {
     int ret;
-    BenchmarkContext context;
-    common::initBenchmarkContext(&context);
-    context.operationType = FLAGS_rma_op;
-
-    size_t workerId = 0;
-    common::workerConnectionStatus.push_back(false);
-    common::workerOperationCounter.push_back(0);
-
-    CsvLogger logger = CsvLogger(context);
-
     fi_info *hints = fi_allocinfo();
     common::setRmaFabricHints(hints);
 
@@ -31,7 +21,6 @@ void startRmaServer()
     common::workerConnectionStatus[workerId] = true;
 
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-    logger.start();
     server.startTimer();
     while (true)
     {
@@ -45,12 +34,35 @@ void startRmaServer()
     server.stopTimer();
 
     common::workerConnectionStatus[workerId] = false;
-    logger.stop();
-
     server.showTransferStatistics(common::workerOperationCounter[workerId], 1);
 }
 
-void _rmaBatchServerWorker(size_t workerId)
+void RmaServer::rma()
+{
+    int ret;
+    BenchmarkContext context;
+    common::initBenchmarkContext(&context);
+    context.operationType = FLAGS_rma_op;
+
+    for (size_t i = 0; i < FLAGS_threads; i++)
+    {
+        common::workerConnectionStatus.push_back(false);
+        common::workerOperationCounter.push_back(0);
+        common::workers.push_back(std::thread(&RmaServer::_rmaWorker, this, i));
+    }
+
+    CsvLogger logger = CsvLogger(context);
+    logger.start();
+
+    for (std::thread &worker : common::workers)
+    {
+        worker.join();
+    }
+
+    logger.stop();
+}
+
+void RmaServer::_batchWorker(size_t workerId)
 {
     int ret;
     fi_info *hints = fi_allocinfo();
@@ -114,7 +126,7 @@ void _rmaBatchServerWorker(size_t workerId)
     server.showTransferStatistics(common::workerOperationCounter[workerId], 1);
 }
 
-void startRmaBatchServer()
+void RmaServer::batch()
 {
     int ret;
     BenchmarkContext context;
@@ -125,7 +137,7 @@ void startRmaBatchServer()
     {
         common::workerConnectionStatus.push_back(false);
         common::workerOperationCounter.push_back(0);
-        common::workers.push_back(std::thread(_rmaBatchServerWorker, i));
+        common::workers.push_back(std::thread(&RmaServer::_batchWorker, this, i));
     }
 
     CsvLogger logger = CsvLogger(context);
@@ -139,7 +151,7 @@ void startRmaBatchServer()
     logger.stop();
 }
 
-void startRmaInjectServer()
+void RmaServer::inject()
 {
     int ret;
     BenchmarkContext context;
@@ -190,7 +202,7 @@ void startRmaInjectServer()
     server.showTransferStatistics(common::workerOperationCounter[workerId], 1);
 }
 
-void startRmaSelectiveCompletionServer()
+void RmaServer::batchSelectiveCompletion()
 {
     int ret;
     BenchmarkContext context;
@@ -260,7 +272,7 @@ void startRmaSelectiveCompletionServer()
     server.showTransferStatistics(common::workerOperationCounter[workerId], 1);
 }
 
-void startRmaLargeBufferServer()
+void RmaServer::batchLargeBuffer()
 {
     int ret;
     BenchmarkContext context;

@@ -1,7 +1,22 @@
-#include "Common.h"
+#include "RmaNode.h"
 
-void startRmaClient();
+class RmaClient : public RmaNode
+{
+private:
+    void _spawnRmaWorkers(size_t numWorkers);
 
-void startRmaBatchClient();
+    void _rmaWorker(size_t workerId);
 
-void startRmaLargeBufferClient();
+    void _batchWorker(size_t workerId);
+
+public:
+    void rma();
+
+    void inject();
+
+    void batch();
+
+    void batchLargeBuffer();
+
+    void batchSelectiveCompletion();
+};

@@ -3,19 +3,8 @@
 using namespace std;
 using namespace libefa;
 
-void startPingPongServer()
+void SendRecvServer::_pingPongWorker(size_t workerId)
 {
-    BenchmarkContext context;
-    common::initBenchmarkContext(&context);
-    context.operationType = "send";
-
-    size_t workerId = 0;
-    common::workerConnectionStatus.push_back(false);
-    common::workerOperationCounter.push_back(0);
-
-    CsvLogger logger = CsvLogger(context);
-    logger.start();
-
     int ret;
     fi_info *hints = fi_allocinfo();
     common::setBaseFabricHints(hints);
@@ -45,12 +34,36 @@ void startPingPongServer()
     server.stopTimer();
 
     common::workerConnectionStatus[workerId] = false;
-    logger.stop();
 
-    server.showTransferStatistics(common::workerOperationCounter[workerId] / 2, 2);
+    server.showTransferStatistics(common::workerOperationCounter[workerId], 2);
 }
 
-void startPingPongInjectServer()
+void SendRecvServer::pingPong()
+{
+
+    BenchmarkContext context;
+    common::initBenchmarkContext(&context);
+    context.operationType = "send";
+
+    for (size_t i = 0; i < FLAGS_threads; i++)
+    {
+        common::workerConnectionStatus.push_back(false);
+        common::workerOperationCounter.push_back(0);
+        common::workers.push_back(std::thread(&SendRecvServer::_pingPongWorker, this, i));
+    }
+
+    CsvLogger logger = CsvLogger(context);
+    logger.start();
+
+    for (std::thread &worker : common::workers)
+    {
+        worker.join();
+    }
+
+    logger.stop();
+}
+
+void SendRecvServer::pingPongInject()
 {
     int ret;
     BenchmarkContext context;
@@ -99,7 +112,7 @@ void startPingPongInjectServer()
     server.showTransferStatistics(common::workerOperationCounter[workerId] / 2, 2);
 }
 
-void _batchServerWorker(size_t workerId)
+void SendRecvServer::_batchWorker(size_t workerId)
 {
     int ret;
     fi_info *hints = fi_allocinfo();
@@ -161,7 +174,7 @@ void _batchServerWorker(size_t workerId)
     server.showTransferStatistics(common::workerOperationCounter[workerId], 1);
 }
 
-void startBatchServer()
+void SendRecvServer::batch()
 {
 
     BenchmarkContext context;
@@ -172,7 +185,7 @@ void startBatchServer()
     {
         common::workerConnectionStatus.push_back(false);
         common::workerOperationCounter.push_back(0);
-        common::workers.push_back(std::thread(_batchServerWorker, i));
+        common::workers.push_back(std::thread(&SendRecvServer::_batchWorker, this, i));
     }
 
     CsvLogger logger = CsvLogger(context);
@@ -186,7 +199,7 @@ void startBatchServer()
     logger.stop();
 }
 
-void startLatencyTestServer()
+void SendRecvServer::latency()
 {
     int ret;
 
@@ -217,11 +230,11 @@ void startLatencyTestServer()
     server.showTransferStatistics(FLAGS_iterations, 2);
 }
 
-void startCapsTestServer()
+void SendRecvServer::capabilityTest()
 {
 }
 
-void startBatchLargeBufferServer()
+void SendRecvServer::batchLargeBuffer()
 {
     int ret;
     BenchmarkContext context;

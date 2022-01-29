@@ -22,7 +22,7 @@ enum T
     INJECT,
     LATENCY,
     BATCH,
-    CAPS,
+    CAPABILITY_TEST,
     RMA,
     RMA_BATCH,
     RMA_INJECT,
@@ -36,7 +36,7 @@ static std::map<T, const char *> BENCHMARK_TYPE = {
     {INJECT, "inject"},
     {LATENCY, "latency"},
     {BATCH, "batch"},
-    {CAPS, "caps"},
+    {CAPABILITY_TEST, "caps"},
     {RMA, "rma"},
     {RMA_BATCH, "rma_batch"},
     {RMA_INJECT, "rma_inject"},
@@ -64,9 +64,13 @@ struct BenchmarkContext
 
 namespace common
 {
-    bool is_benchmark(std::string t1, T t2);
+    bool isBenchmark(std::string t1, T t2);
 
-    bool is_node(std::string t1, T t2);
+    bool isBenchmarkClassSendRecv(std::string t1);
+
+    bool isBenchmarkClassRma(std::string t1);
+
+    bool isNode(std::string t1, T t2);
 
     void setBaseFabricHints(fi_info *hints);
 

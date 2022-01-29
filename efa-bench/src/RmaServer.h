@@ -1,12 +1,21 @@
-#include "Common.h"
 #include "CsvLogger.h"
+#include "RmaNode.h"
 
-void startRmaServer();
+class RmaServer : public RmaNode
+{
+private:
+    void _rmaWorker(size_t workerId);
 
-void startRmaBatchServer();
+    void _batchWorker(size_t workerId);
 
-void startRmaInjectServer();
+public:
+    void rma();
 
-void startRmaSelectiveCompletionServer();
+    void inject();
 
-void startRmaLargeBufferServer();
+    void batch();
+
+    void batchLargeBuffer();
+
+    void batchSelectiveCompletion();
+};

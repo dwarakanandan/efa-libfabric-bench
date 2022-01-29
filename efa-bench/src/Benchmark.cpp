@@ -1,65 +1,5 @@
 #include "Common.h"
-#include "SendRecvServer.h"
-#include "SendRecvClient.h"
-#include "RmaServer.h"
-#include "RmaClient.h"
-
-using namespace std;
-using namespace libefa;
-using namespace common;
-
-void startNode()
-{
-	if (is_node(FLAGS_mode, T::SERVER))
-	{
-		if (is_benchmark(FLAGS_benchmark_type, T::LATENCY))
-			startLatencyTestServer();
-		else if (is_benchmark(FLAGS_benchmark_type, T::INJECT))
-			startPingPongInjectServer();
-		else if (is_benchmark(FLAGS_benchmark_type, T::BATCH))
-			startBatchServer();
-		else if (is_benchmark(FLAGS_benchmark_type, T::CAPS))
-			startCapsTestServer();
-		else if (is_benchmark(FLAGS_benchmark_type, T::RMA))
-			startRmaServer();
-		else if (is_benchmark(FLAGS_benchmark_type, T::PING_PONG))
-			startPingPongServer();
-		else if (is_benchmark(FLAGS_benchmark_type, T::RMA_BATCH))
-			startRmaBatchServer();
-		else if (is_benchmark(FLAGS_benchmark_type, T::RMA_INJECT))
-			startRmaInjectServer();
-		else if (is_benchmark(FLAGS_benchmark_type, T::RMA_SEL_COMP))
-			startRmaSelectiveCompletionServer();
-		else if (is_benchmark(FLAGS_benchmark_type, T::RMA_LARGE_BUFFER))
-			startRmaLargeBufferServer();
-		else if (is_benchmark(FLAGS_benchmark_type, T::BATCH_LARGE_BUFFER))
-			startBatchLargeBufferServer();
-	}
-
-	if (is_node(FLAGS_mode, T::CLIENT))
-	{
-		if (is_benchmark(FLAGS_benchmark_type, T::LATENCY))
-			startLatencyTestClient();
-		else if (is_benchmark(FLAGS_benchmark_type, T::INJECT))
-			startPingPongInjectClient();
-		else if (is_benchmark(FLAGS_benchmark_type, T::BATCH))
-			startBatchClient();
-		else if (is_benchmark(FLAGS_benchmark_type, T::CAPS))
-			startCapsTestClient();
-		else if (is_benchmark(FLAGS_benchmark_type, T::RMA) ||
-				 is_benchmark(FLAGS_benchmark_type, T::RMA_INJECT) ||
-				 is_benchmark(FLAGS_benchmark_type, T::RMA_SEL_COMP))
-			startRmaClient();
-		else if (is_benchmark(FLAGS_benchmark_type, T::RMA_BATCH))
-			startRmaBatchClient();
-		else if (is_benchmark(FLAGS_benchmark_type, T::PING_PONG))
-			startPingPongClient();
-		else if (is_benchmark(FLAGS_benchmark_type, T::RMA_LARGE_BUFFER))
-			startRmaLargeBufferClient();
-		else if (is_benchmark(FLAGS_benchmark_type, T::BATCH_LARGE_BUFFER))
-			startBatchLargeBufferClient();
-	}
-}
+#include "BenchmarkNode.h"
 
 int main(int argc, char *argv[])
 {
@@ -67,15 +7,11 @@ int main(int argc, char *argv[])
 
 	if (FLAGS_fabinfo)
 	{
-		fi_info *hints = fi_allocinfo();
-		common::setBaseFabricHints(hints);
-		Server server = Server(FLAGS_provider, FLAGS_endpoint, std::to_string(FLAGS_port),
-							   std::to_string(FLAGS_oob_port), hints);
-		server.printFabricInfo();
+		BenchmarkNode().getFabInfo();
 		return 0;
 	}
 
-	startNode();
+	BenchmarkNode().run();
 
 	return 0;
 }

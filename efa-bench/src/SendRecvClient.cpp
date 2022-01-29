@@ -3,15 +3,11 @@
 using namespace std;
 using namespace libefa;
 
-void startPingPongClient()
+void SendRecvClient::_pingPongWorker(size_t workerId)
 {
 	int ret;
 	fi_info *hints = fi_allocinfo();
 	common::setBaseFabricHints(hints);
-
-	size_t workerId = 0;
-	common::workerConnectionStatus.push_back(false);
-	common::workerOperationCounter.push_back(0);
 
 	Client client = Client(FLAGS_provider, FLAGS_endpoint, std::to_string(FLAGS_port + workerId),
 						   std::to_string(FLAGS_oob_port + workerId), hints, FLAGS_dst_addr);
@@ -36,10 +32,25 @@ void startPingPongClient()
 	}
 	client.stopTimer();
 
-	client.showTransferStatistics(common::workerOperationCounter[workerId] / 2, 2);
+	client.showTransferStatistics(common::workerOperationCounter[workerId], 2);
 }
 
-void startPingPongInjectClient()
+void SendRecvClient::pingPong()
+{
+	for (size_t i = 0; i < FLAGS_threads; i++)
+	{
+		common::workerConnectionStatus.push_back(false);
+		common::workerOperationCounter.push_back(0);
+		common::workers.push_back(std::thread(&SendRecvClient::_pingPongWorker, this, i));
+	}
+
+	for (std::thread &worker : common::workers)
+	{
+		worker.join();
+	}
+}
+
+void SendRecvClient::pingPongInject()
 {
 	int ret;
 	fi_info *hints = fi_allocinfo();
@@ -75,7 +86,7 @@ void startPingPongInjectClient()
 	client.showTransferStatistics(common::workerOperationCounter[workerId] / 2, 2);
 }
 
-void _batchClientWorker(size_t workerId)
+void SendRecvClient::_batchWorker(size_t workerId)
 {
 	int ret;
 	fi_info *hints = fi_allocinfo();
@@ -106,13 +117,13 @@ void _batchClientWorker(size_t workerId)
 	client.showTransferStatistics(common::workerOperationCounter[workerId], 1);
 }
 
-void startBatchClient()
+void SendRecvClient::batch()
 {
 	for (size_t i = 0; i < FLAGS_threads; i++)
 	{
 		common::workerConnectionStatus.push_back(false);
 		common::workerOperationCounter.push_back(0);
-		common::workers.push_back(std::thread(_batchClientWorker, i));
+		common::workers.push_back(std::thread(&SendRecvClient::_batchWorker, this, i));
 	}
 
 	for (std::thread &worker : common::workers)
@@ -121,7 +132,7 @@ void startBatchClient()
 	}
 }
 
-void startMultiRecvBatchClient()
+void SendRecvClient::multiRecvBatch()
 {
 	int ret;
 	fi_info *hints = fi_allocinfo();
@@ -160,7 +171,7 @@ void startMultiRecvBatchClient()
 	client.showTransferStatistics(common::workerOperationCounter[workerId], 1);
 }
 
-void startLatencyTestClient()
+void SendRecvClient::latency()
 {
 	int ret;
 	fi_info *hints = fi_allocinfo();
@@ -192,11 +203,11 @@ void startLatencyTestClient()
 	client.showTransferStatistics(FLAGS_iterations, 2);
 }
 
-void startCapsTestClient()
+void SendRecvClient::capabilityTest()
 {
 }
 
-void startBatchLargeBufferClient()
+void SendRecvClient::batchLargeBuffer()
 {
 	int ret;
 	fi_info *hints = fi_allocinfo();

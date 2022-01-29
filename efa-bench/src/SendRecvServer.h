@@ -1,15 +1,23 @@
-#include "Common.h"
 #include "CsvLogger.h"
+#include "SendRecvNode.h"
 
-void startPingPongServer();
+class SendRecvServer : public SendRecvNode
+{
+private:
+    void _pingPongWorker(size_t workerId);
 
-void startPingPongInjectServer();
+    void _batchWorker(size_t workerId);
 
-void startBatchServer();
+public:
+    void pingPong();
 
-void startBatchLargeBufferServer();
+    void pingPongInject();
 
-void startLatencyTestServer();
+    void batch();
 
-void startCapsTestServer();
+    void batchLargeBuffer();
 
+    void latency();
+
+    void capabilityTest();
+};

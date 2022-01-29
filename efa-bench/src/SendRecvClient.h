@@ -1,16 +1,24 @@
-#include "Common.h"
+#include "SendRecvNode.h"
 
-void startPingPongClient();
+class SendRecvClient : public SendRecvNode
+{
+private:
+    void _pingPongWorker(size_t workerId);
 
-void startPingPongInjectClient();
+    void _batchWorker(size_t workerId);
 
-void startBatchClient();
+public:
+    void pingPong();
 
-void startBatchLargeBufferClient();
+    void pingPongInject();
 
-void startMultiRecvBatchClient();
+    void batch();
 
-void startLatencyTestClient();
+    void batchLargeBuffer();
 
-void startCapsTestClient();
+    void latency();
 
+    void capabilityTest();
+
+    void multiRecvBatch();
+};
