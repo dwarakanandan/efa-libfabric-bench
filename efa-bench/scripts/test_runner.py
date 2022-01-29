@@ -116,6 +116,7 @@ def runTestWithConfig(config, stat_file, runtime, kill_timeout=True, print_cmd=T
     client = getSSHClient()
     c_stdin, c_stdout = execOnClient(client, buildClientCmd(config, runtime+2))
 
+    exit_status = 0
     # Wait till server completes
     timeout = RUNTIME + 5 if kill_timeout else 3600
     timer = Timer(timeout, server.kill)
@@ -127,10 +128,13 @@ def runTestWithConfig(config, stat_file, runtime, kill_timeout=True, print_cmd=T
     finally:
         if not timer.is_alive():
             print('Server process killed due to timeout...')
+            exit_status = -1
         timer.cancel()
     if server.returncode != 0:
         print('Server exited with code:', server.returncode)
+        exit_status = -1
     killClient(c_stdin)
+    return exit_status
 
 
 def runPingPongDGRAM():
@@ -271,7 +275,10 @@ def runMultiThreadPingPongDGRAM(thread_count):
                   '--endpoint=dgram', payload_flag, thread_count_flag]
         stats_file = 'ping_pong_dgram_' + \
             str(thread_count) + 't_' + str(payload)
-        runTestWithConfig(config, stats_file, RUNTIME)
+        while True:
+            exit_status = runTestWithConfig(config, stats_file, RUNTIME)
+            if exit_status == 0:
+                break
 
 
 def runMultiThreadPingPongRDM(thread_count):
@@ -281,7 +288,10 @@ def runMultiThreadPingPongRDM(thread_count):
         config = ['--benchmark_type=ping_pong',
                   '--endpoint=rdm', payload_flag, thread_count_flag]
         stats_file = 'ping_pong_rdm_' + str(thread_count) + 't_' + str(payload)
-        runTestWithConfig(config, stats_file, RUNTIME)
+        while True:
+            exit_status = runTestWithConfig(config, stats_file, RUNTIME)
+            if exit_status == 0:
+                break
 
 
 def runMultiThreadBatchRDM(thread_count, batch):
