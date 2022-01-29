@@ -2,6 +2,18 @@
 
 #include "Common.h"
 
+struct CsvStat
+{
+    int timestamp;
+    double opsPerSecond;
+    double txPktsPsec;
+    double rxPktsPsec;
+    double txBw;
+    double rxBw;
+    double appBw;
+    double latency;
+};
+
 class CsvLogger
 {
     BenchmarkContext context;
@@ -41,5 +53,5 @@ public:
 
     double calculatePktsPsec(uint64_t initial, uint64_t current, int timeElapsed);
 
-    std::stringstream logRow(int timestamp, double opsPerSecond, double txPktsPsec, double rxPktsPsec, double txBw, double rxBw, double appBw);
+    std::stringstream logRow(CsvStat stat);
 };

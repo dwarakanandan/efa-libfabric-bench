@@ -78,4 +78,5 @@ void common::initBenchmarkContext(BenchmarkContext *context)
     context->nodeType = FLAGS_mode;
     context->batchSize = FLAGS_batch;
     context->numThreads = FLAGS_threads;
+    context->xfersPerIter = 1;
 }

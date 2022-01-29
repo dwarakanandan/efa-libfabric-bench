@@ -60,6 +60,7 @@ struct BenchmarkContext
     uint64_t numThreads;
     std::string operationType;
     uint64_t msgSize;
+    uint64_t xfersPerIter;
 };
 
 namespace common

@@ -21,7 +21,7 @@ void SendRecvServer::_pingPongWorker(size_t workerId)
     server.startTimer();
     while (true)
     {
-        common::workerOperationCounter[workerId] += 2;
+        common::workerOperationCounter[workerId]++;
         ret = server.rx();
         if (ret)
             return;
@@ -43,6 +43,7 @@ void SendRecvServer::pingPong()
 
     BenchmarkContext context;
     common::initBenchmarkContext(&context);
+    context.xfersPerIter = 2;
     context.operationType = "send";
 
     for (size_t i = 0; i < FLAGS_threads; i++)
@@ -68,6 +69,7 @@ void SendRecvServer::pingPongInject()
     int ret;
     BenchmarkContext context;
     common::initBenchmarkContext(&context);
+    context.xfersPerIter = 2;
     context.operationType = "inject";
 
     size_t workerId = 0;
@@ -94,7 +96,7 @@ void SendRecvServer::pingPongInject()
     server.startTimer();
     while (true)
     {
-        common::workerOperationCounter[workerId] += 2;
+        common::workerOperationCounter[workerId]++;
         ret = server.rx();
         if (ret)
             return;

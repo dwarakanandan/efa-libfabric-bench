@@ -7,9 +7,6 @@ from threading import Timer
 
 '''
     Usage: test_runner.py <server-ip> <client-ip> [local]
-    TEST_CASE_COUTN = 92
-    RUNTIME_PER_CASE = 30sec
-    TOTAL_RUNTIME = ~45min
 '''
 
 if len(sys.argv) > 3 and sys.argv[3] == 'local':
@@ -31,7 +28,12 @@ else:
 
 RUNTIME = 1
 DGRAM_PAYLOADS = [4, 64, 512, 1024, 4096, 8192]
-RDM_PAYLOADS = [4, 64, 512, 1024, 4096, 8192, 16384, 65536]
+JUMBO_PAYLOADS = [4, 64, 512, 1024, 4096, 8192, 16384, 65536]
+MT_DGRAM_PAYLOADS = [64, 8192]
+MT_JUMBO_PAYLOADS = [64, 8192, 65536]
+BATCH_SIZES_SR = [2, 10, 50, 80, 100, 120]
+BATCH_SIZES_RMA = [2, 10, 100, 200, 300, 500]
+THREAD_COUNTS = [1, 2, 4, 8, 16, 32]
 
 PAYLOAD_ITERATION_MAP = {
     4: 100000,
@@ -141,7 +143,7 @@ def runPingPongDGRAM():
 
 
 def runPingPongRDM():
-    for payload in RDM_PAYLOADS:
+    for payload in JUMBO_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
         config = ['--benchmark_type=ping_pong', '--endpoint=rdm', payload_flag]
         stats_file = 'ping_pong_rdm_' + str(payload)
@@ -149,7 +151,7 @@ def runPingPongRDM():
 
 
 def runPingPongRDMTagged():
-    for payload in RDM_PAYLOADS:
+    for payload in JUMBO_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
         config = ['--benchmark_type=ping_pong',
                   '--endpoint=rdm', '--tagged', payload_flag]
@@ -171,7 +173,7 @@ def runLatencyDGRAM():
 
 def runLatencyRDM():
     print('latency_rdm')
-    for payload in RDM_PAYLOADS:
+    for payload in JUMBO_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
         iterations_flag = '--iterations=' + str(PAYLOAD_ITERATION_MAP[payload])
         config = ['--benchmark_type=latency',
@@ -183,7 +185,7 @@ def runLatencyRDM():
 
 def runLatencyRDMTagged():
     print('latency_rdm_tagged')
-    for payload in RDM_PAYLOADS:
+    for payload in JUMBO_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
         iterations_flag = '--iterations=' + str(PAYLOAD_ITERATION_MAP[payload])
         config = ['--benchmark_type=latency',
@@ -204,7 +206,7 @@ def runBatchDGRAM(batch):
 
 
 def runBatchRDM(batch):
-    for payload in RDM_PAYLOADS:
+    for payload in JUMBO_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
         batch_flag = '--batch=' + str(batch)
         cq_try_flag = '--cq_try=' + str(0.8 if payload <= 8192 else 0.9)
@@ -215,7 +217,7 @@ def runBatchRDM(batch):
 
 
 def runBatchRDMTagged(batch):
-    for payload in RDM_PAYLOADS:
+    for payload in JUMBO_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
         batch_flag = '--batch=' + str(batch)
         cq_try_flag = '--cq_try=' + str(0.8 if payload <= 8192 else 0.9)
@@ -226,7 +228,7 @@ def runBatchRDMTagged(batch):
 
 
 def runRMA(rma_op):
-    for payload in RDM_PAYLOADS:
+    for payload in JUMBO_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
         rma_flag = '--rma_op=' + rma_op
         config = ['--benchmark_type=rma',
@@ -236,7 +238,7 @@ def runRMA(rma_op):
 
 
 def runRMABatch(rma_op, batch):
-    for payload in RDM_PAYLOADS:
+    for payload in JUMBO_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
         batch_flag = '--batch=' + str(batch)
         rma_flag = '--rma_op=' + rma_op
@@ -249,7 +251,7 @@ def runRMABatch(rma_op, batch):
 
 
 def runRMASelectiveCompletion(rma_op, batch):
-    for payload in RDM_PAYLOADS:
+    for payload in JUMBO_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
         batch_flag = '--batch=' + str(batch)
         rma_flag = '--rma_op=' + rma_op
@@ -258,6 +260,66 @@ def runRMASelectiveCompletion(rma_op, batch):
                   '--endpoint=rdm', rma_flag, batch_flag, payload_flag, cq_try_flag]
         stats_file = 'rma_sel_comp_' + rma_op + \
             '_' + str(batch) + 'b_' + str(payload)
+        runTestWithConfig(config, stats_file, RUNTIME)
+
+
+def runMultiThreadPingPongDGRAM(thread_count):
+    for payload in MT_DGRAM_PAYLOADS:
+        thread_count_flag = '--threads=' + str(thread_count)
+        payload_flag = '--payload=' + str(payload)
+        config = ['--benchmark_type=ping_pong',
+                  '--endpoint=dgram', payload_flag, thread_count_flag]
+        stats_file = 'ping_pong_dgram_' + \
+            str(thread_count) + 't_' + str(payload)
+        runTestWithConfig(config, stats_file, RUNTIME)
+
+
+def runMultiThreadPingPongRDM(thread_count):
+    for payload in MT_JUMBO_PAYLOADS:
+        thread_count_flag = '--threads=' + str(thread_count)
+        payload_flag = '--payload=' + str(payload)
+        config = ['--benchmark_type=ping_pong',
+                  '--endpoint=rdm', payload_flag, thread_count_flag]
+        stats_file = 'ping_pong_rdm_' + str(thread_count) + 't_' + str(payload)
+        runTestWithConfig(config, stats_file, RUNTIME)
+
+
+def runMultiThreadBatchRDM(thread_count, batch):
+    for payload in MT_JUMBO_PAYLOADS:
+        payload_flag = '--payload=' + str(payload)
+        thread_count_flag = '--threads=' + str(thread_count)
+        batch_flag = '--batch=' + str(batch)
+        cq_try_flag = '--cq_try=' + str(0.8 if payload <= 8192 else 0.9)
+        config = ['--benchmark_type=batch',
+                  '--endpoint=rdm', batch_flag, cq_try_flag, payload_flag, thread_count_flag]
+        stats_file = 'batch_rdm_' + \
+            str(batch) + 'b_' + str(thread_count) + 't_' + str(payload)
+        runTestWithConfig(config, stats_file, RUNTIME)
+
+
+def runMultiThreadRMA(rma_op, thread_count):
+    for payload in MT_JUMBO_PAYLOADS:
+        payload_flag = '--payload=' + str(payload)
+        thread_count_flag = '--threads=' + str(thread_count)
+        rma_flag = '--rma_op=' + rma_op
+        config = ['--benchmark_type=rma',
+                  '--endpoint=rdm', rma_flag, payload_flag, thread_count_flag]
+        stats_file = 'rma_' + rma_op + '_' + \
+            str(thread_count) + 't_' + str(payload)
+        runTestWithConfig(config, stats_file, RUNTIME)
+
+
+def runMultiThreadRMABatch(rma_op, thread_count, batch):
+    for payload in MT_JUMBO_PAYLOADS:
+        payload_flag = '--payload=' + str(payload)
+        thread_count_flag = '--threads=' + str(thread_count)
+        batch_flag = '--batch=' + str(batch)
+        rma_flag = '--rma_op=' + rma_op
+        cq_try_flag = '--cq_try=' + str(0.8 if payload < 8192 else 0.9)
+        config = ['--benchmark_type=rma_batch',
+                  '--endpoint=rdm', rma_flag, batch_flag, payload_flag, cq_try_flag, thread_count_flag]
+        stats_file = 'rma_batch_' + rma_op + \
+            '_' + str(batch) + 'b_' + str(thread_count) + 't_' + str(payload)
         runTestWithConfig(config, stats_file, RUNTIME)
 
 
@@ -274,15 +336,33 @@ if __name__ == "__main__":
     # runLatencyRDM()
     # runLatencyRDMTagged()
 
-    # for batch in [2, 10, 50, 80, 100, 120]:
+    # for batch in BATCH_SIZES_SR:
     #     runBatchDGRAM(batch)
-    
-    # for batch in [2, 10, 50, 80, 100, 120]:
+
+    # for batch in BATCH_SIZES_SR:
     #     runBatchRDM(batch)
 
-    # for batch in [2, 10, 100, 200, 300, 500]:
+    # for batch in BATCH_SIZES_RMA:
     #     runRMABatch('write', batch)
-    
-    # for batch in [2, 10, 100, 200, 300, 500]:
+
+    # for batch in BATCH_SIZES_RMA:
     #     runRMASelectiveCompletion('write', batch)
+
+    for thread_count in THREAD_COUNTS:
+        runMultiThreadPingPongDGRAM(thread_count)
+
+    for thread_count in THREAD_COUNTS:
+        runMultiThreadPingPongRDM(thread_count)
+
+    # for thread_count in THREAD_COUNTS:
+    #     for batch in BATCH_SIZES_SR:
+    #         runMultiThreadBatchRDM(thread_count, batch)
+
+    # for thread_count in THREAD_COUNTS:
+    #     runMultiThreadRMA('write', thread_count)
+
+    # for thread_count in THREAD_COUNTS:
+    #     for batch in BATCH_SIZES_RMA:
+    #         runMultiThreadRMABatch('write', thread_count, batch)
+
     pass

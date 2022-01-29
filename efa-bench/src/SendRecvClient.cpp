@@ -20,7 +20,7 @@ void SendRecvClient::_pingPongWorker(size_t workerId)
 	client.startTimer();
 	while (true)
 	{
-		common::workerOperationCounter[workerId] += 2;
+		common::workerOperationCounter[workerId]++;
 		ret = client.tx();
 		if (ret)
 			return;
@@ -71,7 +71,7 @@ void SendRecvClient::pingPongInject()
 	client.startTimer();
 	while (true)
 	{
-		common::workerOperationCounter[workerId] += 2;
+		common::workerOperationCounter[workerId]++;
 		ret = client.inject();
 		if (ret)
 			return;
