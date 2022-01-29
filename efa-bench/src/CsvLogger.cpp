@@ -124,7 +124,7 @@ void CsvLogger::loggerTask()
         uint64_t aggregateOps = this->getAggregateOpsCounter();
         stat.opsPerSecond = aggregateOps / (timestamp * 1.0);
         stat.appBw = (aggregateOps * this->context.msgSize * this->context.xfersPerIter) / (timestamp * 1000.0 * 1000.0);
-        stat.latency = ((timestamp * 1000000.0) / aggregateOps / this->context.xfersPerIter);
+        stat.latency = ((timestamp * 1000000.0 * this->context.numThreads) / aggregateOps / this->context.xfersPerIter);
 
         ss = this->logRow(stat);
         this->statsFile << ss.str();
