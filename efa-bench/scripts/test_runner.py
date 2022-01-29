@@ -26,7 +26,7 @@ else:
     BASE_CONFIG = [
         '--debug', '--provider=efa', '--hw_counters=/sys/class/infiniband/rdmap0s6/ports/1/hw_counters/']
 
-RUNTIME = 1
+RUNTIME = 10
 DGRAM_PAYLOADS = [4, 64, 512, 1024, 4096, 8192]
 JUMBO_PAYLOADS = [4, 64, 512, 1024, 4096, 8192, 16384, 65536]
 MT_DGRAM_PAYLOADS = [64, 8192]
