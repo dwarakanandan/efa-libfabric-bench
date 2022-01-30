@@ -4,11 +4,12 @@ from statistics import mean
 DIR_PREFIX = '.'
 PAYLOADS = [4, 64, 512, 1024, 4096, 8192]
 JUMBO_PAYLOADS = [4, 64, 512, 1024, 4096, 8192, 16384, 65536]
-BATCH_SIZES = [2, 10, 50, 80, 100, 120]
-RMA_BATCH_SIZES = [2, 10, 100, 200, 300, 500]
+BATCH_SIZES = [1, 10, 50, 80, 100, 120]
+RMA_BATCH_SIZES = [1, 10, 100, 200, 300, 500]
 
 MT_DGRAM_PAYLOADS = [64, 8192]
-MT_JUMBO_PAYLOADS = [64, 8192, 65536]
+MT_BATCH_SIZES = [2, 10, 50, 80, 100, 120]
+MT_JUMBO_PAYLOADS = [64, 1024, 8192, 65536]
 THREAD_COUNTS = [1, 2, 4, 8, 16, 32]
 
 
@@ -25,7 +26,9 @@ def parse_file(f_name, field):
             continue
         split = line.rstrip().split(',')
         list.append(float(split[field]))
-    return mean(list)
+    if (len(list) == 0):
+        return
+    return round(mean(list), 2)
 
 
 def parse_tx_bw(benchmark):
@@ -143,6 +146,27 @@ def parse_mt_tx_bw_latency_jumbo(benchmark, THREAD_LIST):
     print()
 
 
+def parse_mt_batch_tx_bw_latency_jumbo(benchmark, THREAD_LIST, BATCH_LIST):
+    print(benchmark)
+    for thread_count in THREAD_LIST:
+        for batch in BATCH_LIST:
+            bw_for_thread_count_for_batch = []
+            latency_for_thread_count_for_batch = []
+            for payload in MT_JUMBO_PAYLOADS:
+                f_name = DIR_PREFIX + '/' + benchmark + '_' + str(batch) + 'b_' +\
+                    str(thread_count) + 't_' + str(payload) + '.csv'
+                ret = parse_file(f_name, 12)
+                bw_for_thread_count_for_batch.append(ret)
+                ret = parse_file(f_name, 15)
+                latency_for_thread_count_for_batch.append(ret)
+            print(str(thread_count) + 'x' + str(batch), end=' ')
+            print(thread_count*batch, end=' ')
+            for i in range(0, len(MT_JUMBO_PAYLOADS)):
+                print(bw_for_thread_count_for_batch[i], end=' ')
+                print(latency_for_thread_count_for_batch[i], end=' ')
+            print()
+
+
 if __name__ == "__main__":
     # parse_tx_bw('ping_pong_dgram')
     # parse_tx_bw_jumbo('ping_pong_rdm')
@@ -162,5 +186,14 @@ if __name__ == "__main__":
     # parse_batch_tx_bw('rma_batch_write', RMA_BATCH_SIZES)
     # parse_batch_rx_bw('rma_batch_read', RMA_BATCH_SIZES)
 
-    parse_mt_tx_bw_latency('ping_pong_dgram', THREAD_COUNTS)
-    parse_mt_tx_bw_latency_jumbo('ping_pong_rdm', THREAD_COUNTS)
+    # parse_mt_tx_bw_latency('ping_pong_dgram', THREAD_COUNTS)
+    # parse_mt_tx_bw_latency_jumbo('ping_pong_rdm', THREAD_COUNTS)
+
+    # parse_mt_tx_bw_latency_jumbo('rma_write', THREAD_COUNTS)
+
+    # parse_mt_batch_tx_bw_latency_jumbo(
+    #     'batch_rdm', THREAD_COUNTS, MT_BATCH_SIZES)
+    parse_mt_batch_tx_bw_latency_jumbo(
+        'rma_batch_write', THREAD_COUNTS, MT_BATCH_SIZES)
+
+    pass

@@ -29,10 +29,9 @@ else:
 RUNTIME = 10
 DGRAM_PAYLOADS = [4, 64, 512, 1024, 4096, 8192]
 JUMBO_PAYLOADS = [4, 64, 512, 1024, 4096, 8192, 16384, 65536]
-MT_DGRAM_PAYLOADS = [64, 8192]
-MT_JUMBO_PAYLOADS = [64, 8192, 65536]
-BATCH_SIZES_SR = [2, 10, 50, 80, 100, 120]
-BATCH_SIZES_RMA = [2, 10, 100, 200, 300, 500]
+MT_DGRAM_PAYLOADS = [64, 1024, 8192]
+MT_JUMBO_PAYLOADS = [64, 1024, 8192, 65536]
+MT_BATCH_SIZES = [1, 10, 50, 80, 100, 120]
 THREAD_COUNTS = [1, 2, 4, 8, 16, 32]
 
 PAYLOAD_ITERATION_MAP = {
@@ -303,7 +302,10 @@ def runMultiThreadBatchRDM(thread_count, batch):
                   '--endpoint=rdm', batch_flag, cq_try_flag, payload_flag, thread_count_flag]
         stats_file = 'batch_rdm_' + \
             str(batch) + 'b_' + str(thread_count) + 't_' + str(payload)
-        runTestWithConfig(config, stats_file, RUNTIME)
+        while True:
+            exit_status = runTestWithConfig(config, stats_file, RUNTIME)
+            if exit_status == 0:
+                break
 
 
 def runMultiThreadRMA(rma_op, thread_count):
@@ -315,7 +317,10 @@ def runMultiThreadRMA(rma_op, thread_count):
                   '--endpoint=rdm', rma_flag, payload_flag, thread_count_flag]
         stats_file = 'rma_' + rma_op + '_' + \
             str(thread_count) + 't_' + str(payload)
-        runTestWithConfig(config, stats_file, RUNTIME)
+        while True:
+            exit_status = runTestWithConfig(config, stats_file, RUNTIME)
+            if exit_status == 0:
+                break
 
 
 def runMultiThreadRMABatch(rma_op, thread_count, batch):
@@ -329,7 +334,10 @@ def runMultiThreadRMABatch(rma_op, thread_count, batch):
                   '--endpoint=rdm', rma_flag, batch_flag, payload_flag, cq_try_flag, thread_count_flag]
         stats_file = 'rma_batch_' + rma_op + \
             '_' + str(batch) + 'b_' + str(thread_count) + 't_' + str(payload)
-        runTestWithConfig(config, stats_file, RUNTIME)
+        while True:
+            exit_status = runTestWithConfig(config, stats_file, RUNTIME)
+            if exit_status == 0:
+                break
 
 
 if __name__ == "__main__":
@@ -357,21 +365,21 @@ if __name__ == "__main__":
     # for batch in BATCH_SIZES_RMA:
     #     runRMASelectiveCompletion('write', batch)
 
-    for thread_count in THREAD_COUNTS:
-        runMultiThreadPingPongDGRAM(thread_count)
-
-    for thread_count in THREAD_COUNTS:
-        runMultiThreadPingPongRDM(thread_count)
+    # for thread_count in THREAD_COUNTS:
+    #     runMultiThreadPingPongDGRAM(thread_count)
 
     # for thread_count in THREAD_COUNTS:
-    #     for batch in BATCH_SIZES_SR:
+    #     runMultiThreadPingPongRDM(thread_count)
+
+    # for thread_count in THREAD_COUNTS:
+    #     for batch in MT_BATCH_SIZES:
     #         runMultiThreadBatchRDM(thread_count, batch)
 
     # for thread_count in THREAD_COUNTS:
     #     runMultiThreadRMA('write', thread_count)
 
     # for thread_count in THREAD_COUNTS:
-    #     for batch in BATCH_SIZES_RMA:
+    #     for batch in MT_BATCH_SIZES:
     #         runMultiThreadRMABatch('write', thread_count, batch)
 
     pass
