@@ -1,0 +1,582 @@
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 7K of event 'cycles:u'
+# Event count (approx.): 92060789625
+#
+# Children      Self  Command    Shared Object        Symbol                                  
+# ........  ........  .........  ...................  ........................................
+#
+    65.78%    65.78%  benchmark  libc-2.26.so         [.] __memmove_avx_unaligned_erms
+            |
+            ---__memmove_avx_unaligned_erms
+
+     8.55%     0.98%  benchmark  libfabric.so.1.16.2  [.] rxr_ep_progress_internal
+            |          
+             --8.25%--rxr_ep_progress_internal
+                       |          
+                        --7.11%--rxr_pkt_handle_recv_completion
+
+     7.11%     7.11%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_handle_recv_completion
+            |
+            ---rxr_ep_progress_internal
+               rxr_pkt_handle_recv_completion
+
+     4.76%     4.76%  benchmark  libefa.so.1.1.37.0   [.] efa_poll_cq
+            |
+            ---efa_poll_cq
+
+     4.21%     4.21%  benchmark  libpthread-2.26.so   [.] pthread_spin_lock
+            |          
+            |--1.78%--0
+            |          |          
+            |          |--1.03%--pthread_spin_lock
+            |          |          
+            |           --0.76%--0x10c61a0
+            |                     pthread_spin_lock
+            |          
+            |--1.68%--pthread_spin_lock
+            |          
+             --0.50%--0x100007fe9
+                       pthread_spin_lock
+
+     3.35%     3.35%  benchmark  libefa.so.1.1.37.0   [.] cq_next_sub_cqe_get
+            |
+            ---cq_next_sub_cqe_get
+
+     3.08%     3.08%  benchmark  libfabric.so.1.16.2  [.] rxr_ep_alloc_rx_entry
+            |          
+             --2.93%--rxr_ep_alloc_rx_entry
+
+     3.06%     0.00%  benchmark  [unknown]            [.] 0000000000000000
+            |
+            ---0
+               |          
+               |--1.19%--0x10c61a0
+               |          |          
+               |           --0.76%--pthread_spin_lock
+               |          
+                --1.03%--pthread_spin_lock
+
+     1.69%     0.00%  benchmark  [unknown]            [.] 0x0000000100007fe9
+            |
+            ---0x100007fe9
+               |          
+               |--1.06%--efa_post_recv
+               |          
+                --0.50%--pthread_spin_lock
+
+     1.19%     0.00%  benchmark  [unknown]            [.] 0x00000000010c61a0
+            |
+            ---0x10c61a0
+               |          
+                --0.76%--pthread_spin_lock
+
+     1.09%     1.09%  benchmark  libefa.so.1.1.37.0   [.] efa_post_recv
+            |          
+             --1.06%--0x100007fe9
+                       efa_post_recv
+
+     0.93%     0.93%  benchmark  libfabric.so.1.16.2  [.] efa_post_recv
+            |          
+             --0.81%--efa_post_recv
+
+     0.76%     0.00%  benchmark  [unknown]            [.] 0x00000000010c7338
+            |
+            ---0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+
+     0.76%     0.00%  benchmark  [unknown]            [.] 0x00000000010c68b0
+            |
+            ---0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+               0x10c7338
+               0x10c68b0
+
+     0.62%     0.62%  benchmark  libfabric.so.1.16.2  [.] ofi_cq_readfrom
+     0.60%     0.00%  benchmark  [unknown]            [.] 0x007fffc4efd83000
+            |
+            ---0x7fffc4efd83000
+
+     0.60%     0.60%  benchmark  libfabric.so.1.16.2  [.] rxr_ep_post_prov_buf
+     0.57%     0.57%  benchmark  libfabric.so.1.16.2  [.] efa_ahn_qpn_to_peer
+            |
+            ---efa_ahn_qpn_to_peer
+
+     0.54%     0.30%  benchmark  libc-2.26.so         [.] __memset_avx2_erms
+            |          
+             --0.50%--__memset_avx2_erms
+
+     0.52%     0.52%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_handle_data_copied
+     0.48%     0.48%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_proc_eager_rtw
+     0.46%     0.46%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_copy_to_rx
+     0.45%     0.45%  benchmark  libfabric.so.1.16.2  [.] rxr_rma_verified_copy_iov
+     0.42%     0.42%  benchmark  libfabric.so.1.16.2  [.] smr_ep_progress
+     0.36%     0.20%  benchmark  libpthread-2.26.so   [.] __libc_recv
+     0.34%     0.34%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_req_base_hdr_size
+     0.30%     0.00%  benchmark  [unknown]            [.] 0x6665646362613938
+     0.30%     0.00%  benchmark  [unknown]            [.] 0x0000000000002000
+     0.29%     0.29%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_entry_alloc
+     0.24%     0.24%  benchmark  [unknown]            [k] 0xffffffffa9a00ab0
+     0.23%     0.23%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_proc_received
+     0.23%     0.23%  benchmark  libfabric.so.1.16.2  [.] ofi_rbmap_find
+     0.21%     0.21%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_handle_eager_rtw_recv
+     0.20%     0.00%  benchmark  [unknown]            [.] 0x00007fe9139be010
+     0.20%     0.20%  benchmark  libfabric.so.1.16.2  [.] ofi_mr_map_verify
+     0.19%     0.00%  benchmark  [unknown]            [.] 0x00000000010c21e8
+     0.19%     0.00%  benchmark  [unknown]            [.] 0x00000000010c16f0
+     0.19%     0.19%  benchmark  libfabric.so.1.16.2  [.] ofi_cq_progress
+     0.17%     0.17%  benchmark  libfabric.so.1.16.2  [.] rxr_ep_progress
+     0.17%     0.17%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_entry_release_rx
+     0.17%     0.17%  benchmark  libc-2.26.so         [.] __memset_avx2_unaligned_erms
+     0.16%     0.16%  benchmark  [unknown]            [k] 0xffffffffa9a00000
+     0.16%     0.16%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_alloc_rtw_rx_entry
+     0.15%     0.15%  benchmark  libefa.so.1.1.37.0   [.] efa_wq_put_wrid_idx_unlocked
+     0.15%     0.15%  benchmark  libpthread-2.26.so   [.] pthread_spin_unlock
+     0.11%     0.11%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_post_handshake_or_queue
+     0.11%     0.00%  benchmark  [unknown]            [.] 0x00000000010c3b98
+     0.11%     0.00%  benchmark  [unknown]            [.] 0x00000000010c4800
+     0.11%     0.11%  benchmark  libfabric.so.1.16.2  [.] ofi_cq_read
+     0.11%     0.11%  benchmark  libfabric.so.1.16.2  [.] ofi_fastlock_acquire
+     0.11%     0.00%  benchmark  [unknown]            [.] 0x00000000010c3af8
+     0.11%     0.00%  benchmark  [unknown]            [.] 0x00000000010c78b0
+     0.09%     0.09%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_req_hdr_size
+     0.09%     0.09%  benchmark  libfabric.so.1.16.2  [.] pthread_spin_lock@plt
+     0.08%     0.08%  benchmark  libfabric.so.1.16.2  [.] rxr_cq_handle_rx_completion
+     0.08%     0.00%  benchmark  [unknown]            [.] 0x00000000010c6528
+     0.08%     0.08%  benchmark  libfabric.so.1.16.2  [.] compare_mr_keys
+     0.05%     0.05%  benchmark  libfabric.so.1.16.2  [.] ofi_fastlock_acquire_noop
+     0.05%     0.05%  benchmark  benchmark            [.] ft_sync
+     0.05%     0.05%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_req_raw_addr
+     0.05%     0.05%  benchmark  libfabric.so.1.16.2  [.] ofi_fastlock_release_noop
+     0.04%     0.00%  benchmark  libfabric.so.1.16.2  [.] rxr_ep_cancel
+     0.04%     0.00%  benchmark  libfabric.so.1.16.2  [.] 0x00007fe9557fa9a0
+     0.04%     0.04%  benchmark  libefa.so.1.1.37.0   [.] pthread_spin_unlock@plt
+     0.03%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c903380
+     0.03%     0.00%  benchmark  [unknown]            [.] 0x00007fe90ac0db40
+     0.03%     0.03%  benchmark  libfabric.so.1.16.2  [.] memcpy@plt
+     0.03%     0.03%  benchmark  libefa.so.1.1.37.0   [.] pthread_spin_lock@plt
+     0.03%     0.00%  benchmark  [unknown]            [.] 0x00000000010c64d8
+     0.03%     0.03%  benchmark  libfabric.so.1.16.2  [.] pthread_spin_unlock@plt
+     0.02%     0.00%  benchmark  [unknown]            [.] 0x00000000010c64f8
+     0.01%     0.01%  benchmark  libpthread-2.26.so   [.] __errno_location
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90ba73880
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c140000
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90cdddc80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90add7f40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90d487000
+     0.01%     0.01%  benchmark  libfabric.so.1.16.2  [.] memset@plt
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90a499cc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90a2f9680
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b269d00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90ba89900
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90e119c40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c795800
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90cd649c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90cf0dd00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90bdd0f40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90a628900
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90a296440
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90ceaf140
+     0.01%     0.01%  benchmark  benchmark            [.] __errno_location@plt
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c801740
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b6cf9c0
+     0.01%     0.01%  benchmark  libfabric.so.1.16.2  [.] ofi_fastlock_release
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90db2e040
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90d4b5440
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c43a480
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90e0b8d40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90e2877c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90a411340
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b457500
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90df772c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90afba700
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b649380
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b191e80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90ac9ce80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90a3e2f00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90d3ecc80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90baeee80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c42adc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c6ebdc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c049400
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90d3db280
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90dfc4480
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b085200
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c61a900
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b8f6640
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b3ff300
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90ad55f80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90e12d980
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c9b3780
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90a24b5c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90d3d8f40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90a3a7740
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b83b200
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90cba9c80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90dc6d780
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90e40d700
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b920400
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90beb1ac0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90d889a80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90d9be180
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b383d00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b0e3dc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c32d800
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90dd171c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90ce9fa80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90ac23bc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90cda6b40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c2cc900
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90bd43f40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90a94ee80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90dc8e840
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90ddb5bc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90e13f380
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90e00ac80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b694200
+     0.01%     0.01%  benchmark  libfabric.so.1.16.2  [.] rxr_msg_multi_recv_free_posted_entry
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90e17ce80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe909f62b40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90bd36bc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c41b700
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90a9511c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90ad44580
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90ad13e00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90d7b6280
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90a8edf80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90aac5700
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90aaad340
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c06c800
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90a612880
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90ca8d940
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90e35f640
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90bef3c40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90ce33b40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90a1a3ec0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b211b00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90a7fdd40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c5df140
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90dabfdc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90ab590c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90bcf03c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90cb1efc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90d24e980
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90d949540
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90aadfe00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c098900
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c2a2b40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90ddd6c80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c052100
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c6dc700
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90be60280
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90a438dc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90ae0aa00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe909f11300
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90a888a00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90d719bc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b0f1140
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90dbe0780
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90abeca80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c3ad480
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90d741640
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b2cac00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90abcdd00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b61af40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90d0b7040
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90d0a7980
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90cae14c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90a4c5dc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe909ee5200
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90d439e40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90cf31100
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90a432400
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90d375d00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90de39ec0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b154380
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90abdb080
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c6a0f40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90d1dc080
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b2b0500
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90aeff2c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90d4732c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90ac5ad00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90cffdf40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b8c3b80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90e17ab40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b9e8bc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90a4ff240
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90bc29f40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90a702ac0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c243f80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90a0784c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90e05c4c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c34e8c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe909fb2040
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90b298140
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c179480
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c1a3240
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90e33e580
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90c859940
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe909f296c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007fe90ab7e800
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2  [.] smr_create
+     0.00%     0.00%  benchmark  libc-2.26.so         [.] _int_malloc
+     0.00%     0.00%  benchmark  ld-2.26.so           [.] do_lookup_x
+     0.00%     0.00%  benchmark  [unknown]            [.] 0xecb8b295526629cf
+     0.00%     0.00%  benchmark  libc-2.26.so         [.] __sleep
+     0.00%     0.00%  benchmark  benchmark            [.] ft_init_oob
+     0.00%     0.00%  benchmark  libpthread-2.26.so   [.] __libc_connect
+     0.00%     0.00%  benchmark  ld-2.26.so           [.] _start
+
+
+#
+# (Tip: To report cacheline events from previous recording: perf c2c report)
+#

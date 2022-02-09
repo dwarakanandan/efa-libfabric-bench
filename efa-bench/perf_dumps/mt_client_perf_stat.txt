@@ -1,0 +1,50 @@
+----=== CLIENT PERF STATS ====----
+
+BATCH SIZE   2 THREADS X 100: 10071.24 MB/sec
+
+ Performance counter stats for './benchmark --flagfile=client.conf --batch=100':
+
+         23,406.75 msec task-clock:u              #    1.815 CPUs utilized          
+                 0      context-switches:u        #    0.000 K/sec                  
+                 0      cpu-migrations:u          #    0.000 K/sec                  
+          5,53,481      page-faults:u             #    0.024 M/sec                  
+   76,60,06,32,827      cycles:u                  #    3.273 GHz                    
+   58,18,23,66,776      instructions:u            #    0.76  insn per cycle         
+   12,40,20,73,084      branches:u                #  529.850 M/sec                  
+       1,51,22,265      branch-misses:u           #    0.12% of all branches        
+
+      12.893366987 seconds time elapsed
+
+      22.224981000 seconds user
+       1.273099000 seconds sys
+
+
+
+
+BATCH SIZE   2 THREADS X 110: 5569.78 MB/sec
+
+ Performance counter stats for './benchmark --flagfile=client.conf --batch=110':
+
+         23,806.50 msec task-clock:u              #    1.819 CPUs utilized          
+                 0      context-switches:u        #    0.000 K/sec                  
+                 0      cpu-migrations:u          #    0.000 K/sec                  
+          5,53,336      page-faults:u             #    0.023 M/sec                  
+   77,38,57,16,920      cycles:u                  #    3.251 GHz                    
+   95,08,34,75,897      instructions:u            #    1.23  insn per cycle         
+   22,30,35,78,487      branches:u                #  936.869 M/sec                  
+       1,19,00,851      branch-misses:u           #    0.05% of all branches        
+
+      13.090952592 seconds time elapsed
+
+      22.704511000 seconds user
+       1.188430000 seconds sys
+
+
+------------------------------------------------------------------------------------------------------------
+
+INSTRUCTIONS NEEDED PER MBPS:
+
+INS_100 =  58182366776 / 10071.24  = 5777080
+INS_110 = 420290860409 / 12157.76 = 17071316
+
+INS_110 / INS_100 =  17071316 / 5777080 = 2.955

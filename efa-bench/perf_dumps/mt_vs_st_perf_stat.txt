@@ -1,0 +1,92 @@
+----=== SERVER PERF STATS ====----
+
+BATCH SIZE 1 THREADS X 80 => 80 : 5563.27 MB/sec
+
+ Performance counter stats for './benchmark --flagfile=server.conf --threads=1 batch=80 --cq_try=0.9':
+
+         14,397.93 msec task-clock:u              #    1.117 CPUs utilized          
+                 0      context-switches:u        #    0.000 K/sec                  
+                 0      cpu-migrations:u          #    0.000 K/sec                  
+          2,77,019      page-faults:u             #    0.019 M/sec                  
+   45,82,56,58,018      cycles:u                  #    3.183 GHz                    
+   61,38,91,51,368      instructions:u            #    1.34  insn per cycle         
+   12,50,31,51,473      branches:u                #  868.399 M/sec                  
+         66,80,126      branch-misses:u           #    0.05% of all branches        
+
+      12.893707762 seconds time elapsed
+
+      13.679111000 seconds user
+       0.808937000 seconds sys
+
+
+BATCH SIZE 8 THREADS X 10 => 80 : 12157.76 MB/sec
+
+ Performance counter stats for './benchmark --flagfile=server.conf --threads=8 batch=10 --cq_try=0.9':
+
+         97,084.86 msec task-clock:u              #    7.354 CPUs utilized          
+                 0      context-switches:u        #    0.000 K/sec                  
+                 0      cpu-migrations:u          #    0.000 K/sec                  
+         22,14,396      page-faults:u             #    0.023 M/sec                  
+ 2,94,05,93,36,794      cycles:u                  #    3.029 GHz                    
+ 4,20,29,08,60,409      instructions:u            #    1.43  insn per cycle         
+   99,09,95,93,223      branches:u                # 1020.752 M/sec                  
+       3,57,62,235      branch-misses:u           #    0.04% of all branches        
+
+      13.202391328 seconds time elapsed
+
+      89.664576000 seconds user
+       7.511977000 seconds sys
+
+
+------------------------------------------------------------------------------------------------------------
+
+----=== CLIENT PERF STATS ====----
+
+BATCH SIZE 1 THREADS X 80 => 80 : 5563.27 MB/sec
+
+ Performance counter stats for './benchmark --flagfile=client.conf --threads=1 batch=80':
+
+         11,568.85 msec task-clock:u              #    0.913 CPUs utilized          
+                 0      context-switches:u        #    0.000 K/sec                  
+                 0      cpu-migrations:u          #    0.000 K/sec                  
+          2,76,574      page-faults:u             #    0.024 M/sec                  
+   38,19,77,46,029      cycles:u                  #    3.302 GHz                    
+   22,72,59,07,265      instructions:u            #    0.59  insn per cycle         
+    4,54,30,41,211      branches:u                #  392.696 M/sec                  
+         39,77,008      branch-misses:u           #    0.09% of all branches        
+
+      12.666727343 seconds time elapsed
+
+      11.088429000 seconds user
+       0.563604000 seconds sys
+
+
+
+BATCH SIZE 8 THREADS X 10 => 80 : 12157.76 MB/sec
+
+ Performance counter stats for './benchmark --flagfile=client.conf --threads=8 batch=10':
+
+         95,588.09 msec task-clock:u              #    6.969 CPUs utilized          
+                 0      context-switches:u        #    0.000 K/sec                  
+                 0      cpu-migrations:u          #    0.000 K/sec                  
+         22,12,773      page-faults:u             #    0.023 M/sec                  
+ 3,03,77,05,35,924      cycles:u                  #    3.178 GHz                    
+ 3,51,43,97,74,286      instructions:u            #    1.16  insn per cycle         
+   83,49,83,31,885      branches:u                #  873.522 M/sec                  
+       2,32,19,252      branch-misses:u           #    0.03% of all branches        
+
+      13.715541605 seconds time elapsed
+
+      90.108032000 seconds user
+       5.604705000 seconds sys
+
+
+
+------------------------------------------------------------------------------------------------------------
+
+INSTRUCTIONS NEEDED PER MBPS:
+
+INS_1_THREAD =  61389151368 / 5563.27  = 11034724
+INS_8_THREAD = 420290860409 / 12157.76 = 34569761
+
+INS_8_THREAD / INS_1_THREAD =  34569761 / 11034724 = 3.1328
