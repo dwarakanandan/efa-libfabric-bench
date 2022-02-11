@@ -178,8 +178,6 @@ void SendRecvClient::latency()
 	common::setBaseFabricHints(hints);
 
 	size_t workerId = 0;
-	common::workerConnectionStatus.push_back(false);
-	common::workerOperationCounter.push_back(0);
 
 	Client client = Client(FLAGS_provider, FLAGS_endpoint, std::to_string(FLAGS_port + workerId),
 						   std::to_string(FLAGS_oob_port + workerId), hints, FLAGS_dst_addr);

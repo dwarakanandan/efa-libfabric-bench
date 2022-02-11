@@ -3,6 +3,10 @@
 CsvLogger::CsvLogger(BenchmarkContext context)
 {
     this->context = context;
+}
+
+void CsvLogger::start()
+{
     headerFields.push_back("timestamp");
     headerFields.push_back("experiment_name");
     headerFields.push_back("provider");
@@ -19,10 +23,6 @@ CsvLogger::CsvLogger(BenchmarkContext context)
     headerFields.push_back("rx_bw_mbps");
     headerFields.push_back("app_bw_mbps");
     headerFields.push_back("latency_usec");
-}
-
-void CsvLogger::start()
-{
     this->lThread = std::thread(&CsvLogger::loggerTask, this);
 }
 
@@ -168,4 +168,45 @@ std::stringstream CsvLogger::logRow(CsvStat stat)
     ss << stat.latency;
     ss << std::endl;
     return ss;
+}
+
+void CsvLogger::dumpLatencyStats(std::vector<std::chrono::_V2::steady_clock::time_point> iterationTimestamps)
+{
+    size_t i;
+    std::stringstream hf;
+
+    this->statsFile.open(FLAGS_stat_file + ".csv");
+
+    headerFields.push_back("iteration");
+    headerFields.push_back("experiment_name");
+    headerFields.push_back("provider");
+    headerFields.push_back("endpoint");
+    headerFields.push_back("node_type");
+    headerFields.push_back("latency_usec");
+
+    for (i = 0; i < headerFields.size() - 1; i++)
+    {
+        hf << headerFields[i] << ",";
+    }
+    hf << headerFields[i] << std::endl;
+
+    this->statsFile << hf.str();
+    // std::cout << hf.str();
+
+    for (i = 0; i < this->context.iterations - 1; i++)
+    {
+        auto latency = iterationTimestamps[i + 1] - iterationTimestamps[i];
+        std::stringstream ss;
+        ss << std::fixed << std::setprecision(2);
+        ss << i + 1 << ",";
+        ss << this->context.experimentName << ",";
+        ss << this->context.provider << ",";
+        ss << this->context.endpoint << ",";
+        ss << this->context.nodeType << ",";
+        ss << latency.count() / (this->context.xfersPerIter * 1000.0);
+        ss << std::endl;
+        this->statsFile << ss.str();
+        // std::cout << ss.str();
+    }
+    this->statsFile.close();
 }

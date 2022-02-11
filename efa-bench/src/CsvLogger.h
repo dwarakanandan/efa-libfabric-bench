@@ -54,4 +54,6 @@ public:
     double calculatePktsPsec(uint64_t initial, uint64_t current, int timeElapsed);
 
     std::stringstream logRow(CsvStat stat);
+
+    void dumpLatencyStats(std::vector<std::chrono::_V2::steady_clock::time_point> iterationTimestamps);
 };

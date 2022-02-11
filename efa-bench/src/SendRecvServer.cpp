@@ -216,6 +216,7 @@ void SendRecvServer::latency()
     server.sync();
 
     server.initTxBuffer(FLAGS_payload);
+    std::vector<std::chrono::_V2::steady_clock::time_point> iterationTimestamps;
 
     server.startTimer();
     for (int i = 0; i < FLAGS_iterations; i++)
@@ -226,8 +227,17 @@ void SendRecvServer::latency()
         ret = server.tx();
         if (ret)
             return;
+
+        iterationTimestamps.push_back(std::chrono::steady_clock::now());
     }
     server.stopTimer();
+
+    BenchmarkContext context;
+    common::initBenchmarkContext(&context);
+    context.xfersPerIter = 2;
+    context.iterations = FLAGS_iterations;
+    CsvLogger logger = CsvLogger(context);
+    logger.dumpLatencyStats(iterationTimestamps);
 
     server.showTransferStatistics(FLAGS_iterations, 2);
 }

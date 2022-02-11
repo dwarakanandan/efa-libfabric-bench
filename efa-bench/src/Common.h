@@ -61,6 +61,7 @@ struct BenchmarkContext
     std::string operationType;
     uint64_t msgSize;
     uint64_t xfersPerIter;
+    uint64_t iterations;
 };
 
 namespace common
