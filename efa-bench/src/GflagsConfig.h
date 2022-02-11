@@ -27,3 +27,4 @@ DECLARE_string(rma_op);
 DECLARE_string(hw_counters);
 DECLARE_string(stat_file);
 DECLARE_uint32(threads);
+DECLARE_uint32(saturation_bw);

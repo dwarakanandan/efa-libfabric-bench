@@ -38,6 +38,8 @@ void BenchmarkNode::startNode(SendRecvNode *node)
         node->pingPong();
     else if (isBenchmark(FLAGS_benchmark_type, T::BATCH_LARGE_BUFFER))
         node->batchLargeBuffer();
+    else if (isBenchmark(FLAGS_benchmark_type, T::SATURATION_LATENCY))
+        node->saturationLatency();
 }
 
 void BenchmarkNode::startNode(RmaNode *node)
@@ -48,7 +50,7 @@ void BenchmarkNode::startNode(RmaNode *node)
         node->batch();
     else if (isBenchmark(FLAGS_benchmark_type, T::RMA_INJECT))
         node->inject();
-    else if (isBenchmark(FLAGS_benchmark_type, T::RMA_SEL_COMP))
+    else if (isBenchmark(FLAGS_benchmark_type, T::RMA_SELECTIVE_COMP))
         node->batchSelectiveCompletion();
     else if (isBenchmark(FLAGS_benchmark_type, T::RMA_LARGE_BUFFER))
         node->batchLargeBuffer();

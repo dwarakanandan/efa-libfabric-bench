@@ -16,4 +16,6 @@ public:
     virtual void latency() = 0;
 
     virtual void capabilityTest() = 0;
+
+    virtual void saturationLatency() = 0;
 };

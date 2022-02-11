@@ -8,6 +8,10 @@ private:
 
     void _batchWorker(size_t workerId);
 
+    void _latencyWorker(size_t workerId);
+
+    void _trafficGenerator(size_t workerId);
+
 public:
     void pingPong();
 
@@ -20,4 +24,6 @@ public:
     void latency();
 
     void capabilityTest();
+
+    void saturationLatency();
 };

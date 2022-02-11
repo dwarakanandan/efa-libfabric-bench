@@ -7,12 +7,7 @@ bool common::isBenchmark(std::string t1, T t2)
 
 bool common::isBenchmarkClassSendRecv(std::string t1)
 {
-    return t1.compare(BENCHMARK_TYPE[T::PING_PONG]) == 0 ||
-           t1.compare(BENCHMARK_TYPE[T::INJECT]) == 0 ||
-           t1.compare(BENCHMARK_TYPE[T::LATENCY]) == 0 ||
-           t1.compare(BENCHMARK_TYPE[T::BATCH]) == 0 ||
-           t1.compare(BENCHMARK_TYPE[T::BATCH_LARGE_BUFFER]) == 0 ||
-           t1.compare(BENCHMARK_TYPE[T::CAPABILITY_TEST]) == 0;
+    return !common::isBenchmarkClassRma(t1);
 }
 
 bool common::isBenchmarkClassRma(std::string t1)
@@ -20,7 +15,7 @@ bool common::isBenchmarkClassRma(std::string t1)
     return t1.compare(BENCHMARK_TYPE[T::RMA]) == 0 ||
            t1.compare(BENCHMARK_TYPE[T::RMA_BATCH]) == 0 ||
            t1.compare(BENCHMARK_TYPE[T::RMA_INJECT]) == 0 ||
-           t1.compare(BENCHMARK_TYPE[T::RMA_SEL_COMP]) == 0 ||
+           t1.compare(BENCHMARK_TYPE[T::RMA_SELECTIVE_COMP]) == 0 ||
            t1.compare(BENCHMARK_TYPE[T::RMA_LARGE_BUFFER]) == 0;
 }
 
@@ -79,4 +74,14 @@ void common::initBenchmarkContext(BenchmarkContext *context)
     context->batchSize = FLAGS_batch;
     context->numThreads = FLAGS_threads;
     context->xfersPerIter = 1;
+}
+
+void common::waitFor(int usec)
+{
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+    while (true)
+    {
+        if (std::chrono::steady_clock::now() - start > std::chrono::microseconds(usec))
+            break;
+    }
 }

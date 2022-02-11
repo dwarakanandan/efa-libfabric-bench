@@ -26,9 +26,10 @@ enum T
     RMA,
     RMA_BATCH,
     RMA_INJECT,
-    RMA_SEL_COMP,
+    RMA_SELECTIVE_COMP,
     RMA_LARGE_BUFFER,
     BATCH_LARGE_BUFFER,
+    SATURATION_LATENCY
 };
 
 static std::map<T, const char *> BENCHMARK_TYPE = {
@@ -40,9 +41,10 @@ static std::map<T, const char *> BENCHMARK_TYPE = {
     {RMA, "rma"},
     {RMA_BATCH, "rma_batch"},
     {RMA_INJECT, "rma_inject"},
-    {RMA_SEL_COMP, "rma_sel_comp"},
+    {RMA_SELECTIVE_COMP, "rma_sel_comp"},
     {RMA_LARGE_BUFFER, "rma_large_buffer"},
     {BATCH_LARGE_BUFFER, "batch_large_buffer"},
+    {SATURATION_LATENCY, "sat_latency"},
 };
 
 static std::map<T, const char *> NODE_TYPE = {
@@ -93,4 +95,6 @@ namespace common
     inline std::vector<bool> workerConnectionStatus;
 
     void generateRandomOffsets(uint64_t *offsets);
+
+    void waitFor(int usec);
 }

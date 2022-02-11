@@ -191,9 +191,8 @@ void CsvLogger::dumpLatencyStats(std::vector<std::chrono::_V2::steady_clock::tim
     hf << headerFields[i] << std::endl;
 
     this->statsFile << hf.str();
-    // std::cout << hf.str();
 
-    for (i = 0; i < this->context.iterations - 1; i++)
+    for (i = 0; i < this->context.iterations; i++)
     {
         auto latency = iterationTimestamps[i + 1] - iterationTimestamps[i];
         std::stringstream ss;
@@ -206,7 +205,6 @@ void CsvLogger::dumpLatencyStats(std::vector<std::chrono::_V2::steady_clock::tim
         ss << latency.count() / (this->context.xfersPerIter * 1000.0);
         ss << std::endl;
         this->statsFile << ss.str();
-        // std::cout << ss.str();
     }
     this->statsFile.close();
 }

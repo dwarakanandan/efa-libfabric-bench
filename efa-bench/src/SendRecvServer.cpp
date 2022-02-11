@@ -201,11 +201,9 @@ void SendRecvServer::batch()
     logger.stop();
 }
 
-void SendRecvServer::latency()
+void SendRecvServer::_latencyWorker(size_t workerId)
 {
     int ret;
-
-    size_t workerId = 0;
 
     fi_info *hints = fi_allocinfo();
     common::setBaseFabricHints(hints);
@@ -219,6 +217,7 @@ void SendRecvServer::latency()
     std::vector<std::chrono::_V2::steady_clock::time_point> iterationTimestamps;
 
     server.startTimer();
+    iterationTimestamps.push_back(std::chrono::steady_clock::now());
     for (int i = 0; i < FLAGS_iterations; i++)
     {
         ret = server.rx();
@@ -240,6 +239,16 @@ void SendRecvServer::latency()
     logger.dumpLatencyStats(iterationTimestamps);
 
     server.showTransferStatistics(FLAGS_iterations, 2);
+}
+
+void SendRecvServer::latency()
+{
+    common::workers.push_back(std::thread(&SendRecvServer::_latencyWorker, this, 0));
+
+    for (std::thread &worker : common::workers)
+    {
+        worker.join();
+    }
 }
 
 void SendRecvServer::capabilityTest()
@@ -330,4 +339,79 @@ void SendRecvServer::batchLargeBuffer()
     logger.stop();
 
     server.showTransferStatistics(common::workerOperationCounter[workerId], 1);
+}
+
+void SendRecvServer::_trafficGenerator(size_t workerId)
+{
+    int ret;
+    fi_info *hints = fi_allocinfo();
+    common::setBaseFabricHints(hints);
+
+    Server server = Server(FLAGS_provider, FLAGS_endpoint,
+                           std::to_string(FLAGS_port + workerId),
+                           std::to_string(FLAGS_oob_port + workerId), hints);
+    server.init();
+    server.sync();
+
+    server.initTxBuffer(8192);
+
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+    server.startTimer();
+
+    common::workerConnectionStatus[workerId] = true;
+
+    int numCqObtained = 0;
+    int cqTry = FLAGS_batch * 1.0;
+
+    while (true)
+    {
+        common::workerOperationCounter[workerId]++;
+
+        ret = server.postTx();
+        if (ret)
+            return;
+        if ((common::workerOperationCounter[workerId] - numCqObtained) >= FLAGS_batch)
+        {
+            ret = server.getNTxCompletion(cqTry);
+            if (ret)
+            {
+                printf("SERVER: getCqCompletion failed\n\n");
+                exit(1);
+            }
+            numCqObtained += cqTry;
+        }
+
+        common::waitFor(FLAGS_saturation_bw);
+
+        if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
+            break;
+    }
+
+    ret = server.getNTxCompletion(common::workerOperationCounter[workerId] - numCqObtained);
+    if (ret)
+    {
+        printf("SERVER: getCqCompletion failed\n\n");
+        exit(1);
+    }
+
+    server.stopTimer();
+
+    common::workerConnectionStatus[workerId] = false;
+
+    server.showTransferStatistics(common::workerOperationCounter[workerId], 1);
+}
+
+void SendRecvServer::saturationLatency()
+{
+    for (size_t i = 1; i < FLAGS_threads; i++)
+    {
+        common::workerConnectionStatus.push_back(false);
+        common::workerOperationCounter.push_back(0);
+        common::workers.push_back(std::thread(&SendRecvServer::_trafficGenerator, this, i));
+    }
+
+    for (std::thread &worker : common::workers)
+    {
+        worker.join();
+    }
 }

@@ -171,13 +171,11 @@ void SendRecvClient::multiRecvBatch()
 	client.showTransferStatistics(common::workerOperationCounter[workerId], 1);
 }
 
-void SendRecvClient::latency()
+void SendRecvClient::_latencyWorker(size_t workerId)
 {
 	int ret;
 	fi_info *hints = fi_allocinfo();
 	common::setBaseFabricHints(hints);
-
-	size_t workerId = 0;
 
 	Client client = Client(FLAGS_provider, FLAGS_endpoint, std::to_string(FLAGS_port + workerId),
 						   std::to_string(FLAGS_oob_port + workerId), hints, FLAGS_dst_addr);
@@ -199,6 +197,16 @@ void SendRecvClient::latency()
 	client.stopTimer();
 
 	client.showTransferStatistics(FLAGS_iterations, 2);
+}
+
+void SendRecvClient::latency()
+{
+	common::workers.push_back(std::thread(&SendRecvClient::_latencyWorker, this, 0));
+
+	for (std::thread &worker : common::workers)
+	{
+		worker.join();
+	}
 }
 
 void SendRecvClient::capabilityTest()
@@ -254,4 +262,50 @@ void SendRecvClient::batchLargeBuffer()
 	client.stopTimer();
 
 	client.showTransferStatistics(common::workerOperationCounter[workerId], 1);
+}
+
+void SendRecvClient::_trafficGenerator(size_t workerId)
+{
+	int ret;
+	fi_info *hints = fi_allocinfo();
+	common::setBaseFabricHints(hints);
+
+	Client client = Client(FLAGS_provider, FLAGS_endpoint,
+						   std::to_string(FLAGS_port + workerId),
+						   std::to_string(FLAGS_oob_port + workerId),
+						   hints, FLAGS_dst_addr);
+	client.init();
+	client.sync();
+
+	client.initTxBuffer(8192);
+
+	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+	client.startTimer();
+	while (true)
+	{
+		common::workerOperationCounter[workerId]++;
+		ret = client.rx();
+		if (ret)
+			return;
+		if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
+			break;
+	}
+	client.stopTimer();
+
+	client.showTransferStatistics(common::workerOperationCounter[workerId], 1);
+}
+
+void SendRecvClient::saturationLatency()
+{
+	for (size_t i = 1; i < FLAGS_threads; i++)
+	{
+		common::workerConnectionStatus.push_back(false);
+		common::workerOperationCounter.push_back(0);
+		common::workers.push_back(std::thread(&SendRecvClient::_batchWorker, this, i));
+	}
+
+	for (std::thread &worker : common::workers)
+	{
+		worker.join();
+	}
 }
