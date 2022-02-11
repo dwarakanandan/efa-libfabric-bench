@@ -297,7 +297,7 @@ void SendRecvClient::_trafficGenerator(size_t workerId)
 
 void SendRecvClient::saturationLatency()
 {
-	for (size_t i = 1; i < FLAGS_threads; i++)
+	for (size_t i = 0; i < FLAGS_threads; i++)
 	{
 		common::workerConnectionStatus.push_back(false);
 		common::workerOperationCounter.push_back(0);
