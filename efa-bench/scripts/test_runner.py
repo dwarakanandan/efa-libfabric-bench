@@ -349,8 +349,8 @@ if __name__ == "__main__":
     # runRMASelectiveCompletion('write', 100)
     # runRMASelectiveCompletion('read', 100)
 
-    # runLatencyDGRAM()
-    # runLatencyRDM()
+    runLatencyDGRAM()
+    runLatencyRDM()
     # runLatencyRDMTagged()
 
     # for batch in BATCH_SIZES_SR:

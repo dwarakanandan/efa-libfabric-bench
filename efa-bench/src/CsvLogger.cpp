@@ -182,6 +182,7 @@ void CsvLogger::dumpLatencyStats(std::vector<std::chrono::_V2::steady_clock::tim
     headerFields.push_back("provider");
     headerFields.push_back("endpoint");
     headerFields.push_back("node_type");
+    headerFields.push_back("message_size");
     headerFields.push_back("latency_usec");
 
     for (i = 0; i < headerFields.size() - 1; i++)
@@ -202,6 +203,7 @@ void CsvLogger::dumpLatencyStats(std::vector<std::chrono::_V2::steady_clock::tim
         ss << this->context.provider << ",";
         ss << this->context.endpoint << ",";
         ss << this->context.nodeType << ",";
+        ss << this->context.msgSize << ",";
         ss << latency.count() / (this->context.xfersPerIter * 1000.0);
         ss << std::endl;
         this->statsFile << ss.str();
