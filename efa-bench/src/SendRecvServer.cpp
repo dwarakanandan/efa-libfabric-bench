@@ -343,6 +343,8 @@ void SendRecvServer::batchLargeBuffer()
 
 void SendRecvServer::_trafficGenerator(size_t workerId)
 {
+    uint32_t override_batch_size = 10;
+    uint32_t override_payload = 8192;
     int ret;
     fi_info *hints = fi_allocinfo();
     common::setBaseFabricHints(hints);
@@ -353,7 +355,7 @@ void SendRecvServer::_trafficGenerator(size_t workerId)
     server.init();
     server.sync();
 
-    server.initTxBuffer(8192);
+    server.initTxBuffer(override_payload);
 
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
     server.startTimer();
@@ -361,7 +363,10 @@ void SendRecvServer::_trafficGenerator(size_t workerId)
     common::workerConnectionStatus[workerId] = true;
 
     int numCqObtained = 0;
-    int cqTry = FLAGS_batch * 1.0;
+    int cqTry = override_batch_size;
+
+    int elapsed_sec = 0;
+    std::chrono::steady_clock::time_point checkpoint = std::chrono::steady_clock::now();
 
     while (true)
     {
@@ -370,7 +375,7 @@ void SendRecvServer::_trafficGenerator(size_t workerId)
         ret = server.postTx();
         if (ret)
             return;
-        if ((common::workerOperationCounter[workerId] - numCqObtained) >= FLAGS_batch)
+        if ((common::workerOperationCounter[workerId] - numCqObtained) >= override_batch_size)
         {
             ret = server.getNTxCompletion(cqTry);
             if (ret)
@@ -381,9 +386,17 @@ void SendRecvServer::_trafficGenerator(size_t workerId)
             numCqObtained += cqTry;
         }
 
-        common::waitFor(FLAGS_saturation_bw);
+        common::waitFor(FLAGS_saturation_wait);
 
-        if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
+        std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+        if (workerId == 0 && (now - checkpoint) > std::chrono::seconds(1))
+        {
+            checkpoint = std::chrono::steady_clock::now();
+            double txBw = (common::workerOperationCounter[workerId] * override_payload) / (++elapsed_sec);
+            std::cout << std::fixed << std::setprecision(2) << "Saturated Bandwidth: " << (txBw / 1000000.0) * FLAGS_threads << " MB/sec" << std::endl;
+        }
+
+        if (now - start > std::chrono::seconds(FLAGS_runtime))
             break;
     }
 
@@ -398,7 +411,7 @@ void SendRecvServer::_trafficGenerator(size_t workerId)
 
     common::workerConnectionStatus[workerId] = false;
 
-    server.showTransferStatistics(common::workerOperationCounter[workerId], 1);
+    // server.showTransferStatistics(common::workerOperationCounter[workerId], 1);
 }
 
 void SendRecvServer::saturationLatency()
@@ -409,6 +422,8 @@ void SendRecvServer::saturationLatency()
         common::workerOperationCounter.push_back(0);
         common::workers.push_back(std::thread(&SendRecvServer::_trafficGenerator, this, i));
     }
+
+    common::workers.push_back(std::thread(&SendRecvServer::_latencyWorker, this, FLAGS_threads));
 
     for (std::thread &worker : common::workers)
     {

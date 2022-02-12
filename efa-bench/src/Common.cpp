@@ -76,12 +76,12 @@ void common::initBenchmarkContext(BenchmarkContext *context)
     context->xfersPerIter = 1;
 }
 
-void common::waitFor(int usec)
+void common::waitFor(int nsec)
 {
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
     while (true)
     {
-        if (std::chrono::steady_clock::now() - start > std::chrono::microseconds(usec))
+        if (std::chrono::steady_clock::now() - start > std::chrono::nanoseconds(nsec))
             break;
     }
 }

@@ -266,6 +266,8 @@ void SendRecvClient::batchLargeBuffer()
 
 void SendRecvClient::_trafficGenerator(size_t workerId)
 {
+	uint32_t override_payload = 8192;
+
 	int ret;
 	fi_info *hints = fi_allocinfo();
 	common::setBaseFabricHints(hints);
@@ -277,7 +279,7 @@ void SendRecvClient::_trafficGenerator(size_t workerId)
 	client.init();
 	client.sync();
 
-	client.initTxBuffer(8192);
+	client.initTxBuffer(override_payload);
 
 	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 	client.startTimer();
@@ -292,7 +294,7 @@ void SendRecvClient::_trafficGenerator(size_t workerId)
 	}
 	client.stopTimer();
 
-	client.showTransferStatistics(common::workerOperationCounter[workerId], 1);
+	// client.showTransferStatistics(common::workerOperationCounter[workerId], 1);
 }
 
 void SendRecvClient::saturationLatency()
@@ -301,8 +303,10 @@ void SendRecvClient::saturationLatency()
 	{
 		common::workerConnectionStatus.push_back(false);
 		common::workerOperationCounter.push_back(0);
-		common::workers.push_back(std::thread(&SendRecvClient::_batchWorker, this, i));
+		common::workers.push_back(std::thread(&SendRecvClient::_trafficGenerator, this, i));
 	}
+
+	common::workers.push_back(std::thread(&SendRecvClient::_latencyWorker, this, FLAGS_threads));
 
 	for (std::thread &worker : common::workers)
 	{

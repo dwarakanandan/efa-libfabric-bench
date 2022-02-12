@@ -34,4 +34,4 @@ DEFINE_string(rma_op, "write", "RMA Operation Eg: read/write");
 DEFINE_string(hw_counters, "/sys/class/infiniband/rdmap0s6/ports/1/hw_counters/", "Path to network interface HW Counters");
 DEFINE_string(stat_file, "stat-file", "Output stats file name");
 DEFINE_uint32(threads, 1, "Thread count / Num of connection streams");
-DEFINE_uint32(saturation_bw, 1000, "Target saturation bandwidth in MB/sec");
+DEFINE_uint32(saturation_wait, 10000, "Wait interval between iterations in nano seconds");
