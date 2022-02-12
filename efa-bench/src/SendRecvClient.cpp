@@ -171,7 +171,7 @@ void SendRecvClient::multiRecvBatch()
 	client.showTransferStatistics(common::workerOperationCounter[workerId], 1);
 }
 
-void SendRecvClient::_latencyWorker(size_t workerId)
+void SendRecvClient::_latencyWorker(size_t workerId, int warmup_time)
 {
 	int ret;
 	fi_info *hints = fi_allocinfo();
@@ -183,6 +183,8 @@ void SendRecvClient::_latencyWorker(size_t workerId)
 	client.sync();
 
 	client.initTxBuffer(FLAGS_payload);
+
+	std::this_thread::sleep_for(std::chrono::seconds(warmup_time));
 
 	client.startTimer();
 	for (int i = 0; i < FLAGS_iterations; i++)
@@ -201,7 +203,7 @@ void SendRecvClient::_latencyWorker(size_t workerId)
 
 void SendRecvClient::latency()
 {
-	common::workers.push_back(std::thread(&SendRecvClient::_latencyWorker, this, 0));
+	common::workers.push_back(std::thread(&SendRecvClient::_latencyWorker, this, 0, 1));
 
 	for (std::thread &worker : common::workers)
 	{
@@ -306,7 +308,7 @@ void SendRecvClient::saturationLatency()
 		common::workers.push_back(std::thread(&SendRecvClient::_trafficGenerator, this, i));
 	}
 
-	common::workers.push_back(std::thread(&SendRecvClient::_latencyWorker, this, FLAGS_threads));
+	common::workers.push_back(std::thread(&SendRecvClient::_latencyWorker, this, FLAGS_threads, 5));
 
 	for (std::thread &worker : common::workers)
 	{

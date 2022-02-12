@@ -201,7 +201,7 @@ void SendRecvServer::batch()
     logger.stop();
 }
 
-void SendRecvServer::_latencyWorker(size_t workerId)
+void SendRecvServer::_latencyWorker(size_t workerId, int warmup_time)
 {
     int ret;
 
@@ -215,6 +215,8 @@ void SendRecvServer::_latencyWorker(size_t workerId)
 
     server.initTxBuffer(FLAGS_payload);
     std::vector<std::chrono::_V2::steady_clock::time_point> iterationTimestamps;
+
+    std::this_thread::sleep_for(std::chrono::seconds(warmup_time));
 
     server.startTimer();
     iterationTimestamps.push_back(std::chrono::steady_clock::now());
@@ -243,7 +245,7 @@ void SendRecvServer::_latencyWorker(size_t workerId)
 
 void SendRecvServer::latency()
 {
-    common::workers.push_back(std::thread(&SendRecvServer::_latencyWorker, this, 0));
+    common::workers.push_back(std::thread(&SendRecvServer::_latencyWorker, this, 0, 1));
 
     for (std::thread &worker : common::workers)
     {
@@ -423,7 +425,7 @@ void SendRecvServer::saturationLatency()
         common::workers.push_back(std::thread(&SendRecvServer::_trafficGenerator, this, i));
     }
 
-    common::workers.push_back(std::thread(&SendRecvServer::_latencyWorker, this, FLAGS_threads));
+    common::workers.push_back(std::thread(&SendRecvServer::_latencyWorker, this, FLAGS_threads, 5));
 
     for (std::thread &worker : common::workers)
     {
