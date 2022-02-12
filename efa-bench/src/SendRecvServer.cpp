@@ -369,6 +369,7 @@ void SendRecvServer::_trafficGenerator(size_t workerId)
 
     int elapsed_sec = 0;
     std::chrono::steady_clock::time_point checkpoint = std::chrono::steady_clock::now();
+    std::vector<double> saturatedTxBw;
 
     while (true)
     {
@@ -395,7 +396,9 @@ void SendRecvServer::_trafficGenerator(size_t workerId)
         {
             checkpoint = std::chrono::steady_clock::now();
             double txBw = (common::workerOperationCounter[workerId] * override_payload) / (++elapsed_sec);
-            std::cout << std::fixed << std::setprecision(2) << "Saturated Bandwidth: " << (txBw / 1000000.0) * FLAGS_threads << " MB/sec" << std::endl;
+            double saturatedBwMbps = (txBw / 1000000.0) * FLAGS_threads;
+            std::cout << std::fixed << std::setprecision(2) << "Saturated Bandwidth: " << saturatedBwMbps << " MB/sec" << std::endl;
+            saturatedTxBw.push_back(saturatedBwMbps);
         }
 
         if (now - start > std::chrono::seconds(FLAGS_runtime))
@@ -412,6 +415,12 @@ void SendRecvServer::_trafficGenerator(size_t workerId)
     server.stopTimer();
 
     common::workerConnectionStatus[workerId] = false;
+
+    if (workerId == 0) {
+        double sum = std::accumulate(saturatedTxBw.begin()+5, saturatedTxBw.end()-3, 0.0l);
+        std::cout << std::fixed << std::setprecision(2) << "Average Saturated Bandwidth: " << sum / (saturatedTxBw.size()-8) << " MB/sec" << std::endl;
+        
+    }
 
     // server.showTransferStatistics(common::workerOperationCounter[workerId], 1);
 }

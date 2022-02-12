@@ -8,6 +8,7 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <numeric>
 
 #include <libefa/Server.h>
 #include <libefa/Client.h>
