@@ -45,6 +45,7 @@ void SendRecvServer::pingPong()
     common::initBenchmarkContext(&context);
     context.xfersPerIter = 2;
     context.operationType = "send";
+    context.batchSize = 1;
 
     for (size_t i = 0; i < FLAGS_threads; i++)
     {
@@ -71,6 +72,7 @@ void SendRecvServer::pingPongInject()
     common::initBenchmarkContext(&context);
     context.xfersPerIter = 2;
     context.operationType = "inject";
+    context.batchSize = 1;
 
     size_t workerId = 0;
     common::workerConnectionStatus.push_back(false);

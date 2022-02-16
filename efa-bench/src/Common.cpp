@@ -66,7 +66,14 @@ void common::generateRandomOffsets(uint64_t *offsets)
 
 void common::initBenchmarkContext(BenchmarkContext *context)
 {
-    context->experimentName = FLAGS_benchmark_type;
+    if (FLAGS_tagged)
+    {
+        context->experimentName = FLAGS_benchmark_type + "_tagged";
+    }
+    else
+    {
+        context->experimentName = FLAGS_benchmark_type;
+    }
     context->endpoint = FLAGS_endpoint;
     context->provider = FLAGS_provider;
     context->msgSize = FLAGS_payload;

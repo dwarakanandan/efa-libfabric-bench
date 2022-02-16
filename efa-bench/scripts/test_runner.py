@@ -26,9 +26,12 @@ else:
     BASE_CONFIG = [
         '--debug', '--provider=efa', '--hw_counters=/sys/class/infiniband/rdmap0s6/ports/1/hw_counters/']
 
-RUNTIME = 10
+RUNTIME = 1
 DGRAM_PAYLOADS = [4, 64, 512, 1024, 4096, 8192]
 JUMBO_PAYLOADS = [4, 64, 512, 1024, 4096, 8192, 16384, 65536]
+BATCH_SIZES = [1, 10, 50, 80, 100, 120]
+BATCH_SIZES_RMA = [1, 10, 100, 200, 300, 500]
+
 MT_DGRAM_PAYLOADS = [64, 1024, 8192]
 MT_JUMBO_PAYLOADS = [64, 1024, 8192, 65536]
 MT_BATCH_SIZES = [1, 10, 50, 80, 100, 120]
@@ -140,7 +143,7 @@ def runPingPongDGRAM():
         payload_flag = '--payload=' + str(payload)
         config = ['--benchmark_type=ping_pong',
                   '--endpoint=dgram', payload_flag]
-        stats_file = 'ping_pong_dgram_' + str(payload)
+        stats_file = 'ping_pong'
         runTestWithConfig(config, stats_file, RUNTIME)
 
 
@@ -148,7 +151,7 @@ def runPingPongRDM():
     for payload in JUMBO_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
         config = ['--benchmark_type=ping_pong', '--endpoint=rdm', payload_flag]
-        stats_file = 'ping_pong_rdm_' + str(payload)
+        stats_file = 'ping_pong'
         runTestWithConfig(config, stats_file, RUNTIME)
 
 
@@ -157,7 +160,7 @@ def runPingPongRDMTagged():
         payload_flag = '--payload=' + str(payload)
         config = ['--benchmark_type=ping_pong',
                   '--endpoint=rdm', '--tagged', payload_flag]
-        stats_file = 'ping_pong_rdm_tagged_' + str(payload)
+        stats_file = 'ping_pong'
         runTestWithConfig(config, stats_file, RUNTIME)
 
 
@@ -203,7 +206,7 @@ def runBatchDGRAM(batch):
         batch_flag = '--batch=' + str(batch)
         config = ['--benchmark_type=batch',
                   '--endpoint=dgram', batch_flag, payload_flag]
-        stats_file = 'batch_dgram_' + str(batch) + 'b_' + str(payload)
+        stats_file = 'batch'
         runTestWithConfig(config, stats_file, RUNTIME)
 
 
@@ -211,10 +214,21 @@ def runBatchRDM(batch):
     for payload in JUMBO_PAYLOADS:
         payload_flag = '--payload=' + str(payload)
         batch_flag = '--batch=' + str(batch)
-        cq_try_flag = '--cq_try=' + str(0.8 if payload <= 8192 else 0.9)
+        cq_try_flag = '--cq_try=' + str(0.8 if payload < 8192 else 0.9)
         config = ['--benchmark_type=batch',
                   '--endpoint=rdm', batch_flag, cq_try_flag, payload_flag]
-        stats_file = 'batch_rdm_' + str(batch) + 'b_' + str(payload)
+        stats_file = 'batch'
+        runTestWithConfig(config, stats_file, RUNTIME)
+
+
+def runBatchSelectiveComp(batch):
+    for payload in JUMBO_PAYLOADS:
+        payload_flag = '--payload=' + str(payload)
+        batch_flag = '--batch=' + str(batch)
+        cq_try_flag = '--cq_try=' + str(0.9 if payload < 8192 else 1.0)
+        config = ['--benchmark_type=batch_sel_comp',
+                  '--endpoint=rdm', batch_flag, cq_try_flag, payload_flag]
+        stats_file = 'batch'
         runTestWithConfig(config, stats_file, RUNTIME)
 
 
@@ -341,23 +355,27 @@ def runMultiThreadRMABatch(rma_op, thread_count, batch):
 
 
 if __name__ == "__main__":
-    # runPingPongDGRAM()
-    # runPingPongRDM()
-    # runPingPongRDMTagged()
+    runPingPongDGRAM()
+    runPingPongRDM()
+    runPingPongRDMTagged()
+
     # runRMA('write')
     # runRMA('read')
     # runRMASelectiveCompletion('write', 100)
     # runRMASelectiveCompletion('read', 100)
 
-    runLatencyDGRAM()
-    runLatencyRDM()
+    # runLatencyDGRAM()
+    # runLatencyRDM()
     # runLatencyRDMTagged()
 
-    # for batch in BATCH_SIZES_SR:
+    # for batch in BATCH_SIZES:
     #     runBatchDGRAM(batch)
 
-    # for batch in BATCH_SIZES_SR:
+    # for batch in BATCH_SIZES:
     #     runBatchRDM(batch)
+    
+    # for batch in BATCH_SIZES:
+    #     runBatchSelectiveComp(batch)
 
     # for batch in BATCH_SIZES_RMA:
     #     runRMABatch('write', batch)
