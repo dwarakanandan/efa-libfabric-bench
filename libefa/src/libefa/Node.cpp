@@ -94,6 +94,11 @@ int libefa::Node::postTx()
     return ft_post_tx(&ctx, ctx.ep, ctx.remote_fi_addr, ctx.opts.transfer_size, NO_CQ_DATA, &ctx.tx_ctx);
 }
 
+int libefa::Node::postTxSelectiveComp(bool enableCompletion)
+{
+    return ft_post_tx_selective_comp(&ctx, ctx.ep, ctx.remote_fi_addr, ctx.opts.transfer_size, NO_CQ_DATA, &ctx.tx_ctx, enableCompletion);
+}
+
 int libefa::Node::postTxBuffer(void *buffer)
 {
     return ft_post_tx_buf(&ctx, ctx.ep, ctx.remote_fi_addr, ctx.opts.transfer_size, NO_CQ_DATA,

@@ -71,6 +71,12 @@ uint64_t CsvLogger::getAggregateOpsCounter()
     return aggregateOps;
 }
 
+bool CsvLogger::fileExists(std::string fname)
+{
+    std::ifstream f(fname.c_str());
+    return f.good();
+}
+
 void CsvLogger::loggerTask()
 {
     while (this->getAggregateConnectionStatus() == false)
@@ -78,11 +84,19 @@ void CsvLogger::loggerTask()
     }
 
     std::stringstream ss;
-    this->statsFile.open(FLAGS_stat_file + ".csv");
+    std::string fname = FLAGS_stat_file + ".csv";
 
-    ss = this->logHeader();
-    this->statsFile << ss.str();
-    std::cout << ss.str();
+    if (this->fileExists(fname))
+    {
+        this->statsFile.open(fname, std::ios_base::app);
+    }
+    else
+    {
+        this->statsFile.open(fname);
+        ss = this->logHeader();
+        this->statsFile << ss.str();
+        std::cout << ss.str();
+    }
 
     int timestamp = 0;
     std::string tx_bytes, rx_bytes, tx_packets, rx_packets;
@@ -175,8 +189,6 @@ void CsvLogger::dumpLatencyStats(std::vector<std::chrono::_V2::steady_clock::tim
     size_t i;
     std::stringstream hf;
 
-    this->statsFile.open(FLAGS_stat_file + ".csv");
-
     headerFields.push_back("iteration");
     headerFields.push_back("experiment_name");
     headerFields.push_back("provider");
@@ -191,7 +203,16 @@ void CsvLogger::dumpLatencyStats(std::vector<std::chrono::_V2::steady_clock::tim
     }
     hf << headerFields[i] << std::endl;
 
-    this->statsFile << hf.str();
+    std::string fname = FLAGS_stat_file + ".csv";
+    if (this->fileExists(fname))
+    {
+        this->statsFile.open(fname, std::ios_base::app);
+    }
+    else
+    {
+        this->statsFile.open(fname);
+        this->statsFile << hf.str();
+    }
 
     for (i = 0; i < this->context.iterations; i++)
     {

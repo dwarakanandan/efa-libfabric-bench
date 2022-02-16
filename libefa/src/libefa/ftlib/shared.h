@@ -124,7 +124,7 @@ extern "C"
 	};
 
 	/* for RMA tests --- we want to be able to select fi_writedata, but there is no
- * constant in libfabric for this */
+	 * constant in libfabric for this */
 	enum ft_rma_opcodes
 	{
 		FT_RMA_READ = 1,
@@ -418,9 +418,9 @@ extern "C"
 	}
 
 	/* Set the FI_MSG_PREFIX mode bit in the given fi_info structure and also set
- * the option bit in the given opts structure. If using ft_getinfo, it will
- * return -ENODATA if the provider clears the application requested mdoe bit.
- */
+	 * the option bit in the given opts structure. If using ft_getinfo, it will
+	 * return -ENODATA if the provider clears the application requested mdoe bit.
+	 */
 	static inline void ft_force_prefix(struct fi_info *info, struct ft_opts *opts)
 	{
 		info->mode |= FI_MSG_PREFIX;
@@ -428,8 +428,8 @@ extern "C"
 	}
 
 	/* If force_prefix was not requested, just continue. If it was requested,
- * return true if it was respected by the provider.
- */
+	 * return true if it was respected by the provider.
+	 */
 	static inline bool ft_check_prefix_forced(struct fi_info *info,
 											  struct ft_opts *opts)
 	{
@@ -519,6 +519,9 @@ extern "C"
 
 	ssize_t ft_post_rma_selective_comp(struct ConnectionContext *ctx, enum ft_rma_opcodes op, struct fid_ep *ep, size_t size,
 									   struct fi_rma_iov *remote, void *context, bool enable_completion);
+
+	ssize_t ft_post_tx_selective_comp(struct ConnectionContext *ctx, struct fid_ep *ep, fi_addr_t fi_addr, size_t size,
+									  uint64_t data, void *ctxptr, bool enable_completion);
 
 	int alloc_ep_res_multi_recv(struct ConnectionContext *ctx);
 	int repost_multi_recv(struct ConnectionContext *ctx, int chunk);

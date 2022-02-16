@@ -202,6 +202,86 @@ void SendRecvServer::batch()
     logger.stop();
 }
 
+void SendRecvServer::_batchSelectiveCompletionWorker(size_t workerId)
+{
+    int ret;
+    fi_info *hints = fi_allocinfo();
+    common::setBaseFabricHints(hints);
+
+    Server server = Server(FLAGS_provider, FLAGS_endpoint,
+                           std::to_string(FLAGS_port + workerId),
+                           std::to_string(FLAGS_oob_port + workerId), hints);
+    server.enableSelectiveCompletion();
+    server.init();
+    server.sync();
+
+    server.initTxBuffer(FLAGS_payload);
+
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+    server.startTimer();
+
+    common::workerConnectionStatus[workerId] = true;
+
+    int numPendingRequests = 0;
+    int cqTry = FLAGS_batch * FLAGS_cq_try;
+    if (cqTry < 1)
+    {
+        cqTry = 1;
+    }
+
+    while (true)
+    {
+        if (numPendingRequests == cqTry - 1)
+        {
+            server.postTxSelectiveComp(true);
+        }
+        else
+        {
+            server.postTxSelectiveComp(false);
+        }
+        numPendingRequests++;
+        common::workerOperationCounter[workerId] += 1;
+        if (numPendingRequests > FLAGS_batch)
+        {
+            server.getTxCompletion();
+            numPendingRequests = FLAGS_batch - cqTry;
+        }
+        if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
+            break;
+    }
+
+    server.stopTimer();
+
+    common::workerConnectionStatus[workerId] = false;
+
+    server.showTransferStatistics(common::workerOperationCounter[workerId], 1);
+}
+
+void SendRecvServer::batchSelectiveCompletion()
+{
+
+    BenchmarkContext context;
+    common::initBenchmarkContext(&context);
+    context.operationType = "send";
+
+    for (size_t i = 0; i < FLAGS_threads; i++)
+    {
+        common::workerConnectionStatus.push_back(false);
+        common::workerOperationCounter.push_back(0);
+        common::workers.push_back(std::thread(&SendRecvServer::_batchSelectiveCompletionWorker, this, i));
+    }
+
+    CsvLogger logger = CsvLogger(context);
+    logger.start();
+
+    for (std::thread &worker : common::workers)
+    {
+        worker.join();
+    }
+
+    logger.stop();
+}
+
 void SendRecvServer::_latencyWorker(size_t workerId, int warmup_time)
 {
     int ret;
@@ -417,10 +497,10 @@ void SendRecvServer::_trafficGenerator(size_t workerId)
 
     common::workerConnectionStatus[workerId] = false;
 
-    if (workerId == 0) {
-        double sum = std::accumulate(saturatedTxBw.begin()+5, saturatedTxBw.end()-3, 0.0l);
-        std::cout << std::fixed << std::setprecision(2) << "Average Saturated Bandwidth: " << sum / (saturatedTxBw.size()-8) << " MB/sec" << std::endl;
-        
+    if (workerId == 0)
+    {
+        double sum = std::accumulate(saturatedTxBw.begin() + 5, saturatedTxBw.end() - 3, 0.0l);
+        std::cout << std::fixed << std::setprecision(2) << "Average Saturated Bandwidth: " << sum / (saturatedTxBw.size() - 8) << " MB/sec" << std::endl;
     }
 
     // server.showTransferStatistics(common::workerOperationCounter[workerId], 1);

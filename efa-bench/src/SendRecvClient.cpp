@@ -132,6 +132,21 @@ void SendRecvClient::batch()
 	}
 }
 
+void SendRecvClient::batchSelectiveCompletion()
+{
+	for (size_t i = 0; i < FLAGS_threads; i++)
+	{
+		common::workerConnectionStatus.push_back(false);
+		common::workerOperationCounter.push_back(0);
+		common::workers.push_back(std::thread(&SendRecvClient::_batchWorker, this, i));
+	}
+
+	for (std::thread &worker : common::workers)
+	{
+		worker.join();
+	}
+}
+
 void SendRecvClient::multiRecvBatch()
 {
 	int ret;

@@ -32,6 +32,8 @@ void BenchmarkNode::startNode(SendRecvNode *node)
         node->pingPongInject();
     else if (isBenchmark(FLAGS_benchmark_type, T::BATCH))
         node->batch();
+    else if (isBenchmark(FLAGS_benchmark_type, T::BATCH_SELECTIVE_COMP))
+        node->batchSelectiveCompletion();
     else if (isBenchmark(FLAGS_benchmark_type, T::CAPABILITY_TEST))
         node->capabilityTest();
     else if (isBenchmark(FLAGS_benchmark_type, T::PING_PONG))

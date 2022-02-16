@@ -13,6 +13,8 @@ public:
 
     virtual void batchLargeBuffer() = 0;
 
+    virtual void batchSelectiveCompletion() = 0;
+
     virtual void latency() = 0;
 
     virtual void capabilityTest() = 0;

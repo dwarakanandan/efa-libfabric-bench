@@ -27,6 +27,8 @@ namespace libefa
 
         int postTx();
 
+        int postTxSelectiveComp(bool enableCompletion);
+
         int postTxBuffer(void *buffer);
 
         int getTxCompletion();

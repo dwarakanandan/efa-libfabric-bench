@@ -8,6 +8,8 @@ private:
 
     void _batchWorker(size_t workerId);
 
+    void _batchSelectiveCompletionWorker(size_t workerId);
+
     void _latencyWorker(size_t workerId, int warmup_time);
 
     void _trafficGenerator(size_t workerId);
@@ -20,6 +22,8 @@ public:
     void batch();
 
     void batchLargeBuffer();
+
+    void batchSelectiveCompletion();
 
     void latency();
 

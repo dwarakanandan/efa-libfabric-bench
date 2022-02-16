@@ -55,5 +55,7 @@ public:
 
     std::stringstream logRow(CsvStat stat);
 
+    bool fileExists(std::string fname);
+
     void dumpLatencyStats(std::vector<std::chrono::_V2::steady_clock::time_point> iterationTimestamps);
 };

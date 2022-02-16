@@ -20,6 +20,8 @@ public:
 
     void batchLargeBuffer();
 
+    void batchSelectiveCompletion();
+
     void latency();
 
     void capabilityTest();

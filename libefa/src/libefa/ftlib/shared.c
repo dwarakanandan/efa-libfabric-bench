@@ -750,9 +750,9 @@ static int ft_init(struct ConnectionContext *ctx)
 	ctx->tx_cq_cntr = 0;
 	ctx->rx_cq_cntr = 0;
 
-	//If using device memory for transfers, require OOB address
-	//exchange because extra steps are involved when passing
-	//device buffers into fi_av_insert
+	// If using device memory for transfers, require OOB address
+	// exchange because extra steps are involved when passing
+	// device buffers into fi_av_insert
 	if (ctx->opts.options & FT_OPT_ENABLE_HMEM)
 		ctx->opts.options |= FT_OPT_OOB_ADDR_EXCH;
 
@@ -1449,12 +1449,12 @@ int ft_init_av_dst_addr(struct ConnectionContext *ctx, struct fid_av *av_ptr, st
 
 set_rx_seq_close:
 	/*
-	* For a test which does not have MSG or TAGGED
-	* capabilities, but has RMA/Atomics and uses the OOB sync.
-	* If no recv is going to be posted,
-	* then the rx_seq needs to be incremented to wait on the first RMA/Atomic
-	* completion.
-	*/
+	 * For a test which does not have MSG or TAGGED
+	 * capabilities, but has RMA/Atomics and uses the OOB sync.
+	 * If no recv is going to be posted,
+	 * then the rx_seq needs to be incremented to wait on the first RMA/Atomic
+	 * completion.
+	 */
 	if (!(ctx->fi->caps & FI_MSG) && !(ctx->fi->caps & FI_TAGGED) && ctx->opts.oob_port)
 		ctx->rx_seq++;
 
@@ -2066,6 +2066,11 @@ ssize_t ft_post_tx_buf(struct ConnectionContext *ctx, struct fid_ep *ep, fi_addr
 ssize_t ft_post_tx(struct ConnectionContext *ctx, struct fid_ep *ep, fi_addr_t fi_addr, size_t size,
 				   uint64_t data, void *ctxptr)
 {
+	/**
+	 * When selective completion is enabled, either in case of RMA or SEND,
+	 * the initial handshake packets are forced to generate a completion.
+	 * Subsequent data packets may use ft_post_tx_selective_comp to control completions.
+	 */
 	if (ft_check_opts(ctx, FT_OPT_SELECTIVE_COMP))
 	{
 		size += ft_tx_prefix_size(ctx);
@@ -2081,6 +2086,37 @@ ssize_t ft_post_tx(struct ConnectionContext *ctx, struct fid_ep *ep, fi_addr_t f
 		return ft_post_tx_buf(ctx, ep, fi_addr, size, data,
 							  ctxptr, ctx->tx_buf, ctx->mr_desc, ctx->ft_tag);
 	}
+}
+
+ssize_t ft_post_tx_selective_comp(struct ConnectionContext *ctx, struct fid_ep *ep, fi_addr_t fi_addr, size_t size,
+								  uint64_t data, void *ctxptr, bool enable_completion)
+{
+	uint64_t flags = enable_completion ? FI_COMPLETION : 0;
+	size += ft_tx_prefix_size(ctx);
+
+	struct fi_msg msg;
+	struct iovec msg_iov;
+
+	msg_iov.iov_base = ctx->tx_buf;
+	msg_iov.iov_len = size;
+
+	msg.msg_iov = &msg_iov;
+	msg.desc = &ctx->mr_desc;
+	msg.iov_count = 1;
+	msg.addr = fi_addr;
+	msg.data = NO_CQ_DATA;
+	msg.context = ctxptr;
+
+	FT_POST(fi_sendmsg, ft_progress, ctx->txcq, ctx->tx_seq, &ctx->tx_cq_cntr,
+			"fi_sendmsg", ep, &msg, flags);
+
+	if (!enable_completion)
+	{
+		// No completion will be generated for this request. Manually increment completion cntr
+		ctx->tx_cq_cntr++;
+	}
+
+	return EXIT_SUCCESS;
 }
 
 ssize_t ft_tx(struct ConnectionContext *ctx, struct fid_ep *ep, fi_addr_t fi_addr, size_t size, void *ctxptr)
@@ -4005,9 +4041,9 @@ int alloc_ep_res_multi_recv(struct ConnectionContext *ctx)
 	 */
 	ctx->mr_desc = fi_mr_desc(ctx->mr);
 
-	//Each multi recv buffer will be able to hold at least 2 and
-	//up to 64 messages, allowing proper testing of multi recv
-	//completions and reposting
+	// Each multi recv buffer will be able to hold at least 2 and
+	// up to 64 messages, allowing proper testing of multi recv
+	// completions and reposting
 	ctx->rx_size = MIN(ctx->tx_size * 128, MAX_XFER_SIZE * 4);
 	ctx->comp_per_buf = ctx->rx_size / 2 / ctx->opts.transfer_size;
 	ctx->rx_buf = malloc(ctx->rx_size);
@@ -4051,33 +4087,39 @@ int wait_for_multi_recv_completion(struct ConnectionContext *ctx, int num_comple
 	int i, ret, per_buf_cnt = 0;
 	struct fi_cq_data_entry comp;
 
-	while (num_completions > 0) {
+	while (num_completions > 0)
+	{
 		ret = fi_cq_sread(ctx->rxcq, &comp, 64, NULL, ctx->timeout);
 		if (ret == -FI_EAGAIN)
 			continue;
 
-		if (ret < 0) {
+		if (ret < 0)
+		{
 			FT_PRINTERR("fi_cq_read", ret);
 			return ret;
 		}
 
-		if (comp.flags & FI_RECV) {
-			if (comp.len != ctx->opts.transfer_size) {
+		if (comp.flags & FI_RECV)
+		{
+			if (comp.len != ctx->opts.transfer_size)
+			{
 				FT_ERR("completion length %lu, expected %lu",
-					comp.len, ctx->opts.transfer_size);
+					   comp.len, ctx->opts.transfer_size);
 				return -FI_EIO;
 			}
 			if (ft_check_opts(ctx, FT_OPT_VERIFY_DATA | FT_OPT_ACTIVE) &&
-			    ft_check_buf(ctx, comp.buf, ctx->opts.transfer_size))
+				ft_check_buf(ctx, comp.buf, ctx->opts.transfer_size))
 				return -FI_EIO;
 			per_buf_cnt++;
 			num_completions--;
 		}
 
-		if (comp.flags & FI_MULTI_RECV) {
-			if (per_buf_cnt != ctx->comp_per_buf) {
+		if (comp.flags & FI_MULTI_RECV)
+		{
+			if (per_buf_cnt != ctx->comp_per_buf)
+			{
 				FT_ERR("Received %d completions per buffer, expected %d",
-					per_buf_cnt, ctx->comp_per_buf);
+					   per_buf_cnt, ctx->comp_per_buf);
 				return -FI_EIO;
 			}
 			per_buf_cnt = 0;
