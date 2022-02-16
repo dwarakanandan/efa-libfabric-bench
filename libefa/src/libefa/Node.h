@@ -65,6 +65,8 @@ namespace libefa
 
         int enableSelectiveCompletion();
 
+        int enableFiMore();
+
         int enableLargeBufferInit(size_t buffer_size_gbs);
 
         int rma();

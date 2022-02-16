@@ -30,6 +30,11 @@ int libefa::Node::enableSelectiveCompletion()
     ctx.opts.options |= FT_OPT_SELECTIVE_COMP;
 }
 
+int libefa::Node::enableFiMore()
+{
+    ctx.opts.options |= FT_OPT_FI_MORE;
+}
+
 int libefa::Node::enableLargeBufferInit(size_t buffer_size_gbs)
 {
     ctx.opts.options |= FT_OPT_INIT_LARGE_BUFFER;

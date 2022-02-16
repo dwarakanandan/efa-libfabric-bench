@@ -2071,6 +2071,11 @@ ssize_t ft_post_tx(struct ConnectionContext *ctx, struct fid_ep *ep, fi_addr_t f
 		size += ft_tx_prefix_size(ctx);
 		return ft_sendmsg(ctx, ep, fi_addr, size, ctxptr, FI_COMPLETION);
 	}
+	else if (ft_check_opts(ctx, FT_OPT_FI_MORE))
+	{
+		size += ft_tx_prefix_size(ctx);
+		return ft_sendmsg(ctx, ep, fi_addr, size, ctxptr, FI_MORE);
+	}
 	else
 	{
 		return ft_post_tx_buf(ctx, ep, fi_addr, size, data,
