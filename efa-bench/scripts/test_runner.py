@@ -205,7 +205,7 @@ def runBatchDGRAM(batch):
         payload_flag = '--payload=' + str(payload)
         batch_flag = '--batch=' + str(batch)
         config = ['--benchmark_type=batch',
-                  '--endpoint=dgram', batch_flag, payload_flag]
+                  '--endpoint=dgram', batch_flag, payload_flag, "--cq_try=1.0"]
         stats_file = 'batch'
         runTestWithConfig(config, stats_file, RUNTIME)
 

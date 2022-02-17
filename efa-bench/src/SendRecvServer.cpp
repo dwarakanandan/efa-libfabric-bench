@@ -125,7 +125,10 @@ void SendRecvServer::_batchWorker(size_t workerId)
     Server server = Server(FLAGS_provider, FLAGS_endpoint,
                            std::to_string(FLAGS_port + workerId),
                            std::to_string(FLAGS_oob_port + workerId), hints);
-    server.enableFiMore();
+    if (FLAGS_endpoint == "rdm")
+    {
+        server.enableFiMore();
+    }
     server.init();
     server.sync();
 

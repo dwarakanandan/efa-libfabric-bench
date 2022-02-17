@@ -179,8 +179,8 @@ def parse_file_matching_fields(f_name, experiment, endpoint, payload_size, batch
             read_header = True
             continue
         split = line.rstrip().split(',')
-        if (experiment in split[1]) and \
-            (endpoint in split[3]) and \
+        if (experiment == split[1]) and \
+            (endpoint == split[3]) and \
             (payload_size == int(split[8])) and \
                 (batch_size == int(split[5])):
             list.append(float(split[avg_field]))
@@ -189,46 +189,46 @@ def parse_file_matching_fields(f_name, experiment, endpoint, payload_size, batch
     return round(mean(list), 2)
 
 
-def parse_ping_pong():
+def parse_ping_pong(fname):
     print("\nDGRAM:")
     for payload in PAYLOADS:
         avg = parse_file_matching_fields(
-            "ping_pong.csv", "ping_pong", "dgram", payload, 1, 14)
+            fname, "ping_pong", "dgram", payload, 1, 14)
         print(payload, avg)
 
     print("\nRDM:")
     for payload in JUMBO_PAYLOADS:
         avg = parse_file_matching_fields(
-            "ping_pong.csv", "ping_pong", "rdm", payload, 1, 14)
+            fname, "ping_pong", "rdm", payload, 1, 14)
         print(payload, avg)
 
     print("\nRDM tagged:")
     for payload in JUMBO_PAYLOADS:
         avg = parse_file_matching_fields(
-            "ping_pong.csv", "ping_pong_tagged", "rdm", payload, 1, 14)
+            fname, "ping_pong_tagged", "rdm", payload, 1, 14)
         print(payload, avg)
 
 
-def parse_batch():
+def parse_batch(fname):
     print("\nDGRAM:")
     for payload in PAYLOADS:
         for batch in BATCH_SIZES:
             avg = parse_file_matching_fields(
-                "batch.csv", "batch", "dgram", payload, batch, 14)
+                fname, "batch", "dgram", payload, batch, 14)
             print(payload, batch, avg)
 
     print("\nRDM:")
     for payload in JUMBO_PAYLOADS:
         for batch in BATCH_SIZES:
             avg = parse_file_matching_fields(
-                "batch.csv", "batch", "rdm", payload, batch, 14)
+                fname, "batch", "rdm", payload, batch, 14)
             print(payload, batch, avg)
 
     print("\nRDM sel_comp:")
     for payload in JUMBO_PAYLOADS:
         for batch in BATCH_SIZES:
             avg = parse_file_matching_fields(
-                "batch.csv", "batch_sel_comp", "rdm", payload, batch, 14)
+                fname, "batch_sel_comp", "rdm", payload, batch, 14)
             print(payload, batch, avg)
 
 
@@ -261,6 +261,10 @@ if __name__ == "__main__":
     # parse_mt_batch_tx_bw_latency_jumbo(
     #     'rma_batch_write', THREAD_COUNTS, MT_BATCH_SIZES)
 
-    parse_ping_pong()
-    parse_batch()
+    # parse_ping_pong("ping_pong_run1.csv")
+    # parse_ping_pong("ping_pong_run2.csv")
+    # parse_ping_pong("ping_pong_run3.csv")
+    parse_batch("batch_run1.csv")
+    parse_batch("batch_run2.csv")
+    parse_batch("batch_run3.csv")
     pass
