@@ -2010,6 +2010,7 @@ static int ft_progress(struct fid_cq *cq, uint64_t total, uint64_t *cq_cntr)
 				FT_PRINTERR(op_str, ret);                            \
 				return ret;                                          \
 			}                                                        \
+			printf("FI_EAGAIN received %d\n",ret);\
                                                                      \
 			timeout_save = ctx->timeout;                             \
 			ctx->timeout = 0;                                        \
