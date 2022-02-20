@@ -1,0 +1,753 @@
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 13K of event 'cycles:u'
+# Event count (approx.): 8256616011
+#
+# Children      Self  Command    Shared Object        Symbol                                                                                                                                                                              
+# ........  ........  .........  ...................  ....................................................................................................................................................................................
+#
+    62.91%    62.91%  benchmark  libc-2.26.so         [.] __memmove_avx_unaligned_erms
+            |          
+            |--42.36%--0
+            |          __memmove_avx_unaligned_erms
+            |          
+             --20.36%--__memmove_avx_unaligned_erms
+
+    49.76%     0.00%  benchmark  [unknown]            [.] 0000000000000000
+            |
+            ---0
+               |          
+               |--42.36%--__memmove_avx_unaligned_erms
+               |          
+               |--1.95%--rxr_pkt_entry_alloc
+               |          
+               |--1.75%--rxr_pkt_rtm_total_len
+               |          
+               |--0.70%--pthread_spin_lock
+               |          
+                --0.59%--__memset_avx2_erms
+
+     6.18%     3.52%  benchmark  libc-2.26.so         [.] __memset_avx2_erms
+            |          
+            |--3.12%--0x218000000010c02
+            |          __memset_avx2_erms
+            |          
+             --2.66%--__memset_avx2_erms
+                       0xffffffffb5a00ab0
+
+     5.95%     5.95%  benchmark  libpthread-2.26.so   [.] pthread_spin_lock
+            |          
+            |--4.92%--pthread_spin_lock
+            |          
+             --0.77%--0
+                       |          
+                        --0.70%--pthread_spin_lock
+
+     5.60%     0.00%  benchmark  [unknown]            [.] 0x0218000000010c02
+            |
+            ---0x218000000010c02
+               __memset_avx2_erms
+               |          
+                --2.48%--0xffffffffb5a00ab0
+
+     3.42%     0.28%  benchmark  libfabric.so.1.16.2  [.] rxr_ep_progress_internal
+            |          
+             --3.37%--rxr_ep_progress_internal
+                       |          
+                        --2.93%--rxr_pkt_handle_recv_completion
+
+     2.93%     2.93%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_handle_recv_completion
+            |
+            ---rxr_ep_progress_internal
+               rxr_pkt_handle_recv_completion
+
+     2.67%     2.67%  benchmark  [unknown]            [k] 0xffffffffb5a00ab0
+            |          
+             --2.48%--0x218000000010c02
+                       __memset_avx2_erms
+                       0xffffffffb5a00ab0
+
+     2.50%     2.50%  benchmark  libfabric.so.1.16.2  [.] rxr_cq_proc_pending_items_in_recvwin
+            |
+            ---rxr_cq_proc_pending_items_in_recvwin
+
+     2.43%     0.00%  benchmark  libstdc++.so.6.0.24  [.] execute_native_thread_routine
+            |
+            ---execute_native_thread_routine
+               std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long> > >::_M_run
+               std::thread::_Invoker<std::tuple<void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long> >::operator()
+               std::thread::_Invoker<std::tuple<void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+               |          
+                --2.43%--std::__invoke<void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long>
+                          std::__invoke_impl<void, void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long>
+                          |          
+                           --2.27%--SendRecvClient::_batchWorker
+                                     |          
+                                     |--0.84%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                                     |          |          
+                                     |           --0.76%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+                                     |          
+                                      --0.63%--0x7f2a5ee6f920
+                                                |          
+                                                 --0.62%--__clock_gettime
+
+     2.43%     0.00%  benchmark  benchmark            [.] std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long> > >::_M_run
+            |
+            ---std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long> > >::_M_run
+               std::thread::_Invoker<std::tuple<void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long> >::operator()
+               std::thread::_Invoker<std::tuple<void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+               |          
+                --2.43%--std::__invoke<void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long>
+                          std::__invoke_impl<void, void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long>
+                          |          
+                           --2.27%--SendRecvClient::_batchWorker
+                                     |          
+                                     |--0.84%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                                     |          |          
+                                     |           --0.76%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+                                     |          
+                                      --0.63%--0x7f2a5ee6f920
+                                                |          
+                                                 --0.62%--__clock_gettime
+
+     2.43%     0.00%  benchmark  benchmark            [.] std::thread::_Invoker<std::tuple<void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long> >::operator()
+            |
+            ---std::thread::_Invoker<std::tuple<void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long> >::operator()
+               std::thread::_Invoker<std::tuple<void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+               |          
+                --2.43%--std::__invoke<void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long>
+                          std::__invoke_impl<void, void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long>
+                          |          
+                           --2.27%--SendRecvClient::_batchWorker
+                                     |          
+                                     |--0.84%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                                     |          |          
+                                     |           --0.76%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+                                     |          
+                                      --0.63%--0x7f2a5ee6f920
+                                                |          
+                                                 --0.62%--__clock_gettime
+
+     2.43%     0.00%  benchmark  benchmark            [.] std::thread::_Invoker<std::tuple<void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+            |
+            ---std::thread::_Invoker<std::tuple<void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+               |          
+                --2.43%--std::__invoke<void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long>
+                          std::__invoke_impl<void, void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long>
+                          |          
+                           --2.27%--SendRecvClient::_batchWorker
+                                     |          
+                                     |--0.84%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                                     |          |          
+                                     |           --0.76%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+                                     |          
+                                      --0.63%--0x7f2a5ee6f920
+                                                |          
+                                                 --0.62%--__clock_gettime
+
+     2.43%     0.00%  benchmark  benchmark            [.] std::__invoke_impl<void, void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long>
+            |          
+             --2.43%--std::__invoke_impl<void, void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long>
+                       |          
+                        --2.27%--SendRecvClient::_batchWorker
+                                  |          
+                                  |--0.84%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                                  |          |          
+                                  |           --0.76%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+                                  |          
+                                   --0.63%--0x7f2a5ee6f920
+                                             |          
+                                              --0.62%--__clock_gettime
+
+     2.43%     0.00%  benchmark  benchmark            [.] std::__invoke<void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long>
+            |
+            ---std::__invoke<void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long>
+               std::__invoke_impl<void, void (SendRecvClient::*)(unsigned long), SendRecvClient*, unsigned long>
+               |          
+                --2.27%--SendRecvClient::_batchWorker
+                          |          
+                          |--0.84%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                          |          |          
+                          |           --0.76%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                           --0.63%--0x7f2a5ee6f920
+                                     |          
+                                      --0.62%--__clock_gettime
+
+     2.29%     2.29%  benchmark  libfabric.so.1.16.2  [.] rxr_ep_alloc_rx_entry
+            |
+            ---rxr_ep_alloc_rx_entry
+
+     2.27%     0.13%  benchmark  benchmark            [.] SendRecvClient::_batchWorker
+            |          
+             --2.14%--SendRecvClient::_batchWorker
+                       |          
+                       |--0.84%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                       |          |          
+                       |           --0.76%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+                       |          
+                        --0.63%--0x7f2a5ee6f920
+                                  |          
+                                   --0.62%--__clock_gettime
+
+     2.13%     2.13%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_entry_alloc
+            |          
+             --1.95%--0
+                       rxr_pkt_entry_alloc
+
+     1.75%     1.75%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_rtm_total_len
+            |          
+             --1.75%--0
+                       rxr_pkt_rtm_total_len
+
+     1.46%     1.46%  benchmark  libefa.so.1.1.37.0   [.] efa_poll_cq
+            |
+            ---efa_poll_cq
+
+     0.85%     0.05%  benchmark  benchmark            [.] std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+            |          
+             --0.80%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                       |          
+                        --0.76%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+
+     0.78%     0.20%  benchmark  benchmark            [.] std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+            |          
+             --0.58%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+
+     0.75%     0.75%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_entry_release_rx
+     0.69%     0.00%  benchmark  [unknown]            [.] 0x0000000100007f2a
+            |
+            ---0x100007f2a
+
+     0.66%     0.06%  benchmark  libc-2.26.so         [.] __clock_gettime
+            |          
+             --0.60%--__clock_gettime
+
+     0.63%     0.00%  benchmark  [unknown]            [.] 0x00007f2a5ee6f920
+            |
+            ---0x7f2a5ee6f920
+               |          
+                --0.62%--__clock_gettime
+
+     0.61%     0.61%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_proc_rtm_rta
+     0.51%     0.51%  benchmark  libfabric.so.1.16.2  [.] rxr_msg_alloc_unexp_rx_entry_for_msgrtm
+     0.50%     0.50%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_proc_msgrtm
+     0.46%     0.09%  benchmark  benchmark            [.] std::chrono::duration<long, std::ratio<1l, 1000000000l> >::duration<long, std::ratio<1l, 1l>, void>
+     0.45%     0.45%  benchmark  libefa.so.1.1.37.0   [.] efa_post_recv
+     0.43%     0.43%  benchmark  libfabric.so.1.16.2  [.] efa_post_recv
+     0.42%     0.42%  benchmark  [vdso]               [.] 0x0000000000000758
+     0.42%     0.00%  benchmark  [vdso]               [.] 0x00007ffd7385c758
+     0.38%     0.38%  benchmark  libfabric.so.1.16.2  [.] rxr_cq_reorder_msg
+     0.34%     0.04%  benchmark  benchmark            [.] std::chrono::duration_cast<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, long, std::ratio<1l, 1l> >
+     0.33%     0.00%  benchmark  [unknown]            [.] 0x3736353433323130
+     0.33%     0.33%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_rtm_update_rx_entry
+     0.32%     0.05%  benchmark  benchmark            [.] std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+     0.31%     0.31%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_req_base_hdr_size
+     0.30%     0.30%  benchmark  libfabric.so.1.16.2  [.] rxr_msg_handle_unexp_match.isra.5
+     0.30%     0.17%  benchmark  benchmark            [.] std::chrono::__duration_cast_impl<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::ratio<1000000000l, 1l>, long, false, true>::__cast<long, std::ratio<1l, 1l> >
+     0.29%     0.29%  benchmark  libfabric.so.1.16.2  [.] rxr_ep_post_prov_buf
+     0.28%     0.28%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_req_data_size
+     0.27%     0.27%  benchmark  libfabric.so.1.16.2  [.] rxr_cq_write_rx_completion
+     0.27%     0.27%  benchmark  libfabric.so.1.16.2  [.] rxr_msg_proc_unexp_msg_list
+     0.25%     0.25%  benchmark  benchmark            [.] std::chrono::duration<long, std::ratio<1l, 1000000000l> >::count
+     0.23%     0.23%  benchmark  libefa.so.1.1.37.0   [.] cq_next_sub_cqe_get
+     0.22%     0.22%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_copy_to_rx
+     0.22%     0.22%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_handle_data_copied
+     0.22%     0.22%  benchmark  libfabric.so.1.16.2  [.] ofi_cq_readfrom
+     0.22%     0.22%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_proc_matched_rtm
+     0.21%     0.21%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_handle_rtm_rta_recv
+     0.21%     0.21%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_req_hdr_size
+     0.20%     0.20%  benchmark  libfabric.so.1.16.2  [.] rxr_msg_generic_recv
+     0.18%     0.18%  benchmark  libfabric.so.1.16.2  [.] efa_ahn_qpn_to_peer
+     0.16%     0.09%  benchmark  benchmark            [.] std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+     0.16%     0.16%  benchmark  benchmark            [.] std::chrono::duration<long, std::ratio<1l, 1000000000l> >::duration<long, void>
+     0.14%     0.14%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_proc_matched_eager_rtm
+     0.14%     0.00%  benchmark  [unknown]            [.] 0x00007f2a5ee6f978
+     0.13%     0.13%  benchmark  benchmark            [.] ft_get_cq_comp
+     0.12%     0.00%  benchmark  [unknown]            [.] 0x00007f2a58136b90
+     0.11%     0.00%  benchmark  [unknown]            [.] 0x00007f2a58013af8
+     0.11%     0.00%  benchmark  [unknown]            [.] 0x00007f2a58013070
+     0.10%     0.10%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_entry_clone
+     0.10%     0.10%  benchmark  benchmark            [.] std::chrono::duration<long, std::ratio<1l, 1l> >::duration<unsigned int, void>
+     0.10%     0.00%  benchmark  [unknown]            [.] 0x00007f2a5ee6f660
+     0.10%     0.10%  benchmark  benchmark            [.] ft_post_rx_buf
+     0.09%     0.09%  benchmark  benchmark            [.] libefa::Node::rx
+     0.09%     0.09%  benchmark  benchmark            [.] std::chrono::duration<long, std::ratio<1l, 1l> >::count
+     0.08%     0.08%  benchmark  libfabric.so.1.16.2  [.] smr_ep_progress
+     0.08%     0.08%  benchmark  libfabric.so.1.16.2  [.] rxr_msg_recv
+     0.08%     0.08%  benchmark  libefa.so.1.1.37.0   [.] efa_wq_put_wrid_idx_unlocked
+     0.07%     0.07%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_entry_copy
+     0.07%     0.00%  benchmark  [unknown]            [.] 0x00007f2a58136b30
+     0.06%     0.06%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_proc_received
+     0.06%     0.06%  benchmark  libfabric.so.1.16.2  [.] rxr_cq_handle_rx_completion
+     0.06%     0.06%  benchmark  benchmark            [.] std::vector<unsigned long, std::allocator<unsigned long> >::operator[]
+     0.06%     0.06%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_post_handshake_or_queue
+     0.06%     0.06%  benchmark  libpthread-2.26.so   [.] pthread_spin_unlock
+     0.05%     0.05%  benchmark  libc-2.26.so         [.] __memset_avx2_unaligned_erms
+     0.04%     0.04%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_req_raw_addr
+     0.04%     0.04%  benchmark  libstdc++.so.6.0.24  [.] std::chrono::_V2::steady_clock::now
+     0.04%     0.04%  benchmark  benchmark            [.] ft_post_rx
+     0.04%     0.04%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_get_unexp
+     0.04%     0.04%  benchmark  libfabric.so.1.16.2  [.] pthread_spin_lock@plt
+     0.04%     0.04%  benchmark  benchmark            [.] ft_get_rx_comp
+     0.04%     0.04%  benchmark  libfabric.so.1.16.2  [.] util_cq_read_ctx
+     0.04%     0.00%  benchmark  [unknown]            [k] 0x0000000000000040
+     0.03%     0.00%  benchmark  ld-2.26.so           [.] _dl_sysdep_start
+     0.03%     0.00%  benchmark  ld-2.26.so           [.] dl_main
+     0.03%     0.03%  benchmark  [vdso]               [.] 0x0000000000000a47
+     0.03%     0.00%  benchmark  [vdso]               [.] 0x00007ffd7385ca47
+     0.03%     0.02%  benchmark  ld-2.26.so           [.] _dl_relocate_object
+     0.03%     0.00%  benchmark  libc-2.26.so         [.] _IO_vsprintf
+     0.03%     0.00%  benchmark  [unknown]            [.] 0x00007f2a5c197500
+     0.03%     0.03%  benchmark  libfabric.so.1.16.2  [.] pthread_spin_unlock@plt
+     0.03%     0.03%  benchmark  [vdso]               [.] 0x0000000000000a2f
+     0.03%     0.00%  benchmark  [vdso]               [.] 0x00007ffd7385ca2f
+     0.03%     0.03%  benchmark  [vdso]               [.] 0x0000000000000a40
+     0.03%     0.00%  benchmark  [vdso]               [.] 0x00007ffd7385ca40
+     0.03%     0.03%  benchmark  libfabric.so.1.16.2  [.] ofi_bufpool_grow
+     0.03%     0.03%  benchmark  libfabric.so.1.16.2  [.] efa_cntr_report_rx_completion
+     0.02%     0.02%  benchmark  libc-2.26.so         [.] vfprintf
+     0.02%     0.00%  benchmark  [unknown]            [.] 0x1000653032653a30
+     0.02%     0.02%  benchmark  libfabric.so.1.16.2  [.] efa_ep_recvmsg
+     0.02%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dae0600
+     0.02%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f3afcc0
+     0.02%     0.02%  benchmark  libfabric.so.1.16.2  [.] ofi_cq_read
+     0.02%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0d848400
+     0.02%     0.02%  benchmark  [vdso]               [.] 0x0000000000000a5c
+     0.02%     0.00%  benchmark  [vdso]               [.] 0x00007ffd7385ca5c
+     0.02%     0.02%  benchmark  libstdc++.so.6.0.24  [.] clock_gettime@plt
+     0.02%     0.02%  benchmark  [vdso]               [.] 0x00000000000009fc
+     0.02%     0.00%  benchmark  [vdso]               [.] 0x00007ffd7385c9fc
+     0.02%     0.00%  benchmark  [unknown]            [.] 0x00007f2a58012c98
+     0.02%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e6e1a40
+     0.02%     0.02%  benchmark  [vdso]               [.] 0x0000000000000a84
+     0.02%     0.00%  benchmark  [vdso]               [.] 0x00007ffd7385ca84
+     0.02%     0.02%  benchmark  libfabric.so.1.16.2  [.] ofi_cq_progress
+     0.02%     0.02%  benchmark  libfabric.so.1.16.2  [.] ofi_fastlock_acquire_noop
+     0.02%     0.01%  benchmark  ld-2.26.so           [.] _dl_fixup
+     0.02%     0.02%  benchmark  ld-2.26.so           [.] _dl_lookup_symbol_x
+     0.02%     0.01%  benchmark  libc-2.26.so         [.] __strncpy_sse2_unaligned
+     0.01%     0.01%  benchmark  libfabric.so.1.16.2  [.] smr_create
+     0.01%     0.01%  benchmark  libc-2.26.so         [.] _IO_str_init_static_internal
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dbd8b80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a16cc9640
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a5800ffe0
+     0.01%     0.01%  benchmark  ld-2.26.so           [.] do_lookup_x
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a15b0d640
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dfa9e00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e7d6fc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f39e2c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dd22940
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dd77180
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f550600
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0eb87180
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a12c61d80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a13649a40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a11a83fc0
+     0.01%     0.01%  benchmark  [vdso]               [.] 0x0000000000000a15
+     0.01%     0.00%  benchmark  [vdso]               [.] 0x00007ffd7385ca15
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0defd3c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a16cdb040
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0efb6fc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dda55c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0df60600
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f12b800
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a11ac6e00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a125e27c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e977900
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a1421a880
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a1633c900
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f08e480
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a142de9c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e7f6a00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a127fc0c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a16942c00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e039e00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0d8e7ac0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0db6e2c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ebe6a00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e2f8400
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ed7fcc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ec97ac0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a13f4a1c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0da1fe80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0edeec00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a1388adc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e45ec00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a5c187e40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a11a3d7c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a11b21340
+     0.01%     0.00%  benchmark  libfabric.so.1.16.2  [.] rxr_ep_cancel
+     0.01%     0.00%  benchmark  libfabric.so.1.16.2  [.] 0x00007f2a60cac9a0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e996680
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ee89c40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a11b27d00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f543280
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0eca07c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dc5db40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a5c09d080
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ec93440
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0df1c140
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a16ceb3c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a151a7940
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e023d80
+     0.01%     0.01%  benchmark  [vdso]               [.] 0x0000000000000a4a
+     0.01%     0.00%  benchmark  [vdso]               [.] 0x00007ffd7385ca4a
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a13270d80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a5c15e080
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a15170800
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a5c155380
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f4c9300
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f1060c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0eaee480
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f0c7900
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e9af700
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e6bb640
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f38a580
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e822b00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e4f55c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0df4a580
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0d8607c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f186a00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f4d6680
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a13e43f00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e82b800
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0de4d980
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f4489c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0eaf07c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f2c1100
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dcbb080
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dd7b800
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f09b800
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f26a580
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f4e8d40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ddd2380
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a15e75d40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a12f32440
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0eb3b640
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a5c004380
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e5d9e00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0df01a40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a16d62340
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a5c0ea240
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0d8bd040
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ddf1100
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e5cca80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e2a8240
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e124340
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a11a3b480
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a16d1bb40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0db2e480
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e792b00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0de23bc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ed8ad00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0df3d200
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a1249c6c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f212380
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e56aec0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e7aaec0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a13685200
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e55db40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0edea580
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a158bef40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ed02380
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dea8b80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f316fc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0eadedc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0df82380
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dac1880
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e0b3d80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a1269dc00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f1e9c40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e2e6a00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e86b640
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0da47900
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e82fe80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e2255c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f5221c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0de97180
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ebb7900
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f22a740
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a136acc80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e0755c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f3f7180
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0eabd040
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f3bad00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f31fcc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a11ac2780
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e59d980
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dce7180
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e624c80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a16cbc2c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ed70600
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a11a91340
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e122000
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f1f0600
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e838b80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e4aca80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dd821c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0db4d200
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e1b6680
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e5d7ac0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0edfe2c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ec12b00
+     0.01%     0.01%  benchmark  libfabric.so.1.16.2  [.] memset@plt
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f1a1100
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a16dade80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a124d5b40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dd0ec00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ee52b00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0df27180
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0eb56a00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e17f540
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a58012ce8
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e7b1880
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ecbd200
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a126784c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a16dd9f80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f44d040
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a5c1bcc40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ea53440
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e167180
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0d91a580
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a16c66400
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a11b52780
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e8960c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dc33d80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f4aa580
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0eccec00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f51fe80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f108400
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a13aa6a00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x0000000020275f59
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e56f540
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a163dd640
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f2b60c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0d9021c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ee507c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ee75f00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a11aea200
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e362000
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0d822000
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f461a40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f4a5f00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f5ab800
+     0.01%     0.01%  benchmark  libefa.so.1.1.37.0   [.] pthread_spin_unlock@plt
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ecb8b80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0d885f00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0da59300
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f30bf80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x000000001a83efc5
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f528b80
+     0.01%     0.01%  benchmark  [vdso]               [.] 0x0000000000000a59
+     0.01%     0.00%  benchmark  [vdso]               [.] 0x00007ffd7385ca59
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dabaec0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dacec00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f0c9c40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f332380
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0eba3bc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f268240
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a13133980
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e277ac0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a14288b00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dbcfe80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e6c6680
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a11a15d40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e301100
+     0.01%     0.01%  benchmark  benchmark            [.] std::chrono::time_point<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >::time_since_epoch
+     0.01%     0.01%  benchmark  [vdso]               [.] 0x00000000000009d0
+     0.01%     0.00%  benchmark  [vdso]               [.] 0x00007ffd7385c9d0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a12f20a40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dfb94c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0d855780
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ee9fcc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0eafb800
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0da76a00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dfebf80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e02a740
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f235780
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f41a580
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f5e4c80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a16d47c40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a5c09f3c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a134b6780
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a5c08f040
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a15e94ac0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dd61100
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f0b3bc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a168a4200
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f2db800
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a16c85180
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ef95f00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ecfd040
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a5c171dc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dc83280
+     0.01%     0.01%  benchmark  libfabric.so.1.16.2  [.] rxr_msg_multi_recv_free_posted_entry
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dd8aec0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ed1ca80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dd05f00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f2e6840
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a139c3b40
+     0.01%     0.01%  benchmark  libfabric.so.1.16.2  [.] rxr_msg_alloc_rx_entry
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0eb29c40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a150c6dc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dca89c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a16c9b200
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a14bc6d80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a14e2d840
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e0ce480
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a14eef640
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e2f60c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e923d80
+     0.01%     0.01%  benchmark  [vdso]               [.] 0x0000000000000a12
+     0.01%     0.00%  benchmark  [vdso]               [.] 0x00007ffd7385ca12
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a15431800
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a13d11b40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dca6680
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f4ed3c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a12f0a9c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e49d3c0
+     0.01%     0.01%  benchmark  libfabric.so.1.16.2  [.] memcpy@plt
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a133d5c00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a16d10b00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dffb640
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f2e21c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f145f00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e8b94c0
+     0.01%     0.01%  benchmark  libc-2.26.so         [.] __strchrnul_avx2
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0dc26a00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e77ca80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a16df8d00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a16d05ac0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a16c640c0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0de73d80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a5c162700
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ec0e480
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a14c51a40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f4f8400
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a1258ec40
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e781100
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0efe8400
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x000000002269579d
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a15d29280
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a15688c00
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ea8a580
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e354c80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f446680
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f42bf80
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e3cec00
+     0.01%     0.01%  benchmark  libfabric.so.1.16.2  [.] ofi_av_lookup_fi_addr_unsafe
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0edaedc0
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x000080fe00000024
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0deba580
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x3032653a30366566
+     0.01%     0.00%  benchmark  [unknown]            [.] 0xae5096389c5c2fb8
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x656420746e697250
+     0.01%     0.00%  benchmark  benchmark            [.] 0x0000000000449a24
+     0.01%     0.01%  benchmark  benchmark            [.] std::_Rb_tree<T, std::pair<T const, char const*>, std::_Select1st<std::pair<T const, char const*> >, std::less<T>, std::allocator<std::pair<T const, char const*> > >::_M_erase
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x0000000000000020
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x000000000000000b
+     0.01%     0.00%  benchmark  libc-2.26.so         [.] 0x00007f2a600df1a0
+     0.01%     0.00%  benchmark  libc-2.26.so         [.] __run_exit_handlers
+     0.01%     0.00%  benchmark  benchmark            [.] std::map<T, char const*, std::less<T>, std::allocator<std::pair<T const, char const*> > >::~map
+     0.01%     0.00%  benchmark  benchmark            [.] std::_Rb_tree<T, std::pair<T const, char const*>, std::_Select1st<std::pair<T const, char const*> >, std::less<T>, std::allocator<std::pair<T const, char const*> > >::~_Rb_tree
+     0.01%     0.01%  benchmark  libc-2.26.so         [.] __memcmp_avx2_movbe
+     0.01%     0.01%  benchmark  libfabric.so.1.16.2  [.] smr_recvmsg
+     0.01%     0.00%  benchmark  [unknown]            [.] 0x00007f2a5c297ac0
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2  [.] ofi_fastlock_acquire
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x65663a666661383a
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2  [.] rxr_ep_close
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00000000007f2a58
+     0.00%     0.00%  benchmark  libc-2.26.so         [.] inet_ntop
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2  [.] rxr_ep_progress
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00300b00007f2a58
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0df9ca80
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2  [.] smr_calculate_size_offsets
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x6e756f6600000000
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x0000000000000003
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2  [.] efa_alloc_info
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x0000653032653a30
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a5cd16218
+     0.00%     0.00%  benchmark  ld-2.26.so           [.] check_match
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x8c2e306b1044e838
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2  [.] smr_endpoint
+     0.00%     0.00%  benchmark  [vdso]               [.] 0x0000000000000761
+     0.00%     0.00%  benchmark  [vdso]               [.] 0x00007ffd7385c761
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ee38400
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0d857ac0
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0eee7180
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0d8ad980
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a5c030480
+     0.00%     0.00%  benchmark  libc-2.26.so         [.] __libc_calloc
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2  [.] ofi_check_ep_attr
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e261a40
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e42c140
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ea93280
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0db74c80
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2  [.] ofi_fastlock_release_noop
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e4bc140
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e514340
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a149f5fc0
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f1f9300
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e7f46c0
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e2546c0
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a16c94840
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e947180
+     0.00%     0.00%  benchmark  ld-2.26.so           [.] strcmp
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x5f53425245564249
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x0000000009a72451
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a5cbb9618
+     0.00%     0.00%  benchmark  libpthread-2.26.so   [.] __close
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e7ce2c0
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0df321c0
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e7ead00
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0ea88240
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2  [.] rxr_pkt_get_rtm_matched_rx_entry
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a5cd2d3d8
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a58012c38
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e004340
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0d7d07c0
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0d942000
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e79db40
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0e90ad00
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a11b5d7c0
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a0f049300
+     0.00%     0.00%  benchmark  ld-2.26.so           [.] _dl_map_object
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x70636d656d5f7861
+     0.00%     0.00%  benchmark  libc-2.26.so         [.] malloc
+     0.00%     0.00%  benchmark  libc-2.26.so         [.] _dl_signal_error
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x2e69662d66726570
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007f2a580027f8
+     0.00%     0.00%  benchmark  [unknown]            [k] 0xffffffffb5a00000
+     0.00%     0.00%  benchmark  ld-2.26.so           [.] open_path
+     0.00%     0.00%  benchmark  ld-2.26.so           [.] open64
+     0.00%     0.00%  benchmark  libc-2.26.so         [.] _IO_vfscanf
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x7a25203a657a6973
+     0.00%     0.00%  benchmark  libc-2.26.so         [.] _IO_vsscanf
+     0.00%     0.00%  benchmark  ld-2.26.so           [.] match_symbol
+     0.00%     0.00%  benchmark  ld-2.26.so           [.] _dl_check_all_versions
+     0.00%     0.00%  benchmark  ld-2.26.so           [.] _dl_check_map_versions
+     0.00%     0.00%  benchmark  ld-2.26.so           [.] _dl_map_object_deps
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2  [.] fi_param_define@@FABRIC_1.0
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2  [.] 0x00007f2a60caa7c0
+     0.00%     0.00%  benchmark  ld-2.26.so           [.] _dl_cache_libcmp
+     0.00%     0.00%  benchmark  libc-2.26.so         [.] __strdup
+     0.00%     0.00%  benchmark  benchmark            [.] libefa::Client::Client
+     0.00%     0.00%  benchmark  ld-2.26.so           [.] _dl_load_cache_lookup
+     0.00%     0.00%  benchmark  ld-2.26.so           [.] __GI___tunables_init
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00687361622f6e69
+     0.00%     0.00%  benchmark  [unknown]            [.] 0x00007ffd73846569
+     0.00%     0.00%  benchmark  ld-2.26.so           [.] _dl_start
+     0.00%     0.00%  benchmark  ld-2.26.so           [.] _dl_start_user
+     0.00%     0.00%  benchmark  libc-2.26.so         [.] __ctype_init
+     0.00%     0.00%  benchmark  libpthread-2.26.so   [.] start_thread
+     0.00%     0.00%  benchmark  libc-2.26.so         [.] __clone
+     0.00%     0.00%  benchmark  ld-2.26.so           [.] _start
+
+
+#
+# (Tip: Show individual samples with: perf script)
+#

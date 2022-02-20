@@ -1,0 +1,2415 @@
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 26K of event 'cycles:u'
+# Event count (approx.): 17214445997
+#
+# Children      Self  Command    Shared Object            Symbol                                                                                                                                                                                                                                                                                                                                                                                                                  
+# ........  ........  .........  .......................  ........................................................................................................................................................................................................................................................................................................................................................................................................................
+#
+    32.39%     0.00%  benchmark  [unknown]                [.] 0000000000000000
+            |
+            ---0
+               |          
+               |--15.06%--pthread_spin_lock
+               |          
+               |--4.36%--rxr_ep_progress_internal
+               |          
+               |--1.73%--ofi_cq_readfrom
+               |          
+               |--1.14%--rxr_pkt_entry_send
+               |          
+               |--0.91%--rxr_cq_handle_tx_completion
+               |          
+               |--0.75%--efa_post_send
+               |          
+               |--0.59%--rxr_pkt_entry_release_tx
+               |          
+               |--0.58%--rxr_pkt_handle_send_completion
+               |          
+               |--0.56%--rxr_ep_progress
+               |          
+               |--0.55%--pthread_spin_unlock
+               |          
+               |--0.55%--pthread_spin_lock@plt
+               |          
+               |--0.53%--pthread_spin_unlock@plt
+               |          
+               |--0.52%--rxr_ep_alloc_tx_entry
+               |          
+                --0.50%--ofi_cq_progress
+
+    24.37%    24.37%  benchmark  libpthread-2.26.so       [.] pthread_spin_lock
+            |          
+            |--8.64%--0x894c00000028250c
+            |          0
+            |          pthread_spin_lock
+            |          
+            |--6.42%--0
+            |          pthread_spin_lock
+            |          
+            |--4.57%--pthread_spin_lock
+            |          
+            |--3.38%--0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          pthread_spin_lock
+            |          
+             --0.67%--0x900050030
+                       pthread_spin_lock
+
+    15.25%    15.25%  benchmark  libefa.so.1.1.37.0       [.] efa_poll_cq
+            |
+            ---efa_poll_cq
+
+    12.77%     0.00%  benchmark  [unknown]                [.] 0x894c00000028250c
+            |
+            ---0x894c00000028250c
+               0
+               |          
+               |--8.64%--pthread_spin_lock
+               |          
+               |--1.73%--ofi_cq_readfrom
+               |          
+               |--0.53%--pthread_spin_unlock
+               |          
+               |--0.50%--pthread_spin_unlock@plt
+               |          
+                --0.50%--ofi_cq_progress
+
+    10.20%     0.00%  benchmark  [unknown]                [.] 0x00007f6f64013ac8
+            |
+            ---0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               |          
+               |--5.60%--smr_ep_progress
+               |          
+               |--3.38%--pthread_spin_lock
+               |          
+                --0.91%--ofi_cq_progress
+
+    10.20%     0.00%  benchmark  [unknown]                [.] 0x00007f6f64013040
+            |
+            ---0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               |          
+               |--5.60%--smr_ep_progress
+               |          
+               |--3.38%--pthread_spin_lock
+               |          
+                --0.91%--ofi_cq_progress
+
+    10.07%     0.00%  benchmark  libstdc++.so.6.0.24      [.] execute_native_thread_routine
+            |
+            ---execute_native_thread_routine
+               |          
+                --10.07%--std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+                          std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+                          std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+                          std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                          std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                          |          
+                           --9.86%--SendRecvServer::_batchWorker
+                                     |          
+                                     |--3.82%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                                     |          |          
+                                     |           --3.71%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                                     |          
+                                     |--2.78%--libefa::Node::postTx
+                                     |          |          
+                                     |           --2.72%--__clock_gettime
+                                     |                     |          
+                                     |                      --2.54%--0x7fff051bc758
+                                     |          
+                                     |--2.09%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                                     |          
+                                      --0.61%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                                                |          
+                                                 --0.56%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+
+    10.07%     0.00%  benchmark  benchmark                [.] std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+            |
+            ---std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+               std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+               std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+               std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               |          
+                --9.86%--SendRecvServer::_batchWorker
+                          |          
+                          |--3.82%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                          |          |          
+                          |           --3.71%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                          |--2.78%--libefa::Node::postTx
+                          |          |          
+                          |           --2.72%--__clock_gettime
+                          |                     |          
+                          |                      --2.54%--0x7fff051bc758
+                          |          
+                          |--2.09%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                           --0.61%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                                     |          
+                                      --0.56%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+
+    10.07%     0.00%  benchmark  benchmark                [.] std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+            |
+            ---std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+               std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+               std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               |          
+                --9.86%--SendRecvServer::_batchWorker
+                          |          
+                          |--3.82%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                          |          |          
+                          |           --3.71%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                          |--2.78%--libefa::Node::postTx
+                          |          |          
+                          |           --2.72%--__clock_gettime
+                          |                     |          
+                          |                      --2.54%--0x7fff051bc758
+                          |          
+                          |--2.09%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                           --0.61%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                                     |          
+                                      --0.56%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+
+    10.07%     0.00%  benchmark  benchmark                [.] std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+            |
+            ---std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+               std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               |          
+                --9.86%--SendRecvServer::_batchWorker
+                          |          
+                          |--3.82%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                          |          |          
+                          |           --3.71%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                          |--2.78%--libefa::Node::postTx
+                          |          |          
+                          |           --2.72%--__clock_gettime
+                          |                     |          
+                          |                      --2.54%--0x7fff051bc758
+                          |          
+                          |--2.09%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                           --0.61%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                                     |          
+                                      --0.56%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+
+    10.07%     0.00%  benchmark  benchmark                [.] std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+            |
+            ---std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               |          
+                --9.86%--SendRecvServer::_batchWorker
+                          |          
+                          |--3.82%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                          |          |          
+                          |           --3.71%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                          |--2.78%--libefa::Node::postTx
+                          |          |          
+                          |           --2.72%--__clock_gettime
+                          |                     |          
+                          |                      --2.54%--0x7fff051bc758
+                          |          
+                          |--2.09%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                           --0.61%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                                     |          
+                                      --0.56%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+
+    10.07%     0.00%  benchmark  benchmark                [.] std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+            |
+            ---std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               |          
+                --9.86%--SendRecvServer::_batchWorker
+                          |          
+                          |--3.82%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                          |          |          
+                          |           --3.71%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                          |--2.78%--libefa::Node::postTx
+                          |          |          
+                          |           --2.72%--__clock_gettime
+                          |                     |          
+                          |                      --2.54%--0x7fff051bc758
+                          |          
+                          |--2.09%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                           --0.61%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                                     |          
+                                      --0.56%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+
+     9.86%     0.24%  benchmark  benchmark                [.] SendRecvServer::_batchWorker
+            |          
+             --9.62%--SendRecvServer::_batchWorker
+                       |          
+                       |--3.82%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                       |          |          
+                       |           --3.71%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                       |          
+                       |--2.78%--libefa::Node::postTx
+                       |          |          
+                       |           --2.72%--__clock_gettime
+                       |                     |          
+                       |                      --2.54%--0x7fff051bc758
+                       |          
+                       |--2.09%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                       |          
+                        --0.61%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                                  |          
+                                   --0.56%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+
+     9.60%     9.60%  benchmark  libfabric.so.1.16.2      [.] rxr_ep_progress_internal
+            |          
+            |--4.36%--0
+            |          rxr_ep_progress_internal
+            |          
+            |--3.13%--rxr_ep_progress_internal
+            |          
+            |--0.71%--0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          0x7f6f64012d88
+            |          rxr_ep_progress_internal
+            |          
+             --0.53%--0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       0x7f6f64012d38
+                       rxr_ep_progress_internal
+
+     6.04%     6.04%  benchmark  libfabric.so.1.16.2      [.] ofi_cq_readfrom
+            |          
+            |--3.32%--ofi_cq_readfrom
+            |          
+            |--1.73%--0x894c00000028250c
+            |          0
+            |          ofi_cq_readfrom
+            |          
+             --0.77%--0x7f6f68b5e960
+                       ofi_cq_readfrom
+
+     5.80%     5.72%  benchmark  benchmark                [.] std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+            |          
+             --5.72%--execute_native_thread_routine
+                       std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+                       std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                       std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                       SendRecvServer::_batchWorker
+                       |          
+                       |--3.63%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                       |          std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                       |          
+                        --2.09%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+
+     5.60%     5.60%  benchmark  libfabric.so.1.16.2      [.] smr_ep_progress
+            |
+            ---0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               0x7f6f64013ac8
+               0x7f6f64013040
+               smr_ep_progress
+
+     3.86%     0.09%  benchmark  benchmark                [.] std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+            |          
+             --3.77%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                       |          
+                        --3.71%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+
+     3.44%     0.10%  benchmark  libc-2.26.so             [.] __clock_gettime
+            |          
+             --3.34%--__clock_gettime
+                       |          
+                        --2.98%--0x7fff051bc758
+
+     2.98%     2.98%  benchmark  [vdso]                   [.] 0x0000000000000758
+            |          
+             --2.54%--execute_native_thread_routine
+                       std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+                       std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                       std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                       SendRecvServer::_batchWorker
+                       libefa::Node::postTx
+                       __clock_gettime
+                       0x7fff051bc758
+
+     2.98%     0.00%  benchmark  [vdso]                   [.] 0x00007fff051bc758
+            |
+            ---0x7fff051bc758
+
+     2.98%     2.98%  benchmark  libfabric.so.1.16.2      [.] ofi_cq_progress
+            |          
+            |--0.92%--0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          0x7f6f640102e8
+            |          0x7f6f640140d0
+            |          ofi_cq_progress
+            |          
+            |--0.91%--0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          0x7f6f64013ac8
+            |          0x7f6f64013040
+            |          ofi_cq_progress
+            |          
+            |--0.55%--ofi_cq_progress
+            |          
+             --0.50%--0x894c00000028250c
+                       0
+                       ofi_cq_progress
+
+     2.89%     1.70%  benchmark  libc-2.26.so             [.] __memset_avx2_erms
+            |          
+            |--1.54%--0x218000000010c02
+            |          __memset_avx2_erms
+            |          
+             --1.18%--__memset_avx2_erms
+                       0xffffffff9da00ab0
+
+     2.81%     0.07%  benchmark  benchmark                [.] libefa::Node::postTx
+            |          
+             --2.74%--libefa::Node::postTx
+                       |          
+                        --2.72%--__clock_gettime
+                                  |          
+                                   --2.54%--0x7fff051bc758
+
+     2.76%     0.00%  benchmark  [unknown]                [.] 0x00007f6f64012a00
+            |
+            ---0x7f6f64012a00
+               |          
+               |--0.98%--efa_post_send
+               |          
+                --0.56%--__clock_gettime
+
+     2.68%     0.00%  benchmark  [unknown]                [k] 0x0218000000010c02
+            |
+            ---0x218000000010c02
+               __memset_avx2_erms
+               |          
+                --1.14%--0xffffffff9da00ab0
+
+     2.58%     2.58%  benchmark  libefa.so.1.1.37.0       [.] cq_next_sub_cqe_get
+            |
+            ---cq_next_sub_cqe_get
+
+     1.63%     0.00%  benchmark  [unknown]                [.] 0x00007f6f68b5e960
+            |
+            ---0x7f6f68b5e960
+               |          
+               |--0.77%--ofi_cq_readfrom
+               |          
+                --0.66%--ft_get_cq_comp
+
+     1.54%     0.00%  benchmark  [unknown]                [.] 0x00007f6f640102e8
+            |
+            ---0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               |          
+                --0.92%--ofi_cq_progress
+
+     1.54%     0.00%  benchmark  [unknown]                [.] 0x00007f6f640140d0
+            |
+            ---0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               0x7f6f640102e8
+               0x7f6f640140d0
+               |          
+                --0.92%--ofi_cq_progress
+
+     1.38%     1.38%  benchmark  libefa.so.1.1.37.0       [.] efa_post_send
+            |          
+            |--0.75%--0
+            |          efa_post_send
+            |          
+             --0.51%--0x100000000
+                       efa_post_send
+
+     1.19%     1.19%  benchmark  [unknown]                [k] 0xffffffff9da00ab0
+            |          
+             --1.14%--0x218000000010c02
+                       __memset_avx2_erms
+                       0xffffffff9da00ab0
+
+     1.19%     1.19%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_entry_send
+            |          
+             --1.14%--0
+                       rxr_pkt_entry_send
+
+     1.05%     0.00%  benchmark  [unknown]                [.] 0x0000000900050030
+            |
+            ---0x900050030
+               |          
+                --0.67%--pthread_spin_lock
+
+     1.03%     1.03%  benchmark  libfabric.so.1.16.2      [.] efa_post_send
+            |          
+             --0.98%--0x7f6f64012a00
+                       efa_post_send
+
+     1.01%     1.01%  benchmark  libpthread-2.26.so       [.] pthread_spin_unlock
+            |          
+             --0.53%--0x894c00000028250c
+                       0
+                       pthread_spin_unlock
+
+     0.91%     0.91%  benchmark  libfabric.so.1.16.2      [.] rxr_cq_handle_tx_completion
+            |
+            ---0
+               rxr_cq_handle_tx_completion
+
+     0.91%     0.91%  benchmark  libfabric.so.1.16.2      [.] rxr_ep_progress
+            |          
+             --0.56%--0
+                       rxr_ep_progress
+
+     0.77%     0.00%  benchmark  [unknown]                [.] 0x0ee260feff8ade00
+            |
+            ---0xee260feff8ade00
+
+     0.75%     0.75%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_post_ctrl_once
+     0.71%     0.00%  benchmark  [unknown]                [.] 0x00007f6f64012d88
+            |
+            ---0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               0x7f6f64012d88
+               rxr_ep_progress_internal
+
+     0.71%     0.71%  benchmark  libfabric.so.1.16.2      [.] pthread_spin_lock@plt
+     0.66%     0.66%  benchmark  benchmark                [.] ft_get_cq_comp
+            |
+            ---0x7f6f68b5e960
+               ft_get_cq_comp
+
+     0.63%     0.05%  benchmark  benchmark                [.] std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+            |          
+             --0.59%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                       |          
+                        --0.56%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+
+     0.61%     0.61%  benchmark  libfabric.so.1.16.2      [.] ofi_fastlock_acquire
+     0.60%     0.60%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_handle_send_completion
+            |          
+             --0.58%--0
+                       rxr_pkt_handle_send_completion
+
+     0.59%     0.59%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_entry_release_tx
+            |
+            ---0
+               rxr_pkt_entry_release_tx
+
+     0.58%     0.58%  benchmark  libfabric.so.1.16.2      [.] pthread_spin_unlock@plt
+            |          
+             --0.50%--0x894c00000028250c
+                       0
+                       pthread_spin_unlock@plt
+
+     0.57%     0.57%  benchmark  libfabric.so.1.16.2      [.] ofi_fastlock_acquire_noop
+     0.57%     0.00%  benchmark  [unknown]                [.] 0x0000000100000000
+            |
+            ---0x100000000
+               |          
+                --0.51%--efa_post_send
+
+     0.57%     0.14%  benchmark  benchmark                [.] std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+     0.53%     0.53%  benchmark  libfabric.so.1.16.2      [.] rxr_tx_entry_init
+     0.53%     0.00%  benchmark  [unknown]                [.] 0x00007f6f64012d38
+            |
+            ---0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               0x7f6f64012d38
+               rxr_ep_progress_internal
+
+     0.52%     0.52%  benchmark  libfabric.so.1.16.2      [.] rxr_ep_alloc_tx_entry
+            |
+            ---0
+               rxr_ep_alloc_tx_entry
+
+     0.48%     0.48%  benchmark  libfabric.so.1.16.2      [.] rxr_msg_post_rtm
+     0.48%     0.48%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_entry_alloc
+     0.47%     0.47%  benchmark  libfabric.so.1.16.2      [.] efa_av_addr_to_conn
+     0.46%     0.29%  benchmark  libpthread-2.26.so       [.] __libc_recv
+     0.45%     0.00%  benchmark  [unknown]                [.] 0x00007f6f64012d58
+     0.42%     0.00%  benchmark  libfabric.so.1.16.2      [.] rxr_ep_cancel
+     0.42%     0.00%  benchmark  libfabric.so.1.16.2      [.] 0x00007f6f6a99b9a0
+     0.40%     0.00%  benchmark  [unknown]                [.] 0x0000000100007f6f
+     0.38%     0.38%  benchmark  libfabric.so.1.16.2      [.] rxr_ep_record_tx_op_completed
+     0.38%     0.38%  benchmark  libfabric.so.1.16.2      [.] rxr_msg_generic_send
+     0.34%     0.34%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_req_max_data_size
+     0.33%     0.33%  benchmark  libfabric.so.1.16.2      [.] rxr_ep_record_tx_op_submitted
+     0.33%     0.33%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_init_req_hdr
+     0.31%     0.08%  benchmark  benchmark                [.] std::chrono::duration<long, std::ratio<1l, 1000000000l> >::duration<long, std::ratio<1l, 1l>, void>
+     0.27%     0.27%  benchmark  libfabric.so.1.16.2      [.] rxr_cq_write_tx_completion
+     0.24%     0.24%  benchmark  libfabric.so.1.16.2      [.] rxr_release_tx_entry
+     0.24%     0.24%  benchmark  libfabric.so.1.16.2      [.] ofi_fastlock_release_noop
+     0.22%     0.22%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_handle_send_error
+     0.22%     0.22%  benchmark  benchmark                [.] std::chrono::duration<long, std::ratio<1l, 1000000000l> >::count
+     0.22%     0.22%  benchmark  libc-2.26.so             [.] __memset_avx2_unaligned_erms
+     0.22%     0.22%  benchmark  libfabric.so.1.16.2      [.] ofi_cq_read
+     0.20%     0.20%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_req_base_hdr_size
+     0.20%     0.20%  benchmark  libefa.so.1.1.37.0       [.] pthread_spin_lock@plt
+     0.19%     0.00%  benchmark  [unknown]                [.] 0x000080fe00000024
+     0.19%     0.19%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_init_eager_msgrtm
+     0.18%     0.18%  benchmark  libefa.so.1.1.37.0       [.] pthread_spin_unlock@plt
+     0.18%     0.03%  benchmark  benchmark                [.] std::chrono::duration_cast<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, long, std::ratio<1l, 1l> >
+     0.18%     0.18%  benchmark  libpthread-2.26.so       [.] __pthread_enable_asynccancel
+     0.17%     0.17%  benchmark  [unknown]                [k] 0xffffffff9da00000
+     0.17%     0.00%  benchmark  [unknown]                [.] 0x00007f6f6400dfa0
+     0.17%     0.06%  benchmark  benchmark                [.] std::chrono::__duration_cast_impl<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::ratio<1000000000l, 1l>, long, false, true>::__cast<long, std::ratio<1l, 1l> >
+     0.17%     0.17%  benchmark  libpthread-2.26.so       [.] __pthread_disable_asynccancel
+     0.16%     0.16%  benchmark  libc-2.26.so             [.] __memmove_avx_unaligned_erms
+     0.15%     0.15%  benchmark  libfabric.so.1.16.2      [.] ofi_fastlock_release
+     0.11%     0.11%  benchmark  libefa.so.1.1.37.0       [.] efa_wq_put_wrid_idx_unlocked
+     0.11%     0.11%  benchmark  libfabric.so.1.16.2      [.] rxr_cq_queue_rnr_pkt
+     0.10%     0.10%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_req_hdr_size
+     0.10%     0.10%  benchmark  benchmark                [.] ft_sendmsg
+     0.09%     0.09%  benchmark  benchmark                [.] std::chrono::duration<long, std::ratio<1l, 1l> >::count
+     0.09%     0.08%  benchmark  libfabric.so.1.16.2      [.] efa_post_flush
+     0.08%     0.08%  benchmark  benchmark                [.] std::chrono::duration<long, std::ratio<1l, 1000000000l> >::duration<long, void>
+     0.07%     0.07%  benchmark  benchmark                [.] ft_post_tx
+     0.07%     0.07%  benchmark  libfabric.so.1.16.2      [.] ofi_gettime_ns
+     0.07%     0.07%  benchmark  benchmark                [.] std::chrono::duration<long, std::ratio<1l, 1l> >::duration<unsigned int, void>
+     0.07%     0.07%  benchmark  libefa.so.1.1.37.0       [.] efa_post_send_validate
+     0.06%     0.06%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_post_ctrl
+     0.06%     0.00%  benchmark  [unknown]                [.] 0x00007f6f64010388
+     0.06%     0.00%  benchmark  [unknown]                [.] 0x00007f6f640140f0
+     0.05%     0.05%  benchmark  benchmark                [.] std::vector<unsigned long, std::allocator<unsigned long> >::operator[]
+     0.05%     0.05%  benchmark  benchmark                [.] std::chrono::time_point<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >::time_since_epoch
+     0.05%     0.05%  benchmark  libfabric.so.1.16.2      [.] rxr_locate_iov_pos
+     0.04%     0.04%  benchmark  benchmark                [.] ft_exchange_addresses_oob
+     0.04%     0.04%  benchmark  [vdso]                   [.] 0x0000000000000a5c
+     0.04%     0.00%  benchmark  [vdso]                   [.] 0x00007fff051bca5c
+     0.03%     0.03%  benchmark  libstdc++.so.6.0.24      [.] std::chrono::_V2::steady_clock::now
+     0.03%     0.03%  benchmark  [vdso]                   [.] 0x0000000000000a4a
+     0.03%     0.00%  benchmark  [vdso]                   [.] 0x00007fff051bca4a
+     0.03%     0.03%  benchmark  [vdso]                   [.] 0x0000000000000a12
+     0.03%     0.00%  benchmark  [vdso]                   [.] 0x00007fff051bca12
+     0.03%     0.03%  benchmark  libfabric.so.1.16.2      [.] rxr_msg_sendmsg
+     0.03%     0.03%  benchmark  [vdso]                   [.] 0x00000000000009f8
+     0.03%     0.00%  benchmark  [vdso]                   [.] 0x00007fff051bc9f8
+     0.03%     0.03%  benchmark  [vdso]                   [.] 0x0000000000000750
+     0.03%     0.00%  benchmark  [vdso]                   [.] 0x00007fff051bc750
+     0.02%     0.02%  benchmark  [vdso]                   [.] 0x0000000000000a2f
+     0.02%     0.00%  benchmark  [vdso]                   [.] 0x00007fff051bca2f
+     0.02%     0.02%  benchmark  [vdso]                   [.] 0x0000000000000a82
+     0.02%     0.00%  benchmark  [vdso]                   [.] 0x00007fff051bca82
+     0.02%     0.02%  benchmark  [vdso]                   [.] 0x0000000000000a59
+     0.02%     0.00%  benchmark  [vdso]                   [.] 0x00007fff051bca59
+     0.02%     0.02%  benchmark  libfabric.so.1.16.2      [.] ofi_gettime_us
+     0.02%     0.02%  benchmark  libfabric.so.1.16.2      [.] efa_cntr_report_tx_completion
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x6665646362613938
+     0.02%     0.02%  benchmark  libfabric.so.1.16.2      [.] ofi_bufpool_grow
+     0.02%     0.02%  benchmark  [vdso]                   [.] 0x00000000000009fc
+     0.02%     0.00%  benchmark  [vdso]                   [.] 0x00007fff051bc9fc
+     0.02%     0.02%  benchmark  [vdso]                   [.] 0x0000000000000a40
+     0.02%     0.00%  benchmark  [vdso]                   [.] 0x00007fff051bca40
+     0.02%     0.02%  benchmark  [vdso]                   [.] 0x0000000000000a47
+     0.02%     0.00%  benchmark  [vdso]                   [.] 0x00007fff051bca47
+     0.02%     0.02%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_req_max_header_size
+     0.02%     0.02%  benchmark  libfabric.so.1.16.2      [.] memset@plt
+     0.02%     0.02%  benchmark  [vdso]                   [.] 0x00000000000009d6
+     0.02%     0.00%  benchmark  [vdso]                   [.] 0x00007fff051bc9d6
+     0.01%     0.01%  benchmark  benchmark                [.] std::chrono::_V2::steady_clock::now@plt
+     0.01%     0.01%  benchmark  libfabric.so.1.16.2      [.] clock_gettime@plt
+     0.01%     0.01%  benchmark  [vdso]                   [.] __vdso_clock_gettime
+     0.01%     0.01%  benchmark  [vdso]                   [.] 0x00000000000009d0
+     0.01%     0.00%  benchmark  [vdso]                   [.] 0x00007fff051bc9d0
+     0.01%     0.01%  benchmark  libstdc++.so.6.0.24      [.] clock_gettime@plt
+     0.01%     0.01%  benchmark  [vdso]                   [.] 0x0000000000000a8a
+     0.01%     0.00%  benchmark  [vdso]                   [.] 0x00007fff051bca8a
+     0.01%     0.01%  benchmark  libfabric.so.1.16.2      [.] util_cq_read_ctx
+     0.01%     0.01%  benchmark  [vdso]                   [.] 0x0000000000000761
+     0.01%     0.00%  benchmark  [vdso]                   [.] 0x00007fff051bc761
+     0.01%     0.01%  benchmark  [vdso]                   [.] 0x00000000000009df
+     0.01%     0.00%  benchmark  [vdso]                   [.] 0x00007fff051bc9df
+     0.01%     0.01%  benchmark  [vdso]                   [.] 0x0000000000000a89
+     0.01%     0.00%  benchmark  [vdso]                   [.] 0x00007fff051bca89
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b8e06d0
+     0.01%     0.01%  benchmark  [vdso]                   [.] 0x0000000000000a15
+     0.01%     0.00%  benchmark  [vdso]                   [.] 0x00007fff051bca15
+     0.01%     0.01%  benchmark  benchmark                [.] __errno_location@plt
+     0.01%     0.00%  benchmark  libc-2.26.so             [.] __strncpy_sse2_unaligned
+     0.01%     0.00%  benchmark  libfabric.so.1.16.2      [.] smr_create
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x0000000000000040
+     0.01%     0.00%  benchmark  ld-2.26.so               [.] _dl_sysdep_start
+     0.01%     0.01%  benchmark  ld-2.26.so               [.] _dl_relocate_object
+     0.01%     0.00%  benchmark  ld-2.26.so               [.] dl_main
+     0.00%     0.00%  benchmark  ld-2.26.so               [.] do_lookup_x
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a76dc80
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00000000285304f4
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x000000000e9f268c
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b33eac0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00000000035e6923
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00000000153d52be
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a85dec0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b7e2ed0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b8698d0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b8d25d0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x000000002565e601
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b7de0d0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1ba3b1d0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b7ae9d0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b2c5800
+     0.00%     0.00%  benchmark  benchmark                [.] libefa::Node::getNTxCompletion
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b0d8000
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x000000002dba0b96
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x0000000006f19b97
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b7eb8d0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b8f4dd0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b9934d0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19af5740
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1ae7a240
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x0000000016300959
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00000000270a63b8
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19be5980
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b8fbfd0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19a45340
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19c9a400
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a1bb500
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19fd2380
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b1485c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1aa98880
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a8bedc0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19db20c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a2c8180
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a8f5f00
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19fa3f40
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1953e940
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1aa8fb80
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b2c1180
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19c9c740
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1af1f600
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1ae77f00
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b44b740
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f192e2ec0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a0ec380
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b226e00
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1af5d100
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f198ff240
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a6a7800
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a2b8ac0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19732b00
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a38e600
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1afec440
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a4d8d80
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f196e12c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19bb5200
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1ac69640
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19b6a380
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a9b59c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1ab3dc40
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b3504c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19c8f3c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a01d200
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1aa777c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a7c1800
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a70f0c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a537940
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19e89f40
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19568700
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a959140
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19aa1bc0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1ad24a80
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a313000
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1aecddc0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19f87500
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19760f40
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a2f1f40
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1ab6c080
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19658940
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1927b600
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a9289c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a2fcf80
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19311300
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1aeb1380
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1947ee80
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19ef81c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f198f1ec0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19c1a780
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a838780
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b3bc400
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a8cc140
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b3e8500
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19327380
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b45f480
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19885f80
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1aadcd40
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1ae2ad40
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1ae31700
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b1e6fc0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a195dc0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b295080
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19ec7a40
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1aba7840
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19441380
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a5218c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a59cec0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a326d40
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19521f00
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b01cbc0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b0f4a40
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f199fc800
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b1e2940
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1add9500
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1ad50b80
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b314d00
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19cf2600
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f195663c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19499580
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a695e00
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a84a180
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f194b8300
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19338d80
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19fb12c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1959d500
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f198a0680
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19c67940
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1afa3900
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1942d640
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1aeaf040
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19e12fc0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a956e00
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1aca2ac0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b111480
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19e7cbc0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a1b4b40
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1973b800
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19a85180
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a042940
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b31fd40
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a7558c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1aa4fd40
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a9d00c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19da7080
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a16e340
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b2ed280
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19612140
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a215a40
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b027c00
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b181a40
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1ba59860
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b2016c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b00b1c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a229780
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x000000000795ca03
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b87f4d0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b7cabd0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x0000000016527815
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b8fd1d0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a132b80
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b8dc4d0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x000000003229cbbf
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19c371c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a6a9b40
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b8cf5d0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b183d80
+     0.00%     0.00%  benchmark  [vdso]                   [.] 0x000000000000075a
+     0.00%     0.00%  benchmark  [vdso]                   [.] 0x00007fff051bc75a
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a1d7f40
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b84c1d0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x0000000027b266da
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19623b40
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b8e45d0
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_handle_eager_rtm_send_completion.localalias.9
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x0000000033f9ec11
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b83a7d0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1afc49c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1af54400
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x000000003679bb4a
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b8fcbd0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a253540
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1ba09cd0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b8176d0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f198a29c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b9df6d0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b84d9d0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b7cd8d0
+     0.00%     0.00%  benchmark  [vdso]                   [.] 0x0000000000000a37
+     0.00%     0.00%  benchmark  [vdso]                   [.] 0x00007fff051bca37
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f194a2280
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b8398d0
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2      [.] memcpy@plt
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b8086d0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b75e5d0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19f8bb80
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] __random
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x0000000024290126
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00000000258489cb
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x0000000017c26181
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a883600
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b7b46d0
+     0.00%     0.00%  benchmark  benchmark                [.] recv@plt
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x0000000029ab3579
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a634f00
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a023bc0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b75b5d0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b8845d0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x0000000007201426
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b853cd0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b858dd0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x0000000008edd592
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f19776fc0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a137200
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1b8babd0
+     0.00%     0.00%  benchmark  ld-2.26.so               [.] check_match
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f1a0c8f80
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] malloc_consolidate
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f64134ee0
+     0.00%     0.00%  benchmark  ld-2.26.so               [.] _dl_name_match_p
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x2d6c6e62696c0036
+     0.00%     0.00%  benchmark  benchmark                [.] std::less<T>::operator()
+     0.00%     0.00%  benchmark  benchmark                [.] __libc_csu_init
+     0.00%     0.00%  benchmark  benchmark                [.] _GLOBAL__sub_I__ZN9RmaServer10_rmaWorkerEm
+     0.00%     0.00%  benchmark  benchmark                [.] __static_initialization_and_destruction_0
+     0.00%     0.00%  benchmark  benchmark                [.] std::map<T, char const*, std::less<T>, std::allocator<std::pair<T const, char const*> > >::map
+     0.00%     0.00%  benchmark  benchmark                [.] std::_Rb_tree<T, std::pair<T const, char const*>, std::_Select1st<std::pair<T const, char const*> >, std::less<T>, std::allocator<std::pair<T const, char const*> > >::_M_insert_unique<std::pair<T const, char const*> const*>
+     0.00%     0.00%  benchmark  benchmark                [.] std::_Rb_tree<T, std::pair<T const, char const*>, std::_Select1st<std::pair<T const, char const*> >, std::less<T>, std::allocator<std::pair<T const, char const*> > >::_M_insert_unique_<std::pair<T const, char const*> const&, std::_Rb_tree<T, std::pair<T const, char const*>, std::_Select1st<std::pair<T const, char const*> >, std::less<T>, std::allocator<std::pair<T const, char const*> > >::_Alloc_node>
+     0.00%     0.00%  benchmark  benchmark                [.] std::_Rb_tree<T, std::pair<T const, char const*>, std::_Select1st<std::pair<T const, char const*> >, std::less<T>, std::allocator<std::pair<T const, char const*> > >::_M_get_insert_hint_unique_pos
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] _int_free
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x0218000000000c02
+     0.00%     0.00%  benchmark  libefa.so.1.1.37.0       [.] efa_post_recv
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x470031322e342e33
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x000000000297f871
+     0.00%     0.00%  benchmark  ld-2.26.so               [.] strcmp
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2      [.] rxr_ep_post_prov_buf
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f20fb30c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x6199b81e01341317
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2      [.] smr_endpoint
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x42494c4700352e32
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x0000000009691a75
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] __GI___readlink
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x6e69666e692f7373
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2      [.] efa_alloc_fid_nic.isra.3
+     0.00%     0.00%  benchmark  libpthread-2.26.so       [.] __errno_location
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] _int_malloc
+     0.00%     0.00%  benchmark  ld-2.26.so               [.] _dl_fixup
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00000000000300c0
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f68b5e500
+     0.00%     0.00%  benchmark  ld-2.26.so               [.] _dl_map_object
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x5a114a520d827591
+     0.00%     0.00%  benchmark  ld-2.26.so               [.] _dl_runtime_resolve_xsavec
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] __strchr_avx2
+     0.00%     0.00%  benchmark  ld-2.26.so               [.] _dl_map_object_from_fd
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2      [.] ofi_get_hugepage_size
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x203a656572465f73
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x0000000000000078
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2      [.] fi_param_get@@FABRIC_1.0
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] malloc
+     0.00%     0.00%  benchmark  ld-2.26.so               [.] close
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] free@plt
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] __GI_____strtoull_l_internal
+     0.00%     0.00%  benchmark  libibverbs.so.1.14.37.0  [.] ibv_query_device@@IBVERBS_1.1
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] sysmalloc
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] vfprintf
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007f6f64001f30
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] __vasprintf_chk
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x2e34362d3638782d
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] __strncasecmp_l_avx
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x0000000000000400
+     0.00%     0.00%  benchmark  ld-2.26.so               [.] _dl_cache_libcmp
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] __strlen_avx2
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00786c6d5f726464
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] __libc_calloc
+     0.00%     0.00%  benchmark  benchmark                [.] ft_getinfo
+     0.00%     0.00%  benchmark  benchmark                [.] fi_allocinfo
+     0.00%     0.00%  benchmark  ld-2.26.so               [.] __GI___tunables_init
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00687361622f6e69
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007fff0518f568
+     0.00%     0.00%  benchmark  ld-2.26.so               [.] _dl_start
+     0.00%     0.00%  benchmark  ld-2.26.so               [.] _dl_start_user
+     0.00%     0.00%  benchmark  benchmark                [.] _init
+     0.00%     0.00%  benchmark  libpthread-2.26.so       [.] start_thread
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] __clone
+     0.00%     0.00%  benchmark  benchmark                [.] ft_init_oob
+     0.00%     0.00%  benchmark  libpthread-2.26.so       [.] __libc_accept
+     0.00%     0.00%  benchmark  ld-2.26.so               [.] _start
+     0.00%     0.00%  benchmark  [unknown]                [k] 0xffffffff9da00cb0
+
+
+#
+# (Tip: Save output of perf stat using: perf stat record <target workload>)
+#

@@ -1,0 +1,2346 @@
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 25K of event 'cycles:u'
+# Event count (approx.): 17119208607
+#
+# Children      Self  Command    Shared Object              Symbol                                                                                                                                                                                                                                                                                                                                                                                                                  
+# ........  ........  .........  .........................  ........................................................................................................................................................................................................................................................................................................................................................................................................................
+#
+    28.73%     0.00%  benchmark  [unknown]                  [.] 0000000000000000
+            |
+            ---0
+               |          
+               |--13.22%--pthread_spin_lock
+               |          
+               |--2.23%--rxr_ep_progress_internal
+               |          
+               |--1.85%--ofi_cq_readfrom
+               |          
+               |--1.15%--rxr_pkt_entry_send
+               |          
+               |--0.96%--efa_post_send
+               |          
+               |--0.79%--rxr_cq_handle_tx_completion
+               |          
+               |--0.64%--pthread_spin_unlock@plt
+               |          
+               |--0.59%--rxr_cq_write_tx_completion
+               |          
+               |--0.57%--pthread_spin_unlock
+               |          
+               |--0.56%--rxr_pkt_init_req_hdr
+               |          
+               |--0.56%--rxr_ep_progress
+               |          
+               |--0.53%--rxr_msg_generic_send
+               |          
+                --0.51%--pthread_spin_lock@plt
+
+    22.85%    22.85%  benchmark  libpthread-2.26.so         [.] pthread_spin_lock
+            |          
+            |--8.03%--0x894c00000028250c
+            |          0
+            |          pthread_spin_lock
+            |          
+            |--5.19%--0
+            |          pthread_spin_lock
+            |          
+            |--4.88%--pthread_spin_lock
+            |          
+            |--3.44%--0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          pthread_spin_lock
+            |          
+             --0.56%--0x900050030
+                       pthread_spin_lock
+
+    16.28%    16.28%  benchmark  libefa.so.1.1.37.0         [.] efa_poll_cq
+            |
+            ---efa_poll_cq
+
+    12.35%     0.00%  benchmark  benchmark                  [.] std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+            |
+            ---std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+               |          
+                --12.35%--std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+                          std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+                          std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                          std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                          |          
+                           --12.12%--SendRecvServer::_batchWorker
+                                     |          
+                                     |--6.48%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                                     |          |          
+                                     |           --6.31%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                                     |          
+                                     |--3.42%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                                     |          
+                                     |--0.81%--libefa::Node::postTx
+                                     |          |          
+                                     |           --0.76%--__clock_gettime
+                                     |                     |          
+                                     |                      --0.61%--0x7fffa1cf5758
+                                     |          
+                                      --0.76%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                                                |          
+                                                 --0.70%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+
+    12.35%     0.00%  benchmark  libstdc++.so.6.0.24        [.] execute_native_thread_routine
+            |
+            ---execute_native_thread_routine
+               std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+               std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+               std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+               std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               |          
+                --12.12%--SendRecvServer::_batchWorker
+                          |          
+                          |--6.48%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                          |          |          
+                          |           --6.31%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                          |--3.42%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                          |--0.81%--libefa::Node::postTx
+                          |          |          
+                          |           --0.76%--__clock_gettime
+                          |                     |          
+                          |                      --0.61%--0x7fffa1cf5758
+                          |          
+                           --0.76%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                                     |          
+                                      --0.70%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+
+    12.35%     0.00%  benchmark  benchmark                  [.] std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+            |
+            ---std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+               std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+               std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               |          
+                --12.12%--SendRecvServer::_batchWorker
+                          |          
+                          |--6.48%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                          |          |          
+                          |           --6.31%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                          |--3.42%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                          |--0.81%--libefa::Node::postTx
+                          |          |          
+                          |           --0.76%--__clock_gettime
+                          |                     |          
+                          |                      --0.61%--0x7fffa1cf5758
+                          |          
+                           --0.76%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                                     |          
+                                      --0.70%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+
+    12.35%     0.00%  benchmark  benchmark                  [.] std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+            |
+            ---std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+               std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               |          
+                --12.12%--SendRecvServer::_batchWorker
+                          |          
+                          |--6.48%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                          |          |          
+                          |           --6.31%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                          |--3.42%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                          |--0.81%--libefa::Node::postTx
+                          |          |          
+                          |           --0.76%--__clock_gettime
+                          |                     |          
+                          |                      --0.61%--0x7fffa1cf5758
+                          |          
+                           --0.76%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                                     |          
+                                      --0.70%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+
+    12.35%     0.00%  benchmark  benchmark                  [.] std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+            |
+            ---std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               |          
+                --12.12%--SendRecvServer::_batchWorker
+                          |          
+                          |--6.48%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                          |          |          
+                          |           --6.31%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                          |--3.42%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                          |--0.81%--libefa::Node::postTx
+                          |          |          
+                          |           --0.76%--__clock_gettime
+                          |                     |          
+                          |                      --0.61%--0x7fffa1cf5758
+                          |          
+                           --0.76%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                                     |          
+                                      --0.70%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+
+    12.35%     0.00%  benchmark  benchmark                  [.] std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+            |
+            ---std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               |          
+                --12.12%--SendRecvServer::_batchWorker
+                          |          
+                          |--6.48%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                          |          |          
+                          |           --6.31%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                          |--3.42%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                          |--0.81%--libefa::Node::postTx
+                          |          |          
+                          |           --0.76%--__clock_gettime
+                          |                     |          
+                          |                      --0.61%--0x7fffa1cf5758
+                          |          
+                           --0.76%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                                     |          
+                                      --0.70%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+
+    12.32%     0.00%  benchmark  [unknown]                  [.] 0x894c00000028250c
+            |
+            ---0x894c00000028250c
+               0
+               |          
+               |--8.03%--pthread_spin_lock
+               |          
+               |--1.85%--ofi_cq_readfrom
+               |          
+               |--0.60%--pthread_spin_unlock@plt
+               |          
+                --0.53%--pthread_spin_unlock
+
+    12.12%     0.22%  benchmark  benchmark                  [.] SendRecvServer::_batchWorker
+            |          
+             --11.90%--SendRecvServer::_batchWorker
+                       |          
+                       |--6.48%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                       |          |          
+                       |           --6.31%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                       |          
+                       |--3.42%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                       |          
+                       |--0.81%--libefa::Node::postTx
+                       |          |          
+                       |           --0.76%--__clock_gettime
+                       |                     |          
+                       |                      --0.61%--0x7fffa1cf5758
+                       |          
+                        --0.76%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                                  |          
+                                   --0.70%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+
+    10.64%     0.00%  benchmark  [unknown]                  [.] 0x00007fa058013ac8
+            |
+            ---0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               |          
+               |--5.95%--smr_ep_progress
+               |          
+               |--3.44%--pthread_spin_lock
+               |          
+                --0.90%--ofi_cq_progress
+
+    10.64%     0.00%  benchmark  [unknown]                  [.] 0x00007fa058013040
+            |
+            ---0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               |          
+               |--5.95%--smr_ep_progress
+               |          
+               |--3.44%--pthread_spin_lock
+               |          
+                --0.90%--ofi_cq_progress
+
+     9.74%     9.59%  benchmark  benchmark                  [.] std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+            |          
+             --9.59%--execute_native_thread_routine
+                       std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+                       std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                       std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                       SendRecvServer::_batchWorker
+                       |          
+                       |--6.16%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                       |          std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                       |          
+                        --3.42%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+
+     7.35%     7.35%  benchmark  libfabric.so.1.16.2        [.] rxr_ep_progress_internal
+            |          
+            |--3.09%--rxr_ep_progress_internal
+            |          
+            |--2.23%--0
+            |          rxr_ep_progress_internal
+            |          
+            |--0.72%--0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          0x7fa058012d88
+            |          rxr_ep_progress_internal
+            |          
+             --0.52%--0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       0x7fa058012d38
+                       rxr_ep_progress_internal
+
+     6.52%     0.10%  benchmark  benchmark                  [.] std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+            |          
+             --6.42%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                       |          
+                        --6.31%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+
+     6.00%     6.00%  benchmark  libfabric.so.1.16.2        [.] ofi_cq_readfrom
+            |          
+            |--3.23%--ofi_cq_readfrom
+            |          
+            |--1.85%--0x894c00000028250c
+            |          0
+            |          ofi_cq_readfrom
+            |          
+             --0.75%--0x7fa05d76e960
+                       ofi_cq_readfrom
+
+     5.95%     5.95%  benchmark  libfabric.so.1.16.2        [.] smr_ep_progress
+            |
+            ---0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               0x7fa058013ac8
+               0x7fa058013040
+               smr_ep_progress
+
+     4.38%     4.38%  benchmark  libefa.so.1.1.37.0         [.] cq_next_sub_cqe_get
+            |
+            ---cq_next_sub_cqe_get
+
+     3.04%     3.04%  benchmark  libfabric.so.1.16.2        [.] ofi_cq_progress
+            |          
+            |--0.96%--0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          0x7fa0580102e8
+            |          0x7fa0580140d0
+            |          ofi_cq_progress
+            |          
+            |--0.90%--0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          0x7fa058013ac8
+            |          0x7fa058013040
+            |          ofi_cq_progress
+            |          
+             --0.64%--ofi_cq_progress
+
+     2.90%     1.63%  benchmark  libc-2.26.so               [.] __memset_avx2_erms
+            |          
+            |--1.47%--0x218000000010c02
+            |          __memset_avx2_erms
+            |          
+             --1.28%--__memset_avx2_erms
+                       |          
+                        --1.28%--0xffffffff9da00ab0
+
+     2.70%     0.00%  benchmark  [unknown]                  [.] 0x0218000000010c02
+            |
+            ---0x218000000010c02
+               __memset_avx2_erms
+               |          
+                --1.22%--0xffffffff9da00ab0
+
+     1.92%     0.00%  benchmark  [unknown]                  [.] 0x00007fa0580102e8
+            |
+            ---0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               |          
+               |--0.96%--ofi_cq_progress
+               |          
+                --0.52%--rxr_ep_progress
+
+     1.92%     0.00%  benchmark  [unknown]                  [.] 0x00007fa0580140d0
+            |
+            ---0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               0x7fa0580102e8
+               0x7fa0580140d0
+               |          
+               |--0.96%--ofi_cq_progress
+               |          
+                --0.52%--rxr_ep_progress
+
+     1.54%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05d76e960
+            |
+            ---0x7fa05d76e960
+               |          
+               |--0.75%--ofi_cq_readfrom
+               |          
+                --0.56%--ft_get_cq_comp
+
+     1.43%     0.00%  benchmark  [unknown]                  [.] 0x00007fa058012a00
+            |
+            ---0x7fa058012a00
+
+     1.29%     1.29%  benchmark  [unknown]                  [k] 0xffffffff9da00ab0
+            |          
+             --1.22%--0x218000000010c02
+                       __memset_avx2_erms
+                       0xffffffff9da00ab0
+
+     1.18%     1.18%  benchmark  libfabric.so.1.16.2        [.] rxr_pkt_entry_send
+            |          
+             --1.15%--0
+                       rxr_pkt_entry_send
+
+     1.11%     1.11%  benchmark  libpthread-2.26.so         [.] pthread_spin_unlock
+            |          
+             --0.53%--0x894c00000028250c
+                       0
+                       pthread_spin_unlock
+
+     1.10%     1.10%  benchmark  libefa.so.1.1.37.0         [.] efa_post_send
+            |          
+             --0.96%--0
+                       efa_post_send
+
+     1.09%     1.09%  benchmark  libfabric.so.1.16.2        [.] rxr_ep_progress
+            |          
+            |--0.56%--0
+            |          rxr_ep_progress
+            |          
+             --0.52%--0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       0x7fa0580102e8
+                       0x7fa0580140d0
+                       rxr_ep_progress
+
+     0.87%     0.87%  benchmark  libfabric.so.1.16.2        [.] rxr_tx_entry_init
+     0.85%     0.00%  benchmark  [unknown]                  [.] 0x0000000900050030
+            |
+            ---0x900050030
+               |          
+                --0.56%--pthread_spin_lock
+
+     0.84%     0.06%  benchmark  benchmark                  [.] libefa::Node::postTx
+            |          
+             --0.78%--libefa::Node::postTx
+                       |          
+                        --0.76%--__clock_gettime
+                                  |          
+                                   --0.61%--0x7fffa1cf5758
+
+     0.81%     0.03%  benchmark  libc-2.26.so               [.] __clock_gettime
+            |          
+             --0.78%--__clock_gettime
+                       |          
+                        --0.61%--0x7fffa1cf5758
+
+     0.79%     0.79%  benchmark  libfabric.so.1.16.2        [.] rxr_cq_handle_tx_completion
+            |
+            ---0
+               rxr_cq_handle_tx_completion
+
+     0.78%     0.05%  benchmark  benchmark                  [.] std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+            |          
+             --0.74%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                       |          
+                        --0.70%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+
+     0.72%     0.00%  benchmark  [unknown]                  [.] 0x00007fa058012d88
+            |
+            ---0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               0x7fa058012d88
+               rxr_ep_progress_internal
+
+     0.72%     0.18%  benchmark  benchmark                  [.] std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+            |          
+             --0.54%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+
+     0.69%     0.69%  benchmark  libfabric.so.1.16.2        [.] pthread_spin_lock@plt
+     0.68%     0.68%  benchmark  libfabric.so.1.16.2        [.] pthread_spin_unlock@plt
+            |          
+             --0.60%--0x894c00000028250c
+                       0
+                       pthread_spin_unlock@plt
+
+     0.66%     0.00%  benchmark  [unknown]                  [.] 0x0ee260feff8ade00
+            |
+            ---0xee260feff8ade00
+
+     0.66%     0.66%  benchmark  libfabric.so.1.16.2        [.] ofi_fastlock_acquire_noop
+     0.65%     0.65%  benchmark  libfabric.so.1.16.2        [.] rxr_pkt_post_ctrl_once
+     0.61%     0.61%  benchmark  [vdso]                     [.] 0x0000000000000758
+            |          
+             --0.61%--execute_native_thread_routine
+                       std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+                       std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                       std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                       SendRecvServer::_batchWorker
+                       libefa::Node::postTx
+                       __clock_gettime
+                       0x7fffa1cf5758
+
+     0.61%     0.00%  benchmark  [vdso]                     [.] 0x00007fffa1cf5758
+            |
+            ---0x7fffa1cf5758
+
+     0.59%     0.59%  benchmark  libfabric.so.1.16.2        [.] rxr_cq_write_tx_completion
+            |
+            ---0
+               rxr_cq_write_tx_completion
+
+     0.59%     0.59%  benchmark  libfabric.so.1.16.2        [.] rxr_pkt_init_req_hdr
+            |          
+             --0.56%--0
+                       rxr_pkt_init_req_hdr
+
+     0.59%     0.59%  benchmark  libfabric.so.1.16.2        [.] rxr_msg_post_rtm
+            |          
+             --0.54%--rxr_msg_post_rtm
+
+     0.56%     0.56%  benchmark  libfabric.so.1.16.2        [.] rxr_msg_generic_send
+            |          
+             --0.53%--0
+                       rxr_msg_generic_send
+
+     0.56%     0.56%  benchmark  benchmark                  [.] ft_get_cq_comp
+            |
+            ---0x7fa05d76e960
+               ft_get_cq_comp
+
+     0.54%     0.54%  benchmark  libfabric.so.1.16.2        [.] ofi_fastlock_acquire
+     0.52%     0.00%  benchmark  [unknown]                  [.] 0x00007fa058012d38
+            |
+            ---0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               0x7fa058012d38
+               rxr_ep_progress_internal
+
+     0.50%     0.50%  benchmark  libfabric.so.1.16.2        [.] rxr_pkt_handle_send_completion
+     0.47%     0.47%  benchmark  libfabric.so.1.16.2        [.] rxr_ep_record_tx_op_completed
+     0.46%     0.00%  benchmark  [unknown]                  [.] 0x0000000100007fa0
+     0.43%     0.43%  benchmark  libfabric.so.1.16.2        [.] rxr_ep_record_tx_op_submitted
+     0.43%     0.43%  benchmark  libfabric.so.1.16.2        [.] efa_post_send
+     0.43%     0.00%  benchmark  libfabric.so.1.16.2        [.] rxr_ep_cancel
+     0.43%     0.00%  benchmark  libfabric.so.1.16.2        [.] 0x00007fa05f5ab9a0
+     0.40%     0.25%  benchmark  libpthread-2.26.so         [.] __libc_recv
+     0.38%     0.12%  benchmark  benchmark                  [.] std::chrono::duration<long, std::ratio<1l, 1000000000l> >::duration<long, std::ratio<1l, 1l>, void>
+     0.38%     0.38%  benchmark  libfabric.so.1.16.2        [.] rxr_pkt_init_eager_msgrtm
+     0.37%     0.37%  benchmark  libfabric.so.1.16.2        [.] efa_av_addr_to_conn
+     0.37%     0.37%  benchmark  libfabric.so.1.16.2        [.] rxr_pkt_req_max_data_size
+     0.37%     0.00%  benchmark  [unknown]                  [.] 0x00007fa058012d58
+     0.28%     0.28%  benchmark  libfabric.so.1.16.2        [.] rxr_release_tx_entry
+     0.28%     0.28%  benchmark  benchmark                  [.] std::chrono::duration<long, std::ratio<1l, 1000000000l> >::count
+     0.25%     0.04%  benchmark  benchmark                  [.] std::chrono::duration_cast<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, long, std::ratio<1l, 1l> >
+     0.25%     0.25%  benchmark  libfabric.so.1.16.2        [.] ofi_cq_read
+     0.22%     0.22%  benchmark  libfabric.so.1.16.2        [.] ofi_fastlock_release_noop
+     0.21%     0.12%  benchmark  benchmark                  [.] std::chrono::__duration_cast_impl<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::ratio<1000000000l, 1l>, long, false, true>::__cast<long, std::ratio<1l, 1l> >
+     0.21%     0.21%  benchmark  libfabric.so.1.16.2        [.] rxr_pkt_req_base_hdr_size
+     0.20%     0.20%  benchmark  libfabric.so.1.16.2        [.] ofi_fastlock_release
+     0.20%     0.20%  benchmark  libefa.so.1.1.37.0         [.] pthread_spin_unlock@plt
+     0.19%     0.00%  benchmark  [unknown]                  [.] 0x000080fe00000024
+     0.18%     0.18%  benchmark  libefa.so.1.1.37.0         [.] pthread_spin_lock@plt
+     0.18%     0.18%  benchmark  libfabric.so.1.16.2        [.] rxr_ep_alloc_tx_entry
+     0.17%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05800dfa0
+     0.16%     0.16%  benchmark  libpthread-2.26.so         [.] __pthread_disable_asynccancel
+     0.16%     0.16%  benchmark  benchmark                  [.] std::chrono::duration<long, std::ratio<1l, 1000000000l> >::duration<long, void>
+     0.15%     0.15%  benchmark  [unknown]                  [k] 0xffffffff9da00000
+     0.13%     0.13%  benchmark  libc-2.26.so               [.] __memmove_avx_unaligned_erms
+     0.12%     0.12%  benchmark  benchmark                  [.] ft_sendmsg
+     0.12%     0.12%  benchmark  benchmark                  [.] std::vector<unsigned long, std::allocator<unsigned long> >::operator[]
+     0.11%     0.11%  benchmark  libpthread-2.26.so         [.] __pthread_enable_asynccancel
+     0.11%     0.11%  benchmark  libefa.so.1.1.37.0         [.] efa_post_send_validate
+     0.11%     0.11%  benchmark  benchmark                  [.] ft_post_tx
+     0.11%     0.11%  benchmark  libc-2.26.so               [.] __memset_avx2_unaligned_erms
+     0.10%     0.10%  benchmark  libfabric.so.1.16.2        [.] rxr_pkt_entry_release_tx
+     0.09%     0.09%  benchmark  libefa.so.1.1.37.0         [.] efa_wq_put_wrid_idx_unlocked
+     0.09%     0.09%  benchmark  libfabric.so.1.16.2        [.] rxr_pkt_req_hdr_size
+     0.08%     0.08%  benchmark  benchmark                  [.] std::chrono::time_point<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >::time_since_epoch
+     0.08%     0.08%  benchmark  libfabric.so.1.16.2        [.] efa_post_flush
+     0.07%     0.07%  benchmark  benchmark                  [.] std::chrono::duration<long, std::ratio<1l, 1l> >::count
+     0.06%     0.06%  benchmark  libfabric.so.1.16.2        [.] rxr_locate_iov_pos
+     0.06%     0.06%  benchmark  libstdc++.so.6.0.24        [.] std::chrono::_V2::steady_clock::now
+     0.06%     0.06%  benchmark  libfabric.so.1.16.2        [.] rxr_pkt_req_max_header_size
+     0.05%     0.05%  benchmark  libfabric.so.1.16.2        [.] efa_cntr_report_tx_completion
+     0.05%     0.05%  benchmark  libfabric.so.1.16.2        [.] rxr_pkt_post_ctrl
+     0.05%     0.05%  benchmark  benchmark                  [.] ft_exchange_addresses_oob
+     0.05%     0.00%  benchmark  [unknown]                  [.] 0x00007fa058010388
+     0.05%     0.00%  benchmark  [unknown]                  [.] 0x00007fa0580140f0
+     0.05%     0.05%  benchmark  libfabric.so.1.16.2        [.] rxr_pkt_entry_alloc
+     0.05%     0.05%  benchmark  benchmark                  [.] std::chrono::duration<long, std::ratio<1l, 1l> >::duration<unsigned int, void>
+     0.04%     0.04%  benchmark  libfabric.so.1.16.2        [.] util_cq_read_ctx
+     0.03%     0.03%  benchmark  libfabric.so.1.16.2        [.] memcpy@plt
+     0.03%     0.03%  benchmark  [vdso]                     [.] 0x0000000000000a47
+     0.03%     0.00%  benchmark  [vdso]                     [.] 0x00007fffa1cf5a47
+     0.02%     0.02%  benchmark  benchmark                  [.] std::chrono::_V2::steady_clock::now@plt
+     0.02%     0.02%  benchmark  [vdso]                     [.] 0x0000000000000a59
+     0.02%     0.00%  benchmark  [vdso]                     [.] 0x00007fffa1cf5a59
+     0.02%     0.02%  benchmark  libfabric.so.1.16.2        [.] rxr_msg_sendmsg
+     0.02%     0.02%  benchmark  [vdso]                     [.] 0x00000000000009d0
+     0.02%     0.00%  benchmark  [vdso]                     [.] 0x00007fffa1cf59d0
+     0.02%     0.02%  benchmark  [vdso]                     [.] 0x00000000000009f8
+     0.02%     0.00%  benchmark  [vdso]                     [.] 0x00007fffa1cf59f8
+     0.02%     0.02%  benchmark  libfabric.so.1.16.2        [.] ofi_bufpool_grow
+     0.01%     0.01%  benchmark  [vdso]                     [.] 0x0000000000000a40
+     0.01%     0.00%  benchmark  [vdso]                     [.] 0x00007fffa1cf5a40
+     0.01%     0.01%  benchmark  libpthread-2.26.so         [.] __errno_location
+     0.01%     0.01%  benchmark  [vdso]                     [.] 0x0000000000000a4a
+     0.01%     0.00%  benchmark  [vdso]                     [.] 0x00007fffa1cf5a4a
+     0.01%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05c0284d0
+     0.01%     0.01%  benchmark  [vdso]                     [.] 0x0000000000000750
+     0.01%     0.00%  benchmark  [vdso]                     [.] 0x00007fffa1cf5750
+     0.01%     0.01%  benchmark  [vdso]                     [.] 0x0000000000000a82
+     0.01%     0.00%  benchmark  [vdso]                     [.] 0x00007fffa1cf5a82
+     0.01%     0.00%  benchmark  [unknown]                  [.] 0x00007fa00de88980
+     0.01%     0.00%  benchmark  benchmark                  [.] libefa::Node::getNTxCompletion
+     0.01%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05c027ed0
+     0.01%     0.01%  benchmark  [vdso]                     [.] __vdso_clock_gettime
+     0.01%     0.00%  benchmark  [unknown]                  [.] 0x00007fa00de678c0
+     0.01%     0.01%  benchmark  libfabric.so.1.16.2        [.] rxr_pkt_handle_eager_rtm_send_completion.localalias.9
+     0.01%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05c027bd0
+     0.01%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05c025dd0
+     0.01%     0.01%  benchmark  [vdso]                     [.] 0x00000000000009fc
+     0.01%     0.00%  benchmark  [vdso]                     [.] 0x00007fffa1cf59fc
+     0.01%     0.01%  benchmark  [vdso]                     [.] 0x0000000000000a12
+     0.01%     0.00%  benchmark  [vdso]                     [.] 0x00007fffa1cf5a12
+     0.01%     0.01%  benchmark  [vdso]                     [.] 0x0000000000000a5c
+     0.01%     0.00%  benchmark  [vdso]                     [.] 0x00007fffa1cf5a5c
+     0.01%     0.01%  benchmark  benchmark                  [.] recv@plt
+     0.01%     0.00%  benchmark  libfabric.so.1.16.2        [.] smr_create
+     0.01%     0.00%  benchmark  libc-2.26.so               [.] __strncpy_sse2_unaligned
+     0.01%     0.01%  benchmark  benchmark                  [.] __errno_location@plt
+     0.01%     0.01%  benchmark  ld-2.26.so                 [.] do_lookup_x
+     0.01%     0.00%  benchmark  [unknown]                  [.] 0x0000000000000040
+     0.01%     0.01%  benchmark  ld-2.26.so                 [.] check_match
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05c0290d0
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa00de3fe40
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05c02f3d0
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05c0314d0
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa00de72900
+     0.00%     0.00%  benchmark  [unknown]                  [k] 0xffffffff9da00cb0
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x0000000025460813
+     0.00%     0.00%  benchmark  [vdso]                     [.] 0x00000000000009d6
+     0.00%     0.00%  benchmark  [vdso]                     [.] 0x00007fffa1cf59d6
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa00de08d00
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05c02ffd0
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa00de8acc0
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05c02c0d0
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05c0251d0
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05c02c6d0
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05c02fcd0
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa00de02340
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa00de5ebc0
+     0.00%     0.00%  benchmark  [vdso]                     [.] 0x0000000000000a27
+     0.00%     0.00%  benchmark  [vdso]                     [.] 0x00007fffa1cf5a27
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa00deae0c0
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa00de3db00
+     0.00%     0.00%  benchmark  [vdso]                     [.] 0x00000000000009d1
+     0.00%     0.00%  benchmark  [vdso]                     [.] 0x00007fffa1cf59d1
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa00de8d000
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05c0260d0
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa00de210c0
+     0.00%     0.00%  benchmark  [vdso]                     [.] 0x0000000000000a37
+     0.00%     0.00%  benchmark  [vdso]                     [.] 0x00007fffa1cf5a37
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05c0248d0
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00000000247b2d54
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa00de84300
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2        [.] ibv_destroy_cq@plt
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa058013a00
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa00de86640
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05c02a5d0
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05c0278d0
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa00de53b80
+     0.00%     0.00%  benchmark  [vdso]                     [.] 0x00000000000009df
+     0.00%     0.00%  benchmark  [vdso]                     [.] 0x00007fffa1cf59df
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2        [.] memset@plt
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05c026cd0
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05c02d8d0
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x0000000038340b26
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05c0266d0
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa00dea3080
+     0.00%     0.00%  benchmark  [vdso]                     [.] 0x0000000000000a89
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x000000002878a5c5
+     0.00%     0.00%  benchmark  [vdso]                     [.] 0x00007fffa1cf5a89
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05c02ead0
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa00de65580
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa05c0329d0
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa00de3b7c0
+     0.00%     0.00%  benchmark  [vdso]                     [.] 0x0000000000000761
+     0.00%     0.00%  benchmark  [vdso]                     [.] 0x00007fffa1cf5761
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa00de25740
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa00de95d00
+     0.00%     0.00%  benchmark  ld-2.26.so                 [.] dl_main
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x000000003804b1c5
+     0.00%     0.00%  benchmark  ld-2.26.so                 [.] _dl_relocate_object
+     0.00%     0.00%  benchmark  ld-2.26.so                 [.] _dl_sysdep_start
+     0.00%     0.00%  benchmark  ld-2.26.so                 [.] _dl_fixup
+     0.00%     0.00%  benchmark  libnl-route-3.so.200.23.0  [.] _init
+     0.00%     0.00%  benchmark  libstdc++.so.6.0.24        [.] std::_Rb_tree_insert_and_rebalance
+     0.00%     0.00%  benchmark  benchmark                  [.] __libc_csu_init
+     0.00%     0.00%  benchmark  benchmark                  [.] _GLOBAL__sub_I__ZN14SendRecvServer15_pingPongWorkerEm
+     0.00%     0.00%  benchmark  benchmark                  [.] __static_initialization_and_destruction_0
+     0.00%     0.00%  benchmark  benchmark                  [.] std::map<T, char const*, std::less<T>, std::allocator<std::pair<T const, char const*> > >::map
+     0.00%     0.00%  benchmark  benchmark                  [.] std::_Rb_tree<T, std::pair<T const, char const*>, std::_Select1st<std::pair<T const, char const*> >, std::less<T>, std::allocator<std::pair<T const, char const*> > >::_M_insert_unique<std::pair<T const, char const*> const*>
+     0.00%     0.00%  benchmark  benchmark                  [.] std::_Rb_tree<T, std::pair<T const, char const*>, std::_Select1st<std::pair<T const, char const*> >, std::less<T>, std::allocator<std::pair<T const, char const*> > >::_M_insert_unique_<std::pair<T const, char const*> const&, std::_Rb_tree<T, std::pair<T const, char const*>, std::_Select1st<std::pair<T const, char const*> >, std::less<T>, std::allocator<std::pair<T const, char const*> > >::_Alloc_node>
+     0.00%     0.00%  benchmark  ld-2.26.so                 [.] _dl_fini
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x0000000000000005
+     0.00%     0.00%  benchmark  libc-2.26.so               [.] 0x00007fa05e9de1a0
+     0.00%     0.00%  benchmark  libc-2.26.so               [.] __run_exit_handlers
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x29d9f5546a90b1c0
+     0.00%     0.00%  benchmark  libefa.so.1.1.37.0         [.] efa_post_recv
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2        [.] rxr_ep_post_prov_buf
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa0145b4500
+     0.00%     0.00%  benchmark  ld-2.26.so                 [.] _dl_lookup_symbol_x
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2        [.] smr_endpoint
+     0.00%     0.00%  benchmark  libc-2.26.so               [.] _int_malloc
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x424158584300332e
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00000000056bafd3
+     0.00%     0.00%  benchmark  libc-2.26.so               [.] __libc_calloc
+     0.00%     0.00%  benchmark  ld-2.26.so                 [.] _dl_map_object
+     0.00%     0.00%  benchmark  ld-2.26.so                 [.] strcmp
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x42494c4700352e32
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x0000000009691a75
+     0.00%     0.00%  benchmark  ld-2.26.so                 [.] _dl_check_caller
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0xe7f73d8023c0474a
+     0.00%     0.00%  benchmark  libc-2.26.so               [.] vfprintf
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fa058009cd0
+     0.00%     0.00%  benchmark  libc-2.26.so               [.] __vasprintf_chk
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2        [.] fi_log_enabled@@FABRIC_1.0
+     0.00%     0.00%  benchmark  libc-2.26.so               [.] _IO_vfscanf
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x7a25203a657a6973
+     0.00%     0.00%  benchmark  libc-2.26.so               [.] _IO_vsscanf
+     0.00%     0.00%  benchmark  libc-2.26.so               [.] cfree@GLIBC_2.2.5
+     0.00%     0.00%  benchmark  benchmark                  [.] ft_getinfo
+     0.00%     0.00%  benchmark  ld-2.26.so                 [.] malloc
+     0.00%     0.00%  benchmark  ld-2.26.so                 [.] _dl_check_all_versions
+     0.00%     0.00%  benchmark  ld-2.26.so                 [.] _dl_load_cache_lookup
+     0.00%     0.00%  benchmark  ld-2.26.so                 [.] open_path
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x20b248579944edd0
+     0.00%     0.00%  benchmark  ld-2.26.so                 [.] _dl_name_match_p
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00302e6f732e6461
+     0.00%     0.00%  benchmark  benchmark                  [.] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::size
+     0.00%     0.00%  benchmark  benchmark                  [.] common::setBaseFabricHints
+     0.00%     0.00%  benchmark  benchmark                  [.] std::operator==<char, std::char_traits<char>, std::allocator<char> >
+     0.00%     0.00%  benchmark  benchmark                  [.] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::compare
+     0.00%     0.00%  benchmark  ld-2.26.so                 [.] __GI___tunables_init
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x2d3237312d70693d
+     0.00%     0.00%  benchmark  [unknown]                  [.] 0x00007fffa1c2452c
+     0.00%     0.00%  benchmark  ld-2.26.so                 [.] _dl_start
+     0.00%     0.00%  benchmark  ld-2.26.so                 [.] _dl_start_user
+     0.00%     0.00%  benchmark  benchmark                  [.] ft_init_oob
+     0.00%     0.00%  benchmark  libpthread-2.26.so         [.] __libc_accept
+     0.00%     0.00%  benchmark  libc-2.26.so               [.] __ctype_init
+     0.00%     0.00%  benchmark  libc-2.26.so               [.] __clone
+     0.00%     0.00%  benchmark  ld-2.26.so                 [.] _start
+
+
+#
+# (Tip: To see callchains in a more compact form: perf report -g folded)
+#
