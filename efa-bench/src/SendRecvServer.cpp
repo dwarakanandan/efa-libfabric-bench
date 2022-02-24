@@ -213,11 +213,15 @@ void SendRecvServer::_batchWorker(size_t workerId)
         {
             ret = server.postTx();
             // std::cout << "postTx: " << ret << std::endl;
-            if (ret)
+            if (ret && ret != FI_EAGAIN)
+            {
                 return;
-
-            common::workerOperationCounter[workerId]++;
-            outstandingOps++;
+            }
+            if (!ret)
+            {
+                common::workerOperationCounter[workerId]++;
+                outstandingOps++;
+            }
         }
 
         if (outstandingOps == FLAGS_batch)
