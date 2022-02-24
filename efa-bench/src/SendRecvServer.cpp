@@ -217,7 +217,7 @@ void SendRecvServer::_batchWorker(size_t workerId)
             {
                 return;
             }
-            if (!ret)
+            else
             {
                 common::workerOperationCounter[workerId]++;
                 outstandingOps++;
@@ -228,7 +228,7 @@ void SendRecvServer::_batchWorker(size_t workerId)
         {
             while (true)
             {
-                ret = server.fiCqRead(server.ctx.txcq, FLAGS_batch);
+                ret = server.fiCqRead(server.ctx.txcq, 10);
                 if (ret > 0)
                 {
                     // std::cout << "fiCqRead: " << ret << std::endl;
