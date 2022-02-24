@@ -2730,7 +2730,7 @@ int ft_sendmsg(struct ConnectionContext *ctx, struct fid_ep *ep, fi_addr_t fi_ad
 		ret = fi_sendmsg(ep, &msg, flags);
 		if (ret)
 		{
-			FT_PRINTERR("fi_sendmsg", ret);
+			// FT_PRINTERR("fi_sendmsg", ret);
 			return ret;
 		}
 	}
