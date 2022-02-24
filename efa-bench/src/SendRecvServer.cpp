@@ -213,11 +213,11 @@ void SendRecvServer::_batchWorker(size_t workerId)
         {
             ret = server.postTx();
             // std::cout << "postTx: " << ret << std::endl;
-            if (ret && ret != FI_EAGAIN)
+            if (ret && ret != -FI_EAGAIN)
             {
                 return;
             }
-            else
+            if (ret == 0)
             {
                 common::workerOperationCounter[workerId]++;
                 outstandingOps++;
