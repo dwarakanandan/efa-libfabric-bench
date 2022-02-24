@@ -74,5 +74,7 @@ namespace libefa
         int rma();
 
         int printFabricInfo();
+
+        ssize_t fiCqRead(struct fid_cq *cq, int n);
     };
 }

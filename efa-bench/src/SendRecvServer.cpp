@@ -116,6 +116,72 @@ void SendRecvServer::pingPongInject()
     server.showTransferStatistics(common::workerOperationCounter[workerId] / 2, 2);
 }
 
+// void SendRecvServer::_batchWorker(size_t workerId)
+// {
+//     int ret;
+//     fi_info *hints = fi_allocinfo();
+//     common::setBaseFabricHints(hints);
+
+//     Server server = Server(FLAGS_provider, FLAGS_endpoint,
+//                            std::to_string(FLAGS_port + workerId),
+//                            std::to_string(FLAGS_oob_port + workerId), hints);
+//     if (FLAGS_endpoint == "rdm")
+//     {
+//         server.enableFiMore();
+//     }
+//     server.init();
+//     server.sync();
+
+//     server.initTxBuffer(FLAGS_payload);
+
+//     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+//     server.startTimer();
+
+//     common::workerConnectionStatus[workerId] = true;
+
+//     int numCqObtained = 0;
+//     int cqTry = FLAGS_batch * FLAGS_cq_try;
+//     if (cqTry < 1)
+//     {
+//         cqTry = 1;
+//     }
+
+//     while (true)
+//     {
+//         common::workerOperationCounter[workerId]++;
+
+//         ret = server.postTx();
+//         if (ret)
+//             return;
+//         if ((common::workerOperationCounter[workerId] - numCqObtained) >= FLAGS_batch)
+//         {
+//             ret = server.getNTxCompletion(cqTry);
+//             if (ret)
+//             {
+//                 printf("SERVER: getCqCompletion failed\n\n");
+//                 exit(1);
+//             }
+//             numCqObtained += cqTry;
+//         }
+
+//         if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
+//             break;
+//     }
+
+//     ret = server.getNTxCompletion(common::workerOperationCounter[workerId] - numCqObtained);
+//     if (ret)
+//     {
+//         printf("SERVER: getCqCompletion failed\n\n");
+//         exit(1);
+//     }
+
+//     server.stopTimer();
+
+//     common::workerConnectionStatus[workerId] = false;
+
+//     server.showTransferStatistics(common::workerOperationCounter[workerId], 1);
+// }
+
 void SendRecvServer::_batchWorker(size_t workerId)
 {
     int ret;
@@ -139,36 +205,45 @@ void SendRecvServer::_batchWorker(size_t workerId)
 
     common::workerConnectionStatus[workerId] = true;
 
-    int numCqObtained = 0;
-    int cqTry = FLAGS_batch * FLAGS_cq_try;
-    if (cqTry < 1)
-    {
-        cqTry = 1;
-    }
+    int outstandingOps = 0;
 
     while (true)
     {
-        common::workerOperationCounter[workerId]++;
-
-        ret = server.postTx();
-        if (ret)
-            return;
-        if ((common::workerOperationCounter[workerId] - numCqObtained) >= FLAGS_batch)
+        if (outstandingOps <= FLAGS_batch)
         {
-            ret = server.getNTxCompletion(cqTry);
+            ret = server.postTx();
+            // std::cout << "postTx: " << ret << std::endl;
             if (ret)
+                return;
+
+            common::workerOperationCounter[workerId]++;
+            outstandingOps++;
+        }
+
+        if (outstandingOps == FLAGS_batch)
+        {
+            while (true)
             {
-                printf("SERVER: getCqCompletion failed\n\n");
-                exit(1);
+                ret = server.fiCqRead(server.ctx.txcq, FLAGS_batch);
+                if (ret > 1)
+                {
+                    // std::cout << "fiCqRead: " << ret << std::endl;
+                    outstandingOps -= ret;
+                    server.ctx.tx_cq_cntr += ret;
+                    break;
+                }
+                else if (ret < 0 && ret != -FI_EAGAIN)
+                {
+                    return;
+                }
             }
-            numCqObtained += cqTry;
         }
 
         if (std::chrono::steady_clock::now() - start > std::chrono::seconds(FLAGS_runtime))
             break;
     }
 
-    ret = server.getNTxCompletion(common::workerOperationCounter[workerId] - numCqObtained);
+    ret = server.getNTxCompletion(outstandingOps);
     if (ret)
     {
         printf("SERVER: getCqCompletion failed\n\n");

@@ -258,3 +258,9 @@ int libefa::Node::printFabricInfo()
     printFabricInfoShort(ctx.fi);
     return EXIT_SUCCESS;
 }
+
+ssize_t libefa::Node::fiCqRead(struct fid_cq *cq, int n)
+{
+    struct fi_cq_err_entry comp;
+    return fi_cq_read(cq, &comp, n);
+}

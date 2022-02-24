@@ -41,6 +41,7 @@ void common::setBaseFabricHints(fi_info *hints)
 {
     hints->mode |= (FLAGS_endpoint == "dgram") ? FI_MSG_PREFIX : FI_CONTEXT;
     hints->caps = FLAGS_tagged ? FI_TAGGED : FI_MSG;
+    hints->caps |= FI_REMOTE_COMM;
     hints->domain_attr->resource_mgmt = (FLAGS_endpoint == "dgram") ? FI_RM_DISABLED : FI_RM_ENABLED;
     hints->domain_attr->threading = FI_THREAD_DOMAIN;
     hints->tx_attr->tclass = FI_TC_LOW_LATENCY;
