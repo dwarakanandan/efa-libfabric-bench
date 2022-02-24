@@ -209,7 +209,7 @@ void SendRecvServer::_batchWorker(size_t workerId)
 
     while (true)
     {
-        if (outstandingOps <= FLAGS_batch)
+        if (outstandingOps < FLAGS_batch)
         {
             ret = server.postTx();
             // std::cout << "postTx: " << ret << std::endl;
@@ -225,7 +225,7 @@ void SendRecvServer::_batchWorker(size_t workerId)
             while (true)
             {
                 ret = server.fiCqRead(server.ctx.txcq, FLAGS_batch);
-                if (ret > 1)
+                if (ret > 0)
                 {
                     // std::cout << "fiCqRead: " << ret << std::endl;
                     outstandingOps -= ret;
