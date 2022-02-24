@@ -217,7 +217,26 @@ void SendRecvServer::_batchWorker(size_t workerId)
             {
                 return;
             }
-            if (ret == 0)
+
+            if (ret == -FI_EAGAIN)
+            {
+                while (true)
+                {
+                    ret = server.fiCqRead(server.ctx.txcq, 10);
+                    if (ret > 0)
+                    {
+                        // std::cout << "fiCqRead: " << ret << std::endl;
+                        outstandingOps -= ret;
+                        server.ctx.tx_cq_cntr += ret;
+                        break;
+                    }
+                    else if (ret < 0 && ret != -FI_EAGAIN)
+                    {
+                        return;
+                    }
+                }
+            }
+            else
             {
                 common::workerOperationCounter[workerId]++;
                 outstandingOps++;
