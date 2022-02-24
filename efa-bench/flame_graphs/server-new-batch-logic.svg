@@ -1,0 +1,832 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" width="1200" height="518" onload="init(evt)" viewBox="0 0 1200 518" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<!-- Flame graph stack visualization. See https://github.com/brendangregg/FlameGraph for latest version, and http://www.brendangregg.com/flamegraphs.html for examples. -->
+<!-- NOTES:  -->
+<defs>
+	<linearGradient id="background" y1="0" y2="1" x1="0" x2="0" >
+		<stop stop-color="#eeeeee" offset="5%" />
+		<stop stop-color="#eeeeb0" offset="95%" />
+	</linearGradient>
+</defs>
+<style type="text/css">
+	text { font-family:Verdana; font-size:12px; fill:rgb(0,0,0); }
+	#search, #ignorecase { opacity:0.1; cursor:pointer; }
+	#search:hover, #search.show, #ignorecase:hover, #ignorecase.show { opacity:1; }
+	#subtitle { text-anchor:middle; font-color:rgb(160,160,160); }
+	#title { text-anchor:middle; font-size:17px}
+	#unzoom { cursor:pointer; }
+	#frames > *:hover { stroke:black; stroke-width:0.5; cursor:pointer; }
+	.hide { display:none; }
+	.parent { opacity:0.5; }
+</style>
+<script type="text/ecmascript">
+<![CDATA[
+	"use strict";
+	var details, searchbtn, unzoombtn, matchedtxt, svg, searching, currentSearchTerm, ignorecase, ignorecaseBtn;
+	function init(evt) {
+		details = document.getElementById("details").firstChild;
+		searchbtn = document.getElementById("search");
+		ignorecaseBtn = document.getElementById("ignorecase");
+		unzoombtn = document.getElementById("unzoom");
+		matchedtxt = document.getElementById("matched");
+		svg = document.getElementsByTagName("svg")[0];
+		searching = 0;
+		currentSearchTerm = null;
+
+		// use GET parameters to restore a flamegraphs state.
+		var params = get_params();
+		if (params.x && params.y)
+			zoom(find_group(document.querySelector('[x="' + params.x + '"][y="' + params.y + '"]')));
+                if (params.s) search(params.s);
+	}
+
+	// event listeners
+	window.addEventListener("click", function(e) {
+		var target = find_group(e.target);
+		if (target) {
+			if (target.nodeName == "a") {
+				if (e.ctrlKey === false) return;
+				e.preventDefault();
+			}
+			if (target.classList.contains("parent")) unzoom();
+			zoom(target);
+			if (!document.querySelector('.parent')) {
+				clearzoom();
+				return;
+			}
+
+			// set parameters for zoom state
+			var el = target.querySelector("rect");
+			if (el && el.attributes && el.attributes.y && el.attributes._orig_x) {
+				var params = get_params()
+				params.x = el.attributes._orig_x.value;
+				params.y = el.attributes.y.value;
+				history.replaceState(null, null, parse_params(params));
+			}
+		}
+		else if (e.target.id == "unzoom") clearzoom();
+		else if (e.target.id == "search") search_prompt();
+		else if (e.target.id == "ignorecase") toggle_ignorecase();
+	}, false)
+
+	// mouse-over for info
+	// show
+	window.addEventListener("mouseover", function(e) {
+		var target = find_group(e.target);
+		if (target) details.nodeValue = "Function: " + g_to_text(target);
+	}, false)
+
+	// clear
+	window.addEventListener("mouseout", function(e) {
+		var target = find_group(e.target);
+		if (target) details.nodeValue = ' ';
+	}, false)
+
+	// ctrl-F for search
+	// ctrl-I to toggle case-sensitive search
+	window.addEventListener("keydown",function (e) {
+		if (e.keyCode === 114 || (e.ctrlKey && e.keyCode === 70)) {
+			e.preventDefault();
+			search_prompt();
+		}
+		else if (e.ctrlKey && e.keyCode === 73) {
+			e.preventDefault();
+			toggle_ignorecase();
+		}
+	}, false)
+
+	// functions
+	function get_params() {
+		var params = {};
+		var paramsarr = window.location.search.substr(1).split('&');
+		for (var i = 0; i < paramsarr.length; ++i) {
+			var tmp = paramsarr[i].split("=");
+			if (!tmp[0] || !tmp[1]) continue;
+			params[tmp[0]]  = decodeURIComponent(tmp[1]);
+		}
+		return params;
+	}
+	function parse_params(params) {
+		var uri = "?";
+		for (var key in params) {
+			uri += key + '=' + encodeURIComponent(params[key]) + '&';
+		}
+		if (uri.slice(-1) == "&")
+			uri = uri.substring(0, uri.length - 1);
+		if (uri == '?')
+			uri = window.location.href.split('?')[0];
+		return uri;
+	}
+	function find_child(node, selector) {
+		var children = node.querySelectorAll(selector);
+		if (children.length) return children[0];
+	}
+	function find_group(node) {
+		var parent = node.parentElement;
+		if (!parent) return;
+		if (parent.id == "frames") return node;
+		return find_group(parent);
+	}
+	function orig_save(e, attr, val) {
+		if (e.attributes["_orig_" + attr] != undefined) return;
+		if (e.attributes[attr] == undefined) return;
+		if (val == undefined) val = e.attributes[attr].value;
+		e.setAttribute("_orig_" + attr, val);
+	}
+	function orig_load(e, attr) {
+		if (e.attributes["_orig_"+attr] == undefined) return;
+		e.attributes[attr].value = e.attributes["_orig_" + attr].value;
+		e.removeAttribute("_orig_"+attr);
+	}
+	function g_to_text(e) {
+		var text = find_child(e, "title").firstChild.nodeValue;
+		return (text)
+	}
+	function g_to_func(e) {
+		var func = g_to_text(e);
+		// if there's any manipulation we want to do to the function
+		// name before it's searched, do it here before returning.
+		return (func);
+	}
+	function update_text(e) {
+		var r = find_child(e, "rect");
+		var t = find_child(e, "text");
+		var w = parseFloat(r.attributes.width.value) -3;
+		var txt = find_child(e, "title").textContent.replace(/\([^(]*\)$/,"");
+		t.attributes.x.value = parseFloat(r.attributes.x.value) + 3;
+
+		// Smaller than this size won't fit anything
+		if (w < 2 * 12 * 0.59) {
+			t.textContent = "";
+			return;
+		}
+
+		t.textContent = txt;
+		// Fit in full text width
+		if (/^ *$/.test(txt) || t.getSubStringLength(0, txt.length) < w)
+			return;
+
+		for (var x = txt.length - 2; x > 0; x--) {
+			if (t.getSubStringLength(0, x + 2) <= w) {
+				t.textContent = txt.substring(0, x) + "..";
+				return;
+			}
+		}
+		t.textContent = "";
+	}
+
+	// zoom
+	function zoom_reset(e) {
+		if (e.attributes != undefined) {
+			orig_load(e, "x");
+			orig_load(e, "width");
+		}
+		if (e.childNodes == undefined) return;
+		for (var i = 0, c = e.childNodes; i < c.length; i++) {
+			zoom_reset(c[i]);
+		}
+	}
+	function zoom_child(e, x, ratio) {
+		if (e.attributes != undefined) {
+			if (e.attributes.x != undefined) {
+				orig_save(e, "x");
+				e.attributes.x.value = (parseFloat(e.attributes.x.value) - x - 10) * ratio + 10;
+				if (e.tagName == "text")
+					e.attributes.x.value = find_child(e.parentNode, "rect[x]").attributes.x.value + 3;
+			}
+			if (e.attributes.width != undefined) {
+				orig_save(e, "width");
+				e.attributes.width.value = parseFloat(e.attributes.width.value) * ratio;
+			}
+		}
+
+		if (e.childNodes == undefined) return;
+		for (var i = 0, c = e.childNodes; i < c.length; i++) {
+			zoom_child(c[i], x - 10, ratio);
+		}
+	}
+	function zoom_parent(e) {
+		if (e.attributes) {
+			if (e.attributes.x != undefined) {
+				orig_save(e, "x");
+				e.attributes.x.value = 10;
+			}
+			if (e.attributes.width != undefined) {
+				orig_save(e, "width");
+				e.attributes.width.value = parseInt(svg.width.baseVal.value) - (10 * 2);
+			}
+		}
+		if (e.childNodes == undefined) return;
+		for (var i = 0, c = e.childNodes; i < c.length; i++) {
+			zoom_parent(c[i]);
+		}
+	}
+	function zoom(node) {
+		var attr = find_child(node, "rect").attributes;
+		var width = parseFloat(attr.width.value);
+		var xmin = parseFloat(attr.x.value);
+		var xmax = parseFloat(xmin + width);
+		var ymin = parseFloat(attr.y.value);
+		var ratio = (svg.width.baseVal.value - 2 * 10) / width;
+
+		// XXX: Workaround for JavaScript float issues (fix me)
+		var fudge = 0.0001;
+
+		unzoombtn.classList.remove("hide");
+
+		var el = document.getElementById("frames").children;
+		for (var i = 0; i < el.length; i++) {
+			var e = el[i];
+			var a = find_child(e, "rect").attributes;
+			var ex = parseFloat(a.x.value);
+			var ew = parseFloat(a.width.value);
+			var upstack;
+			// Is it an ancestor
+			if (0 == 0) {
+				upstack = parseFloat(a.y.value) > ymin;
+			} else {
+				upstack = parseFloat(a.y.value) < ymin;
+			}
+			if (upstack) {
+				// Direct ancestor
+				if (ex <= xmin && (ex+ew+fudge) >= xmax) {
+					e.classList.add("parent");
+					zoom_parent(e);
+					update_text(e);
+				}
+				// not in current path
+				else
+					e.classList.add("hide");
+			}
+			// Children maybe
+			else {
+				// no common path
+				if (ex < xmin || ex + fudge >= xmax) {
+					e.classList.add("hide");
+				}
+				else {
+					zoom_child(e, xmin, ratio);
+					update_text(e);
+				}
+			}
+		}
+		search();
+	}
+	function unzoom() {
+		unzoombtn.classList.add("hide");
+		var el = document.getElementById("frames").children;
+		for(var i = 0; i < el.length; i++) {
+			el[i].classList.remove("parent");
+			el[i].classList.remove("hide");
+			zoom_reset(el[i]);
+			update_text(el[i]);
+		}
+		search();
+	}
+	function clearzoom() {
+		unzoom();
+
+		// remove zoom state
+		var params = get_params();
+		if (params.x) delete params.x;
+		if (params.y) delete params.y;
+		history.replaceState(null, null, parse_params(params));
+	}
+
+	// search
+	function toggle_ignorecase() {
+		ignorecase = !ignorecase;
+		if (ignorecase) {
+			ignorecaseBtn.classList.add("show");
+		} else {
+			ignorecaseBtn.classList.remove("show");
+		}
+		reset_search();
+		search();
+	}
+	function reset_search() {
+		var el = document.querySelectorAll("#frames rect");
+		for (var i = 0; i < el.length; i++) {
+			orig_load(el[i], "fill")
+		}
+		var params = get_params();
+		delete params.s;
+		history.replaceState(null, null, parse_params(params));
+	}
+	function search_prompt() {
+		if (!searching) {
+			var term = prompt("Enter a search term (regexp " +
+			    "allowed, eg: ^ext4_)"
+			    + (ignorecase ? ", ignoring case" : "")
+			    + "\nPress Ctrl-i to toggle case sensitivity", "");
+			if (term != null) search(term);
+		} else {
+			reset_search();
+			searching = 0;
+			currentSearchTerm = null;
+			searchbtn.classList.remove("show");
+			searchbtn.firstChild.nodeValue = "Search"
+			matchedtxt.classList.add("hide");
+			matchedtxt.firstChild.nodeValue = ""
+		}
+	}
+	function search(term) {
+		if (term) currentSearchTerm = term;
+
+		var re = new RegExp(currentSearchTerm, ignorecase ? 'i' : '');
+		var el = document.getElementById("frames").children;
+		var matches = new Object();
+		var maxwidth = 0;
+		for (var i = 0; i < el.length; i++) {
+			var e = el[i];
+			var func = g_to_func(e);
+			var rect = find_child(e, "rect");
+			if (func == null || rect == null)
+				continue;
+
+			// Save max width. Only works as we have a root frame
+			var w = parseFloat(rect.attributes.width.value);
+			if (w > maxwidth)
+				maxwidth = w;
+
+			if (func.match(re)) {
+				// highlight
+				var x = parseFloat(rect.attributes.x.value);
+				orig_save(rect, "fill");
+				rect.attributes.fill.value = "rgb(230,0,230)";
+
+				// remember matches
+				if (matches[x] == undefined) {
+					matches[x] = w;
+				} else {
+					if (w > matches[x]) {
+						// overwrite with parent
+						matches[x] = w;
+					}
+				}
+				searching = 1;
+			}
+		}
+		if (!searching)
+			return;
+		var params = get_params();
+		params.s = currentSearchTerm;
+		history.replaceState(null, null, parse_params(params));
+
+		searchbtn.classList.add("show");
+		searchbtn.firstChild.nodeValue = "Reset Search";
+
+		// calculate percent matched, excluding vertical overlap
+		var count = 0;
+		var lastx = -1;
+		var lastw = 0;
+		var keys = Array();
+		for (k in matches) {
+			if (matches.hasOwnProperty(k))
+				keys.push(k);
+		}
+		// sort the matched frames by their x location
+		// ascending, then width descending
+		keys.sort(function(a, b){
+			return a - b;
+		});
+		// Step through frames saving only the biggest bottom-up frames
+		// thanks to the sort order. This relies on the tree property
+		// where children are always smaller than their parents.
+		var fudge = 0.0001;	// JavaScript floating point
+		for (var k in keys) {
+			var x = parseFloat(keys[k]);
+			var w = matches[keys[k]];
+			if (x >= lastx + lastw - fudge) {
+				count += w;
+				lastx = x;
+				lastw = w;
+			}
+		}
+		// display matched percent
+		matchedtxt.classList.remove("hide");
+		var pct = 100 * count / maxwidth;
+		if (pct != 100) pct = pct.toFixed(1)
+		matchedtxt.firstChild.nodeValue = "Matched: " + pct + "%";
+	}
+]]>
+</script>
+<rect x="0.0" y="0" width="1200.0" height="518.0" fill="url(#background)"  />
+<text id="title" x="600.00" y="24" >Flame Graph</text>
+<text id="details" x="10.00" y="501" > </text>
+<text id="unzoom" x="10.00" y="24" class="hide">Reset Zoom</text>
+<text id="search" x="1090.00" y="24" >Search</text>
+<text id="ignorecase" x="1174.00" y="24" >ic</text>
+<text id="matched" x="1090.00" y="501" > </text>
+<g id="frames">
+<g >
+<title>std::chrono::duration&lt;long, (1 samples, 0.46%)</title><rect x="589.1" y="277" width="5.4" height="15.0" fill="rgb(218,203,31)" rx="2" ry="2" />
+<text  x="592.07" y="287.5" ></text>
+</g>
+<g >
+<title>rxr_pkt_init_req_hdr (1 samples, 0.46%)</title><rect x="458.0" y="117" width="5.4" height="15.0" fill="rgb(240,15,30)" rx="2" ry="2" />
+<text  x="460.96" y="127.5" ></text>
+</g>
+<g >
+<title>ofi_cq_progress (64 samples, 29.63%)</title><rect x="48.2" y="261" width="349.7" height="15.0" fill="rgb(221,182,13)" rx="2" ry="2" />
+<text  x="51.24" y="271.5" >ofi_cq_progress</text>
+</g>
+<g >
+<title>rxr_pkt_handle_eager_rtm_send_completion (3 samples, 1.39%)</title><rect x="381.5" y="181" width="16.4" height="15.0" fill="rgb(250,228,21)" rx="2" ry="2" />
+<text  x="384.48" y="191.5" ></text>
+</g>
+<g >
+<title>efa_poll_cq (39 samples, 18.06%)</title><rect x="157.5" y="181" width="213.1" height="15.0" fill="rgb(243,155,23)" rx="2" ry="2" />
+<text  x="160.50" y="191.5" >efa_poll_cq</text>
+</g>
+<g >
+<title>?? (2 samples, 0.93%)</title><rect x="485.3" y="261" width="10.9" height="15.0" fill="rgb(207,97,26)" rx="2" ry="2" />
+<text  x="488.28" y="271.5" ></text>
+</g>
+<g >
+<title>ft_free_res (1 samples, 0.46%)</title><rect x="474.4" y="277" width="5.4" height="15.0" fill="rgb(221,166,23)" rx="2" ry="2" />
+<text  x="477.35" y="287.5" ></text>
+</g>
+<g >
+<title>rxr_pkt_handle_send_completion (5 samples, 2.31%)</title><rect x="370.6" y="197" width="27.3" height="15.0" fill="rgb(210,147,17)" rx="2" ry="2" />
+<text  x="373.56" y="207.5" >r..</text>
+</g>
+<g >
+<title>std::execute_native_thread_routine (108 samples, 50.00%)</title><rect x="10.0" y="421" width="590.0" height="15.0" fill="rgb(244,24,0)" rx="2" ry="2" />
+<text  x="13.00" y="431.5" >std::execute_native_thread_routine</text>
+</g>
+<g >
+<title>rxr_msg_post_cuda_rtm (10 samples, 4.63%)</title><rect x="414.3" y="213" width="54.6" height="15.0" fill="rgb(214,95,8)" rx="2" ry="2" />
+<text  x="417.26" y="223.5" >rxr_m..</text>
+</g>
+<g >
+<title>rxr_pkt_init_eager_msgrtm (2 samples, 0.93%)</title><rect x="458.0" y="149" width="10.9" height="15.0" fill="rgb(248,214,9)" rx="2" ry="2" />
+<text  x="460.96" y="159.5" ></text>
+</g>
+<g >
+<title>main (108 samples, 50.00%)</title><rect x="600.0" y="453" width="590.0" height="15.0" fill="rgb(248,33,48)" rx="2" ry="2" />
+<text  x="603.00" y="463.5" >main</text>
+</g>
+<g >
+<title>rxr_pkt_init_ctrl (2 samples, 0.93%)</title><rect x="458.0" y="165" width="10.9" height="15.0" fill="rgb(243,144,17)" rx="2" ry="2" />
+<text  x="460.96" y="175.5" ></text>
+</g>
+<g >
+<title>cq_next_sub_cqe_get (17 samples, 7.87%)</title><rect x="266.8" y="133" width="92.8" height="15.0" fill="rgb(219,220,4)" rx="2" ry="2" />
+<text  x="269.76" y="143.5" >cq_next_sub..</text>
+</g>
+<g >
+<title>std::thread::_State_impl&lt;std::thread::_Invoker&lt;std::tuple&lt;void (108 samples, 50.00%)</title><rect x="10.0" y="405" width="590.0" height="15.0" fill="rgb(223,6,51)" rx="2" ry="2" />
+<text  x="13.00" y="415.5" >std::thread::_State_impl&lt;std::thread::_Invoker&lt;std::tuple&lt;void</text>
+</g>
+<g >
+<title>efa_sub_cq_get_cqe (1 samples, 0.46%)</title><rect x="354.2" y="117" width="5.4" height="15.0" fill="rgb(211,112,37)" rx="2" ry="2" />
+<text  x="357.17" y="127.5" ></text>
+</g>
+<g >
+<title>std::__invoke_impl&lt;void, (108 samples, 50.00%)</title><rect x="10.0" y="341" width="590.0" height="15.0" fill="rgb(249,135,20)" rx="2" ry="2" />
+<text  x="13.00" y="351.5" >std::__invoke_impl&lt;void,</text>
+</g>
+<g >
+<title>std::chrono::duration&lt;long, (1 samples, 0.46%)</title><rect x="594.5" y="277" width="5.5" height="15.0" fill="rgb(243,187,51)" rx="2" ry="2" />
+<text  x="597.54" y="287.5" ></text>
+</g>
+<g >
+<title>ft_host_free (1 samples, 0.46%)</title><rect x="474.4" y="261" width="5.4" height="15.0" fill="rgb(248,20,9)" rx="2" ry="2" />
+<text  x="477.35" y="271.5" ></text>
+</g>
+<g >
+<title>libefa::Server::~Server (1 samples, 0.46%)</title><rect x="474.4" y="309" width="5.4" height="15.0" fill="rgb(250,28,52)" rx="2" ry="2" />
+<text  x="477.35" y="319.5" ></text>
+</g>
+<g >
+<title>rxr_ep_progress (62 samples, 28.70%)</title><rect x="59.2" y="245" width="338.7" height="15.0" fill="rgb(240,176,51)" rx="2" ry="2" />
+<text  x="62.17" y="255.5" >rxr_ep_progress</text>
+</g>
+<g >
+<title>memset (1 samples, 0.46%)</title><rect x="403.3" y="197" width="5.5" height="15.0" fill="rgb(232,149,23)" rx="2" ry="2" />
+<text  x="406.33" y="207.5" ></text>
+</g>
+<g >
+<title>rxr_ep_get_peer (1 samples, 0.46%)</title><rect x="468.9" y="197" width="5.5" height="15.0" fill="rgb(254,165,40)" rx="2" ry="2" />
+<text  x="471.89" y="207.5" ></text>
+</g>
+<g >
+<title>std::thread::join (108 samples, 50.00%)</title><rect x="600.0" y="389" width="590.0" height="15.0" fill="rgb(219,10,53)" rx="2" ry="2" />
+<text  x="603.00" y="399.5" >std::thread::join</text>
+</g>
+<g >
+<title>rxr_pkt_req_data_from_tx (1 samples, 0.46%)</title><rect x="463.4" y="117" width="5.5" height="15.0" fill="rgb(233,197,48)" rx="2" ry="2" />
+<text  x="466.43" y="127.5" ></text>
+</g>
+<g >
+<title>pthread_spin_lock (1 samples, 0.46%)</title><rect x="452.5" y="37" width="5.5" height="15.0" fill="rgb(228,109,10)" rx="2" ry="2" />
+<text  x="455.50" y="47.5" ></text>
+</g>
+<g >
+<title>pthread_spin_lock (11 samples, 5.09%)</title><rect x="64.6" y="229" width="60.1" height="15.0" fill="rgb(226,165,17)" rx="2" ry="2" />
+<text  x="67.63" y="239.5" >pthrea..</text>
+</g>
+<g >
+<title>rxr_pkt_init_rtm (2 samples, 0.93%)</title><rect x="458.0" y="133" width="10.9" height="15.0" fill="rgb(245,221,1)" rx="2" ry="2" />
+<text  x="460.96" y="143.5" ></text>
+</g>
+<g >
+<title>munmap (1 samples, 0.46%)</title><rect x="474.4" y="245" width="5.4" height="15.0" fill="rgb(240,146,20)" rx="2" ry="2" />
+<text  x="477.35" y="255.5" ></text>
+</g>
+<g >
+<title>rxr_pkt_req_hdr_size (1 samples, 0.46%)</title><rect x="463.4" y="101" width="5.5" height="15.0" fill="rgb(251,26,4)" rx="2" ry="2" />
+<text  x="466.43" y="111.5" ></text>
+</g>
+<g >
+<title>rxr_tx_entry_init (1 samples, 0.46%)</title><rect x="403.3" y="213" width="5.5" height="15.0" fill="rgb(239,131,12)" rx="2" ry="2" />
+<text  x="406.33" y="223.5" ></text>
+</g>
+<g >
+<title>mmio_wc_spinlock (1 samples, 0.46%)</title><rect x="452.5" y="53" width="5.5" height="15.0" fill="rgb(235,218,28)" rx="2" ry="2" />
+<text  x="455.50" y="63.5" ></text>
+</g>
+<g >
+<title>__GI___clock_gettime (3 samples, 1.39%)</title><rect x="479.8" y="293" width="16.4" height="15.0" fill="rgb(206,185,12)" rx="2" ry="2" />
+<text  x="482.81" y="303.5" ></text>
+</g>
+<g >
+<title>fi_sendmsg (14 samples, 6.48%)</title><rect x="397.9" y="261" width="76.5" height="15.0" fill="rgb(216,65,28)" rx="2" ry="2" />
+<text  x="400.87" y="271.5" >fi_sendmsg</text>
+</g>
+<g >
+<title>std::chrono::operator-&lt;long, (18 samples, 8.33%)</title><rect x="496.2" y="293" width="98.3" height="15.0" fill="rgb(213,103,6)" rx="2" ry="2" />
+<text  x="499.20" y="303.5" >std::chrono..</text>
+</g>
+<g >
+<title>efa_cqe_is_pending (12 samples, 5.56%)</title><rect x="288.6" y="117" width="65.6" height="15.0" fill="rgb(222,1,30)" rx="2" ry="2" />
+<text  x="291.61" y="127.5" >efa_cqe..</text>
+</g>
+<g >
+<title>pthread_spin_lock@plt (1 samples, 0.46%)</title><rect x="124.7" y="229" width="5.5" height="15.0" fill="rgb(211,75,30)" rx="2" ry="2" />
+<text  x="127.72" y="239.5" ></text>
+</g>
+<g >
+<title>efa_poll_sub_cq (18 samples, 8.33%)</title><rect x="261.3" y="149" width="98.3" height="15.0" fill="rgb(227,41,54)" rx="2" ry="2" />
+<text  x="264.30" y="159.5" >efa_poll_su..</text>
+</g>
+<g >
+<title>rxr_cq_write_tx_completion (2 samples, 0.93%)</title><rect x="381.5" y="149" width="10.9" height="15.0" fill="rgb(211,171,35)" rx="2" ry="2" />
+<text  x="384.48" y="159.5" ></text>
+</g>
+<g >
+<title>ofi_bufpool_get_ibuf (1 samples, 0.46%)</title><rect x="458.0" y="85" width="5.4" height="15.0" fill="rgb(214,83,37)" rx="2" ry="2" />
+<text  x="460.96" y="95.5" ></text>
+</g>
+<g >
+<title>BenchmarkNode::startNode (108 samples, 50.00%)</title><rect x="600.0" y="421" width="590.0" height="15.0" fill="rgb(211,200,15)" rx="2" ry="2" />
+<text  x="603.00" y="431.5" >BenchmarkNode::startNode</text>
+</g>
+<g >
+<title>rxr_ep_get_peer (1 samples, 0.46%)</title><rect x="392.4" y="149" width="5.5" height="15.0" fill="rgb(213,63,27)" rx="2" ry="2" />
+<text  x="395.41" y="159.5" ></text>
+</g>
+<g >
+<title>pthread_spin_lock (2 samples, 0.93%)</title><rect x="359.6" y="165" width="11.0" height="15.0" fill="rgb(214,32,26)" rx="2" ry="2" />
+<text  x="362.63" y="175.5" ></text>
+</g>
+<g >
+<title>libefa::Node::postTx (14 samples, 6.48%)</title><rect x="397.9" y="309" width="76.5" height="15.0" fill="rgb(233,150,12)" rx="2" ry="2" />
+<text  x="400.87" y="319.5" >libefa::..</text>
+</g>
+<g >
+<title>rxr_pkt_req_max_data_size (1 samples, 0.46%)</title><rect x="468.9" y="213" width="5.5" height="15.0" fill="rgb(250,211,38)" rx="2" ry="2" />
+<text  x="471.89" y="223.5" ></text>
+</g>
+<g >
+<title>rxr_ep_alloc_tx_entry (1 samples, 0.46%)</title><rect x="403.3" y="229" width="5.5" height="15.0" fill="rgb(241,153,22)" rx="2" ry="2" />
+<text  x="406.33" y="239.5" ></text>
+</g>
+<g >
+<title>efa_post_flush (5 samples, 2.31%)</title><rect x="430.6" y="101" width="27.4" height="15.0" fill="rgb(246,30,51)" rx="2" ry="2" />
+<text  x="433.65" y="111.5" >e..</text>
+</g>
+<g >
+<title>rxr_rm_tx_cq_check (2 samples, 0.93%)</title><rect x="381.5" y="133" width="10.9" height="15.0" fill="rgb(223,144,7)" rx="2" ry="2" />
+<text  x="384.48" y="143.5" ></text>
+</g>
+<g >
+<title>pthread_spin_lock (2 samples, 0.93%)</title><rect x="381.5" y="117" width="10.9" height="15.0" fill="rgb(243,50,21)" rx="2" ry="2" />
+<text  x="384.48" y="127.5" ></text>
+</g>
+<g >
+<title>ofi_bufpool_get_ibuf (1 samples, 0.46%)</title><rect x="392.4" y="133" width="5.5" height="15.0" fill="rgb(222,201,33)" rx="2" ry="2" />
+<text  x="395.41" y="143.5" ></text>
+</g>
+<g >
+<title>BenchmarkNode::run (108 samples, 50.00%)</title><rect x="600.0" y="437" width="590.0" height="15.0" fill="rgb(240,216,14)" rx="2" ry="2" />
+<text  x="603.00" y="447.5" >BenchmarkNode::run</text>
+</g>
+<g >
+<title>rxr_pkt_post_ctrl_once (10 samples, 4.63%)</title><rect x="414.3" y="181" width="54.6" height="15.0" fill="rgb(211,97,24)" rx="2" ry="2" />
+<text  x="417.26" y="191.5" >rxr_p..</text>
+</g>
+<g >
+<title>rxr_pkt_entry_sendmsg (6 samples, 2.78%)</title><rect x="425.2" y="149" width="32.8" height="15.0" fill="rgb(249,108,12)" rx="2" ry="2" />
+<text  x="428.19" y="159.5" >rx..</text>
+</g>
+<g >
+<title>std::chrono::operator&gt;&lt;long, (1 samples, 0.46%)</title><rect x="594.5" y="309" width="5.5" height="15.0" fill="rgb(229,218,28)" rx="2" ry="2" />
+<text  x="597.54" y="319.5" ></text>
+</g>
+<g >
+<title>rxr_pkt_post_ctrl (10 samples, 4.63%)</title><rect x="414.3" y="197" width="54.6" height="15.0" fill="rgb(241,117,8)" rx="2" ry="2" />
+<text  x="417.26" y="207.5" >rxr_p..</text>
+</g>
+<g >
+<title>rdm_ep_poll_ibv_cq (46 samples, 21.30%)</title><rect x="146.6" y="213" width="251.3" height="15.0" fill="rgb(216,10,7)" rx="2" ry="2" />
+<text  x="149.57" y="223.5" >rdm_ep_poll_ibv_cq</text>
+</g>
+<g >
+<title>rxr_msg_post_rtm (12 samples, 5.56%)</title><rect x="408.8" y="229" width="65.6" height="15.0" fill="rgb(230,100,6)" rx="2" ry="2" />
+<text  x="411.80" y="239.5" >rxr_msg..</text>
+</g>
+<g >
+<title>all (216 samples, 100%)</title><rect x="10.0" y="469" width="1180.0" height="15.0" fill="rgb(214,147,22)" rx="2" ry="2" />
+<text  x="13.00" y="479.5" ></text>
+</g>
+<g >
+<title>ofi_bufpool_get_ibuf (1 samples, 0.46%)</title><rect x="414.3" y="149" width="5.4" height="15.0" fill="rgb(226,120,21)" rx="2" ry="2" />
+<text  x="417.26" y="159.5" ></text>
+</g>
+<g >
+<title>rxr_ep_get_peer (1 samples, 0.46%)</title><rect x="414.3" y="165" width="5.4" height="15.0" fill="rgb(252,182,27)" rx="2" ry="2" />
+<text  x="417.26" y="175.5" ></text>
+</g>
+<g >
+<title>fi_sendmsg (6 samples, 2.78%)</title><rect x="425.2" y="133" width="32.8" height="15.0" fill="rgb(226,13,54)" rx="2" ry="2" />
+<text  x="428.19" y="143.5" >fi..</text>
+</g>
+<g >
+<title>rxr_pkt_entry_send (7 samples, 3.24%)</title><rect x="419.7" y="165" width="38.3" height="15.0" fill="rgb(205,219,12)" rx="2" ry="2" />
+<text  x="422.72" y="175.5" >rxr..</text>
+</g>
+<g >
+<title>std::__invoke&lt;void (108 samples, 50.00%)</title><rect x="10.0" y="357" width="590.0" height="15.0" fill="rgb(221,77,8)" rx="2" ry="2" />
+<text  x="13.00" y="367.5" >std::__invoke&lt;void</text>
+</g>
+<g >
+<title>mmio_memcpy_x64 (2 samples, 0.93%)</title><rect x="441.6" y="53" width="10.9" height="15.0" fill="rgb(251,179,16)" rx="2" ry="2" />
+<text  x="444.57" y="63.5" ></text>
+</g>
+<g >
+<title>clone (108 samples, 50.00%)</title><rect x="10.0" y="453" width="590.0" height="15.0" fill="rgb(218,61,37)" rx="2" ry="2" />
+<text  x="13.00" y="463.5" >clone</text>
+</g>
+<g >
+<title>rxr_pkt_req_base_hdr_size (1 samples, 0.46%)</title><rect x="463.4" y="85" width="5.5" height="15.0" fill="rgb(248,79,30)" rx="2" ry="2" />
+<text  x="466.43" y="95.5" ></text>
+</g>
+<g >
+<title>start_thread (108 samples, 50.00%)</title><rect x="10.0" y="437" width="590.0" height="15.0" fill="rgb(228,56,44)" rx="2" ry="2" />
+<text  x="13.00" y="447.5" >start_thread</text>
+</g>
+<g >
+<title>std::chrono::operator-&lt;std::chrono::_V2::steady_clock, (18 samples, 8.33%)</title><rect x="496.2" y="309" width="98.3" height="15.0" fill="rgb(250,108,31)" rx="2" ry="2" />
+<text  x="499.20" y="319.5" >std::chrono..</text>
+</g>
+<g >
+<title>efa_post_send_sgl (1 samples, 0.46%)</title><rect x="436.1" y="53" width="5.5" height="15.0" fill="rgb(214,191,16)" rx="2" ry="2" />
+<text  x="439.11" y="63.5" ></text>
+</g>
+<g >
+<title>__pthread_join (108 samples, 50.00%)</title><rect x="600.0" y="357" width="590.0" height="15.0" fill="rgb(242,13,47)" rx="2" ry="2" />
+<text  x="603.00" y="367.5" >__pthread_join</text>
+</g>
+<g >
+<title>libefa::Node::fiCqRead (70 samples, 32.41%)</title><rect x="15.5" y="309" width="382.4" height="15.0" fill="rgb(251,177,23)" rx="2" ry="2" />
+<text  x="18.46" y="319.5" >libefa::Node::fiCqRead</text>
+</g>
+<g >
+<title>efa_post_send (6 samples, 2.78%)</title><rect x="425.2" y="117" width="32.8" height="15.0" fill="rgb(250,80,24)" rx="2" ry="2" />
+<text  x="428.19" y="127.5" >ef..</text>
+</g>
+<g >
+<title>std::thread::_Invoker&lt;std::tuple&lt;void (108 samples, 50.00%)</title><rect x="10.0" y="373" width="590.0" height="15.0" fill="rgb(205,180,29)" rx="2" ry="2" />
+<text  x="13.00" y="383.5" >std::thread::_Invoker&lt;std::tuple&lt;void</text>
+</g>
+<g >
+<title>SendRecvServer::_batchWorker (108 samples, 50.00%)</title><rect x="10.0" y="325" width="590.0" height="15.0" fill="rgb(215,209,6)" rx="2" ry="2" />
+<text  x="13.00" y="335.5" >SendRecvServer::_batchWorker</text>
+</g>
+<g >
+<title>rxr_cq_handle_tx_completion (3 samples, 1.39%)</title><rect x="381.5" y="165" width="16.4" height="15.0" fill="rgb(223,120,32)" rx="2" ry="2" />
+<text  x="384.48" y="175.5" ></text>
+</g>
+<g >
+<title>rxr_ep_get_peer (1 samples, 0.46%)</title><rect x="458.0" y="101" width="5.4" height="15.0" fill="rgb(219,174,40)" rx="2" ry="2" />
+<text  x="460.96" y="111.5" ></text>
+</g>
+<g >
+<title>std::chrono::duration_cast&lt;std::chrono::duration&lt;long, (1 samples, 0.46%)</title><rect x="594.5" y="261" width="5.5" height="15.0" fill="rgb(249,194,29)" rx="2" ry="2" />
+<text  x="597.54" y="271.5" ></text>
+</g>
+<g >
+<title>SendRecvServer::batch (108 samples, 50.00%)</title><rect x="600.0" y="405" width="590.0" height="15.0" fill="rgb(254,33,46)" rx="2" ry="2" />
+<text  x="603.00" y="415.5" >SendRecvServer::batch</text>
+</g>
+<g >
+<title>std::chrono::operator&lt; (1 samples, 0.46%)</title><rect x="594.5" y="293" width="5.5" height="15.0" fill="rgb(239,127,1)" rx="2" ry="2" />
+<text  x="597.54" y="303.5" ></text>
+</g>
+<g >
+<title>pthread_spin_lock (1 samples, 0.46%)</title><rect x="397.9" y="229" width="5.4" height="15.0" fill="rgb(220,16,38)" rx="2" ry="2" />
+<text  x="400.87" y="239.5" ></text>
+</g>
+<g >
+<title>rxr_msg_generic_send (14 samples, 6.48%)</title><rect x="397.9" y="245" width="76.5" height="15.0" fill="rgb(212,172,42)" rx="2" ry="2" />
+<text  x="400.87" y="255.5" >rxr_msg_..</text>
+</g>
+<g >
+<title>libefa::Node::~Node (1 samples, 0.46%)</title><rect x="474.4" y="293" width="5.4" height="15.0" fill="rgb(207,15,35)" rx="2" ry="2" />
+<text  x="477.35" y="303.5" ></text>
+</g>
+<g >
+<title>std::chrono::__duration_cast_impl&lt;std::chrono::duration&lt;long, (1 samples, 0.46%)</title><rect x="594.5" y="245" width="5.5" height="15.0" fill="rgb(213,95,33)" rx="2" ry="2" />
+<text  x="597.54" y="255.5" ></text>
+</g>
+<g >
+<title>std::chrono::_V2::steady_clock::now (3 samples, 1.39%)</title><rect x="479.8" y="309" width="16.4" height="15.0" fill="rgb(212,127,32)" rx="2" ry="2" />
+<text  x="482.81" y="319.5" ></text>
+</g>
+<g >
+<title>ibv_poll_cq (39 samples, 18.06%)</title><rect x="157.5" y="197" width="213.1" height="15.0" fill="rgb(224,79,4)" rx="2" ry="2" />
+<text  x="160.50" y="207.5" >ibv_poll_cq</text>
+</g>
+<g >
+<title>ibv_post_send (4 samples, 1.85%)</title><rect x="436.1" y="85" width="21.9" height="15.0" fill="rgb(215,30,0)" rx="2" ry="2" />
+<text  x="439.11" y="95.5" >i..</text>
+</g>
+<g >
+<title>ofi_cq_readfrom (67 samples, 31.02%)</title><rect x="31.9" y="277" width="366.0" height="15.0" fill="rgb(242,95,22)" rx="2" ry="2" />
+<text  x="34.85" y="287.5" >ofi_cq_readfrom</text>
+</g>
+<g >
+<title>efa_set_tx_buf (1 samples, 0.46%)</title><rect x="436.1" y="37" width="5.5" height="15.0" fill="rgb(226,182,8)" rx="2" ry="2" />
+<text  x="439.11" y="47.5" ></text>
+</g>
+<g >
+<title>__gthread_join (108 samples, 50.00%)</title><rect x="600.0" y="373" width="590.0" height="15.0" fill="rgb(211,59,29)" rx="2" ry="2" />
+<text  x="603.00" y="383.5" >__gthread_join</text>
+</g>
+<g >
+<title>std::thread::_Invoker&lt;std::tuple&lt;void (108 samples, 50.00%)</title><rect x="10.0" y="389" width="590.0" height="15.0" fill="rgb(220,106,40)" rx="2" ry="2" />
+<text  x="13.00" y="399.5" >std::thread::_Invoker&lt;std::tuple&lt;void</text>
+</g>
+<g >
+<title>std::chrono::duration&lt;long, (1 samples, 0.46%)</title><rect x="594.5" y="229" width="5.5" height="15.0" fill="rgb(222,202,7)" rx="2" ry="2" />
+<text  x="597.54" y="239.5" ></text>
+</g>
+<g >
+<title>?? (2 samples, 0.93%)</title><rect x="485.3" y="277" width="10.9" height="15.0" fill="rgb(231,39,9)" rx="2" ry="2" />
+<text  x="488.28" y="287.5" ></text>
+</g>
+<g >
+<title>ft_post_tx (14 samples, 6.48%)</title><rect x="397.9" y="293" width="76.5" height="15.0" fill="rgb(232,104,30)" rx="2" ry="2" />
+<text  x="400.87" y="303.5" >ft_post_tx</text>
+</g>
+<g >
+<title>rxr_ep_progress_internal (49 samples, 22.69%)</title><rect x="130.2" y="229" width="267.7" height="15.0" fill="rgb(252,64,51)" rx="2" ry="2" />
+<text  x="133.19" y="239.5" >rxr_ep_progress_internal</text>
+</g>
+<g >
+<title>efa_av_addr_to_conn (1 samples, 0.46%)</title><rect x="425.2" y="101" width="5.4" height="15.0" fill="rgb(214,83,23)" rx="2" ry="2" />
+<text  x="428.19" y="111.5" ></text>
+</g>
+<g >
+<title>fi_cq_read (69 samples, 31.94%)</title><rect x="20.9" y="293" width="377.0" height="15.0" fill="rgb(249,7,17)" rx="2" ry="2" />
+<text  x="23.93" y="303.5" >fi_cq_read</text>
+</g>
+<g >
+<title>efa_poll_sub_cqs (35 samples, 16.20%)</title><rect x="168.4" y="165" width="191.2" height="15.0" fill="rgb(253,132,6)" rx="2" ry="2" />
+<text  x="171.43" y="175.5" >efa_poll_sub_cqs</text>
+</g>
+<g >
+<title>efa_post_send (4 samples, 1.85%)</title><rect x="436.1" y="69" width="21.9" height="15.0" fill="rgb(249,105,30)" rx="2" ry="2" />
+<text  x="439.11" y="79.5" >e..</text>
+</g>
+<g >
+<title>__memset_avx2_unaligned_erms (1 samples, 0.46%)</title><rect x="403.3" y="181" width="5.5" height="15.0" fill="rgb(248,131,28)" rx="2" ry="2" />
+<text  x="406.33" y="191.5" ></text>
+</g>
+<g >
+<title>rxr_ep_get_peer (1 samples, 0.46%)</title><rect x="419.7" y="149" width="5.5" height="15.0" fill="rgb(253,180,20)" rx="2" ry="2" />
+<text  x="422.72" y="159.5" ></text>
+</g>
+<g >
+<title>mmio_write64_be (2 samples, 0.93%)</title><rect x="441.6" y="37" width="10.9" height="15.0" fill="rgb(219,120,36)" rx="2" ry="2" />
+<text  x="444.57" y="47.5" ></text>
+</g>
+<g >
+<title>ft_sendmsg (14 samples, 6.48%)</title><rect x="397.9" y="277" width="76.5" height="15.0" fill="rgb(209,203,28)" rx="2" ry="2" />
+<text  x="400.87" y="287.5" >ft_sendmsg</text>
+</g>
+</g>
+</svg>
