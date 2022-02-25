@@ -314,8 +314,7 @@ def runMultiThreadBatchRDM(thread_count, batch):
         cq_try_flag = '--cq_try=' + str(0.8 if payload <= 8192 else 0.9)
         config = ['--benchmark_type=batch',
                   '--endpoint=rdm', batch_flag, cq_try_flag, payload_flag, thread_count_flag]
-        stats_file = 'batch_rdm_' + \
-            str(batch) + 'b_' + str(thread_count) + 't_' + str(payload)
+        stats_file = 'mt_batch'
         while True:
             exit_status = runTestWithConfig(config, stats_file, RUNTIME)
             if exit_status == 0:
@@ -355,9 +354,9 @@ def runMultiThreadRMABatch(rma_op, thread_count, batch):
 
 
 if __name__ == "__main__":
-    runPingPongDGRAM()
-    runPingPongRDM()
-    runPingPongRDMTagged()
+    # runPingPongDGRAM()
+    # runPingPongRDM()
+    # runPingPongRDMTagged()
 
     # runRMA('write')
     # runRMA('read')
@@ -389,9 +388,9 @@ if __name__ == "__main__":
     # for thread_count in THREAD_COUNTS:
     #     runMultiThreadPingPongRDM(thread_count)
 
-    # for thread_count in THREAD_COUNTS:
-    #     for batch in MT_BATCH_SIZES:
-    #         runMultiThreadBatchRDM(thread_count, batch)
+    for thread_count in THREAD_COUNTS:
+        for batch in MT_BATCH_SIZES:
+            runMultiThreadBatchRDM(thread_count, batch)
 
     # for thread_count in THREAD_COUNTS:
     #     runMultiThreadRMA('write', thread_count)
