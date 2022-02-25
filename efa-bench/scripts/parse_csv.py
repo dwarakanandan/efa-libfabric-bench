@@ -232,6 +232,39 @@ def parse_batch(fname):
             print(payload, batch, avg)
 
 
+def parse_file_matching_fields_mt(f_name, experiment, endpoint, thread_count, payload_size, batch_size, avg_field):
+    try:
+        file = open(f_name, "r")
+    except FileNotFoundError:
+        print("File not found")
+        return
+    list = []
+    read_header = False
+    for line in file:
+        if not read_header:
+            read_header = True
+            continue
+        split = line.rstrip().split(',')
+        if (experiment == split[1]) and \
+            (endpoint == split[3]) and \
+            (thread_count == int(split[6])) and \
+            (payload_size == int(split[8])) and \
+                (batch_size == int(split[5])):
+            list.append(float(split[avg_field]))
+    if (len(list) == 0):
+        return
+    return round(mean(list), 2)
+
+
+def parse_batch_mt(fname):
+    for thread in THREAD_COUNTS:
+        for payload in MT_JUMBO_PAYLOADS:
+            for batch in MT_BATCH_SIZES:
+                avg = parse_file_matching_fields_mt(
+                    fname, "batch", "rdm", thread, payload, batch, 12)
+                print(thread, payload, batch, avg)
+
+
 if __name__ == "__main__":
     # parse_tx_bw('ping_pong_dgram')
     # parse_tx_bw_jumbo('ping_pong_rdm')
