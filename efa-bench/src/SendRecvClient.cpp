@@ -228,6 +228,28 @@ void SendRecvClient::latency()
 
 void SendRecvClient::capabilityTest()
 {
+	int ret;
+	fi_info *hints = fi_allocinfo();
+	common::setBaseFabricHints(hints);
+
+	Client client = Client(FLAGS_provider, FLAGS_endpoint,
+						   std::to_string(FLAGS_port + 0),
+						   std::to_string(FLAGS_oob_port + 0),
+						   hints, FLAGS_dst_addr);
+	client.init();
+	client.sync();
+
+	client.initTxBuffer(FLAGS_payload);
+
+	for (size_t i = 0; i < FLAGS_iterations; i++)
+	{
+		ret = client.rx();
+        if (ret )
+        {
+            std::cout << "postTx failed: " << ret << std::endl;
+            return;
+        }
+	}
 }
 
 void SendRecvClient::batchLargeBuffer()

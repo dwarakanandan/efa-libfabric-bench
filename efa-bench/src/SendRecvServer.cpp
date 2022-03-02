@@ -439,6 +439,35 @@ void SendRecvServer::latency()
 
 void SendRecvServer::capabilityTest()
 {
+    int ret;
+    fi_info *hints = fi_allocinfo();
+    common::setBaseFabricHints(hints);
+
+    Server server = Server(FLAGS_provider, FLAGS_endpoint,
+                           std::to_string(FLAGS_port + 0),
+                           std::to_string(FLAGS_oob_port + 0), hints);
+    if (FLAGS_endpoint == "rdm")
+    {
+        server.enableFiMore();
+    }
+    server.init();
+    server.sync();
+
+    server.initTxBuffer(FLAGS_payload);
+
+    for (size_t i = 0; i < FLAGS_iterations; i++)
+    {
+        ret = server.postTx();
+        if (ret)
+        {
+            std::cout << "postTx failed: " << ret <<  std::endl;
+            return;
+        }
+    }
+    sleep(1);
+    ret = server.fiCqRead(server.ctx.txcq, FLAGS_batch);
+    std::cout << "fiCqRead: " << ret <<  std::endl;
+    
 }
 
 void SendRecvServer::batchLargeBuffer()
