@@ -1,0 +1,1257 @@
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 5K of event 'cycles:u'
+# Event count (approx.): 76926998421
+#
+# Children      Self  Command    Shared Object            Symbol                                                                                                                                                                             
+# ........  ........  .........  .......................  ...................................................................................................................................................................................
+#
+    45.21%     0.00%  benchmark  libstdc++.so.6.0.24      [.] execute_native_thread_routine
+            |
+            ---execute_native_thread_routine
+               |          
+               |--36.15%--std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+               |          std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+               |          std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+               |          std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               |          std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               |          |          
+               |           --35.18%--SendRecvServer::_batchWorker
+               |                     |          
+               |                     |--23.60%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+               |                     |          
+               |                     |--3.65%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+               |                     |          |          
+               |                     |           --3.18%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+               |                     |                     |          
+               |                     |                     |--2.02%--std::chrono::duration<long, std::ratio<1l, 1000000000l> >::duration<long, std::ratio<1l, 1l>, void>
+               |                     |                     |          |          
+               |                     |                     |           --1.07%--std::chrono::duration_cast<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, long, std::ratio<1l, 1l> >
+               |                     |                     |                     |          
+               |                     |                     |                      --0.93%--std::chrono::__duration_cast_impl<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::ratio<1000000000l, 1l>, long, false, true>::__cast<long, std::ratio<1l, 1l> >
+               |                     |                     |          
+               |                     |                      --0.63%--std::chrono::duration<long, std::ratio<1l, 1000000000l> >::count
+               |                     |          
+               |                     |--3.07%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+               |                     |          |          
+               |                     |           --2.11%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+               |                     |          
+               |                      --2.93%--libefa::Node::postTx
+               |                                |          
+               |                                 --2.36%--__clock_gettime
+               |                                           |          
+               |                                            --1.84%--0x7fff431fb758
+               |          
+                --9.06%--std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> > >::_M_run
+                          std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::operator()
+                          std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::_M_invoke<0ul, 1ul>
+                          std::__invoke<void (CsvLogger::*)(), CsvLogger*>
+                          std::__invoke_impl<void, void (CsvLogger::*)(), CsvLogger*>
+                          |          
+                           --8.90%--CsvLogger::loggerTask
+                                     |          
+                                      --8.20%--CsvLogger::getAggregateConnectionStatus
+                                                |          
+                                                |--2.02%--std::_Bit_iterator_base::operator!=
+                                                |          |          
+                                                |           --1.43%--std::_Bit_iterator_base::operator==
+                                                |          
+                                                |--1.27%--std::_Bit_iterator::operator*
+                                                |          
+                                                |--0.95%--std::vector<bool, std::allocator<bool> >::begin
+                                                |          
+                                                |--0.81%--std::_Bit_reference::operator bool
+                                                |          
+                                                 --0.50%--std::_Bit_iterator::operator++
+
+    36.15%     0.00%  benchmark  benchmark                [.] std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+            |
+            ---std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+               std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+               std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+               std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               |          
+                --35.18%--SendRecvServer::_batchWorker
+                          |          
+                          |--23.60%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                          |--3.65%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                          |          |          
+                          |           --3.18%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+                          |                     |          
+                          |                     |--2.02%--std::chrono::duration<long, std::ratio<1l, 1000000000l> >::duration<long, std::ratio<1l, 1l>, void>
+                          |                     |          |          
+                          |                     |           --1.07%--std::chrono::duration_cast<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, long, std::ratio<1l, 1l> >
+                          |                     |                     |          
+                          |                     |                      --0.93%--std::chrono::__duration_cast_impl<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::ratio<1000000000l, 1l>, long, false, true>::__cast<long, std::ratio<1l, 1l> >
+                          |                     |          
+                          |                      --0.63%--std::chrono::duration<long, std::ratio<1l, 1000000000l> >::count
+                          |          
+                          |--3.07%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                          |          |          
+                          |           --2.11%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                           --2.93%--libefa::Node::postTx
+                                     |          
+                                      --2.36%--__clock_gettime
+                                                |          
+                                                 --1.84%--0x7fff431fb758
+
+    36.15%     0.00%  benchmark  benchmark                [.] std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+            |
+            ---std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+               std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+               std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               |          
+                --35.18%--SendRecvServer::_batchWorker
+                          |          
+                          |--23.60%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                          |--3.65%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                          |          |          
+                          |           --3.18%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+                          |                     |          
+                          |                     |--2.02%--std::chrono::duration<long, std::ratio<1l, 1000000000l> >::duration<long, std::ratio<1l, 1l>, void>
+                          |                     |          |          
+                          |                     |           --1.07%--std::chrono::duration_cast<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, long, std::ratio<1l, 1l> >
+                          |                     |                     |          
+                          |                     |                      --0.93%--std::chrono::__duration_cast_impl<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::ratio<1000000000l, 1l>, long, false, true>::__cast<long, std::ratio<1l, 1l> >
+                          |                     |          
+                          |                      --0.63%--std::chrono::duration<long, std::ratio<1l, 1000000000l> >::count
+                          |          
+                          |--3.07%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                          |          |          
+                          |           --2.11%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                           --2.93%--libefa::Node::postTx
+                                     |          
+                                      --2.36%--__clock_gettime
+                                                |          
+                                                 --1.84%--0x7fff431fb758
+
+    36.15%     0.00%  benchmark  benchmark                [.] std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+            |
+            ---std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+               std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               |          
+                --35.18%--SendRecvServer::_batchWorker
+                          |          
+                          |--23.60%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                          |--3.65%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                          |          |          
+                          |           --3.18%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+                          |                     |          
+                          |                     |--2.02%--std::chrono::duration<long, std::ratio<1l, 1000000000l> >::duration<long, std::ratio<1l, 1l>, void>
+                          |                     |          |          
+                          |                     |           --1.07%--std::chrono::duration_cast<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, long, std::ratio<1l, 1l> >
+                          |                     |                     |          
+                          |                     |                      --0.93%--std::chrono::__duration_cast_impl<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::ratio<1000000000l, 1l>, long, false, true>::__cast<long, std::ratio<1l, 1l> >
+                          |                     |          
+                          |                      --0.63%--std::chrono::duration<long, std::ratio<1l, 1000000000l> >::count
+                          |          
+                          |--3.07%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                          |          |          
+                          |           --2.11%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                           --2.93%--libefa::Node::postTx
+                                     |          
+                                      --2.36%--__clock_gettime
+                                                |          
+                                                 --1.84%--0x7fff431fb758
+
+    36.15%     0.00%  benchmark  benchmark                [.] std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+            |
+            ---std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               |          
+                --35.18%--SendRecvServer::_batchWorker
+                          |          
+                          |--23.60%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                          |--3.65%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                          |          |          
+                          |           --3.18%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+                          |                     |          
+                          |                     |--2.02%--std::chrono::duration<long, std::ratio<1l, 1000000000l> >::duration<long, std::ratio<1l, 1l>, void>
+                          |                     |          |          
+                          |                     |           --1.07%--std::chrono::duration_cast<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, long, std::ratio<1l, 1l> >
+                          |                     |                     |          
+                          |                     |                      --0.93%--std::chrono::__duration_cast_impl<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::ratio<1000000000l, 1l>, long, false, true>::__cast<long, std::ratio<1l, 1l> >
+                          |                     |          
+                          |                      --0.63%--std::chrono::duration<long, std::ratio<1l, 1000000000l> >::count
+                          |          
+                          |--3.07%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                          |          |          
+                          |           --2.11%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                           --2.93%--libefa::Node::postTx
+                                     |          
+                                      --2.36%--__clock_gettime
+                                                |          
+                                                 --1.84%--0x7fff431fb758
+
+    36.15%     0.00%  benchmark  benchmark                [.] std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+            |
+            ---std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               |          
+                --35.18%--SendRecvServer::_batchWorker
+                          |          
+                          |--23.60%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                          |--3.65%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                          |          |          
+                          |           --3.18%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+                          |                     |          
+                          |                     |--2.02%--std::chrono::duration<long, std::ratio<1l, 1000000000l> >::duration<long, std::ratio<1l, 1l>, void>
+                          |                     |          |          
+                          |                     |           --1.07%--std::chrono::duration_cast<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, long, std::ratio<1l, 1l> >
+                          |                     |                     |          
+                          |                     |                      --0.93%--std::chrono::__duration_cast_impl<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::ratio<1000000000l, 1l>, long, false, true>::__cast<long, std::ratio<1l, 1l> >
+                          |                     |          
+                          |                      --0.63%--std::chrono::duration<long, std::ratio<1l, 1000000000l> >::count
+                          |          
+                          |--3.07%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                          |          |          
+                          |           --2.11%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                          |          
+                           --2.93%--libefa::Node::postTx
+                                     |          
+                                      --2.36%--__clock_gettime
+                                                |          
+                                                 --1.84%--0x7fff431fb758
+
+    35.18%     0.63%  benchmark  benchmark                [.] SendRecvServer::_batchWorker
+            |          
+            |--34.56%--SendRecvServer::_batchWorker
+            |          |          
+            |          |--23.60%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+            |          |          
+            |          |--3.65%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+            |          |          |          
+            |          |           --3.18%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+            |          |                     |          
+            |          |                     |--2.02%--std::chrono::duration<long, std::ratio<1l, 1000000000l> >::duration<long, std::ratio<1l, 1l>, void>
+            |          |                     |          |          
+            |          |                     |           --1.07%--std::chrono::duration_cast<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, long, std::ratio<1l, 1l> >
+            |          |                     |                     |          
+            |          |                     |                      --0.93%--std::chrono::__duration_cast_impl<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::ratio<1000000000l, 1l>, long, false, true>::__cast<long, std::ratio<1l, 1l> >
+            |          |                     |          
+            |          |                      --0.63%--std::chrono::duration<long, std::ratio<1l, 1000000000l> >::count
+            |          |          
+            |          |--3.07%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+            |          |          |          
+            |          |           --2.11%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+            |          |          
+            |           --2.93%--libefa::Node::postTx
+            |                     |          
+            |                      --2.36%--__clock_gettime
+            |                                |          
+            |                                 --1.84%--0x7fff431fb758
+            |          
+             --0.63%--execute_native_thread_routine
+                       std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+                       std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                       std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                       SendRecvServer::_batchWorker
+
+    29.20%     0.00%  benchmark  [unknown]                [.] 0000000000000000
+            |
+            ---0
+               |          
+               |--4.62%--pthread_spin_lock
+               |          
+               |--4.29%--rxr_pkt_entry_send
+               |          
+               |--2.75%--rxr_pkt_init_req_hdr
+               |          
+               |--2.18%--rxr_msg_generic_send
+               |          
+               |--1.91%--rxr_tx_entry_init
+               |          
+               |--1.89%--rxr_ep_record_tx_op_submitted
+               |          
+               |--1.82%--rxr_cq_handle_tx_completion
+               |          
+               |--1.77%--efa_post_send
+               |          
+               |--1.34%--rxr_pkt_post_ctrl_once
+               |          
+               |--1.27%--rxr_cq_write_tx_completion
+               |          
+               |--1.00%--rxr_ep_record_tx_op_completed
+               |          
+               |--0.73%--rxr_pkt_handle_send_completion
+               |          
+               |--0.55%--rxr_ep_alloc_tx_entry
+               |          
+                --0.54%--0x7fa585beaa48
+                          __clock_gettime
+
+    25.71%    25.23%  benchmark  benchmark                [.] std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+            |          
+             --25.23%--execute_native_thread_routine
+                       std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+                       std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                       std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                       SendRecvServer::_batchWorker
+                       |          
+                       |--23.60%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+                       |          
+                        --1.63%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+                                  std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+
+     9.06%     0.00%  benchmark  benchmark                [.] std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> > >::_M_run
+            |
+            ---std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> > >::_M_run
+               std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::operator()
+               std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::_M_invoke<0ul, 1ul>
+               std::__invoke<void (CsvLogger::*)(), CsvLogger*>
+               std::__invoke_impl<void, void (CsvLogger::*)(), CsvLogger*>
+               |          
+                --8.90%--CsvLogger::loggerTask
+                          |          
+                           --8.20%--CsvLogger::getAggregateConnectionStatus
+                                     |          
+                                     |--2.02%--std::_Bit_iterator_base::operator!=
+                                     |          |          
+                                     |           --1.43%--std::_Bit_iterator_base::operator==
+                                     |          
+                                     |--1.27%--std::_Bit_iterator::operator*
+                                     |          
+                                     |--0.95%--std::vector<bool, std::allocator<bool> >::begin
+                                     |          
+                                     |--0.81%--std::_Bit_reference::operator bool
+                                     |          
+                                      --0.50%--std::_Bit_iterator::operator++
+
+     9.06%     0.00%  benchmark  benchmark                [.] std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::operator()
+            |
+            ---std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::operator()
+               std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::_M_invoke<0ul, 1ul>
+               std::__invoke<void (CsvLogger::*)(), CsvLogger*>
+               std::__invoke_impl<void, void (CsvLogger::*)(), CsvLogger*>
+               |          
+                --8.90%--CsvLogger::loggerTask
+                          |          
+                           --8.20%--CsvLogger::getAggregateConnectionStatus
+                                     |          
+                                     |--2.02%--std::_Bit_iterator_base::operator!=
+                                     |          |          
+                                     |           --1.43%--std::_Bit_iterator_base::operator==
+                                     |          
+                                     |--1.27%--std::_Bit_iterator::operator*
+                                     |          
+                                     |--0.95%--std::vector<bool, std::allocator<bool> >::begin
+                                     |          
+                                     |--0.81%--std::_Bit_reference::operator bool
+                                     |          
+                                      --0.50%--std::_Bit_iterator::operator++
+
+     9.06%     0.00%  benchmark  benchmark                [.] std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::_M_invoke<0ul, 1ul>
+            |
+            ---std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::_M_invoke<0ul, 1ul>
+               std::__invoke<void (CsvLogger::*)(), CsvLogger*>
+               std::__invoke_impl<void, void (CsvLogger::*)(), CsvLogger*>
+               |          
+                --8.90%--CsvLogger::loggerTask
+                          |          
+                           --8.20%--CsvLogger::getAggregateConnectionStatus
+                                     |          
+                                     |--2.02%--std::_Bit_iterator_base::operator!=
+                                     |          |          
+                                     |           --1.43%--std::_Bit_iterator_base::operator==
+                                     |          
+                                     |--1.27%--std::_Bit_iterator::operator*
+                                     |          
+                                     |--0.95%--std::vector<bool, std::allocator<bool> >::begin
+                                     |          
+                                     |--0.81%--std::_Bit_reference::operator bool
+                                     |          
+                                      --0.50%--std::_Bit_iterator::operator++
+
+     9.06%     0.00%  benchmark  benchmark                [.] std::__invoke<void (CsvLogger::*)(), CsvLogger*>
+            |
+            ---std::__invoke<void (CsvLogger::*)(), CsvLogger*>
+               std::__invoke_impl<void, void (CsvLogger::*)(), CsvLogger*>
+               |          
+                --8.90%--CsvLogger::loggerTask
+                          |          
+                           --8.20%--CsvLogger::getAggregateConnectionStatus
+                                     |          
+                                     |--2.02%--std::_Bit_iterator_base::operator!=
+                                     |          |          
+                                     |           --1.43%--std::_Bit_iterator_base::operator==
+                                     |          
+                                     |--1.27%--std::_Bit_iterator::operator*
+                                     |          
+                                     |--0.95%--std::vector<bool, std::allocator<bool> >::begin
+                                     |          
+                                     |--0.81%--std::_Bit_reference::operator bool
+                                     |          
+                                      --0.50%--std::_Bit_iterator::operator++
+
+     9.06%     0.00%  benchmark  benchmark                [.] std::__invoke_impl<void, void (CsvLogger::*)(), CsvLogger*>
+            |
+            ---std::__invoke_impl<void, void (CsvLogger::*)(), CsvLogger*>
+               |          
+                --8.90%--CsvLogger::loggerTask
+                          |          
+                           --8.20%--CsvLogger::getAggregateConnectionStatus
+                                     |          
+                                     |--2.02%--std::_Bit_iterator_base::operator!=
+                                     |          |          
+                                     |           --1.43%--std::_Bit_iterator_base::operator==
+                                     |          
+                                     |--1.27%--std::_Bit_iterator::operator*
+                                     |          
+                                     |--0.95%--std::vector<bool, std::allocator<bool> >::begin
+                                     |          
+                                     |--0.81%--std::_Bit_reference::operator bool
+                                     |          
+                                      --0.50%--std::_Bit_iterator::operator++
+
+     8.90%     0.07%  benchmark  benchmark                [.] CsvLogger::loggerTask
+            |          
+             --8.83%--CsvLogger::loggerTask
+                       |          
+                        --8.20%--CsvLogger::getAggregateConnectionStatus
+                                  |          
+                                  |--2.02%--std::_Bit_iterator_base::operator!=
+                                  |          |          
+                                  |           --1.43%--std::_Bit_iterator_base::operator==
+                                  |          
+                                  |--1.27%--std::_Bit_iterator::operator*
+                                  |          
+                                  |--0.95%--std::vector<bool, std::allocator<bool> >::begin
+                                  |          
+                                  |--0.81%--std::_Bit_reference::operator bool
+                                  |          
+                                   --0.50%--std::_Bit_iterator::operator++
+
+     8.36%     2.07%  benchmark  benchmark                [.] CsvLogger::getAggregateConnectionStatus
+            |          
+            |--6.29%--CsvLogger::getAggregateConnectionStatus
+            |          |          
+            |          |--2.02%--std::_Bit_iterator_base::operator!=
+            |          |          |          
+            |          |           --1.43%--std::_Bit_iterator_base::operator==
+            |          |          
+            |          |--1.27%--std::_Bit_iterator::operator*
+            |          |          
+            |          |--0.95%--std::vector<bool, std::allocator<bool> >::begin
+            |          |          
+            |          |--0.81%--std::_Bit_reference::operator bool
+            |          |          
+            |           --0.50%--std::_Bit_iterator::operator++
+            |          
+             --2.07%--execute_native_thread_routine
+                       std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> > >::_M_run
+                       std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::operator()
+                       std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::_M_invoke<0ul, 1ul>
+                       std::__invoke<void (CsvLogger::*)(), CsvLogger*>
+                       std::__invoke_impl<void, void (CsvLogger::*)(), CsvLogger*>
+                       |          
+                        --1.91%--CsvLogger::loggerTask
+                                  CsvLogger::getAggregateConnectionStatus
+
+     7.12%     7.12%  benchmark  libpthread-2.26.so       [.] pthread_spin_lock
+            |          
+            |--4.62%--0
+            |          pthread_spin_lock
+            |          
+            |--1.25%--0x7fa5800144f0
+            |          pthread_spin_lock
+            |          
+             --1.25%--0x100007fa5
+                       pthread_spin_lock
+
+     4.65%     0.00%  benchmark  [unknown]                [.] 0x00007fa5800144f0
+            |
+            ---0x7fa5800144f0
+               |          
+               |--1.49%--efa_post_send
+               |          
+               |--1.25%--pthread_spin_lock
+               |          
+                --1.09%--efa_av_addr_to_conn.part.6
+
+     4.43%     4.43%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_entry_send
+            |          
+             --4.29%--0
+                       rxr_pkt_entry_send
+
+     4.41%     4.41%  benchmark  libefa.so.1.1.37.0       [.] efa_poll_cq
+            |          
+             --4.35%--efa_poll_cq
+
+     3.75%     0.29%  benchmark  benchmark                [.] std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+            |          
+             --3.47%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                       |          
+                        --3.18%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+                                  |          
+                                  |--2.02%--std::chrono::duration<long, std::ratio<1l, 1000000000l> >::duration<long, std::ratio<1l, 1l>, void>
+                                  |          |          
+                                  |           --1.07%--std::chrono::duration_cast<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, long, std::ratio<1l, 1l> >
+                                  |                     |          
+                                  |                      --0.93%--std::chrono::__duration_cast_impl<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::ratio<1000000000l, 1l>, long, false, true>::__cast<long, std::ratio<1l, 1l> >
+                                  |          
+                                   --0.63%--std::chrono::duration<long, std::ratio<1l, 1000000000l> >::count
+
+     3.54%     3.54%  benchmark  libefa.so.1.1.37.0       [.] efa_post_send
+            |          
+            |--1.77%--0
+            |          efa_post_send
+            |          
+             --1.52%--0x100000000
+                       efa_post_send
+
+     3.29%     0.63%  benchmark  benchmark                [.] std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+            |          
+            |--2.66%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+            |          |          
+            |          |--2.02%--std::chrono::duration<long, std::ratio<1l, 1000000000l> >::duration<long, std::ratio<1l, 1l>, void>
+            |          |          |          
+            |          |           --1.07%--std::chrono::duration_cast<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, long, std::ratio<1l, 1l> >
+            |          |                     |          
+            |          |                      --0.93%--std::chrono::__duration_cast_impl<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::ratio<1000000000l, 1l>, long, false, true>::__cast<long, std::ratio<1l, 1l> >
+            |          |          
+            |           --0.63%--std::chrono::duration<long, std::ratio<1l, 1000000000l> >::count
+            |          
+             --0.63%--execute_native_thread_routine
+                       std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+                       std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                       std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                       SendRecvServer::_batchWorker
+                       |          
+                        --0.52%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                                  std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+
+     3.16%     0.54%  benchmark  benchmark                [.] std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+            |          
+            |--2.63%--std::chrono::operator-<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >
+            |          |          
+            |           --2.11%--std::chrono::operator-<long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1000000000l> >
+            |          
+             --0.54%--execute_native_thread_routine
+                       std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+                       std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                       std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+
+     3.11%     3.11%  benchmark  libfabric.so.1.16.2      [.] rxr_tx_entry_init
+            |          
+            |--1.91%--0
+            |          rxr_tx_entry_init
+            |          
+             --1.20%--rxr_tx_entry_init
+
+     3.11%     0.25%  benchmark  libc-2.26.so             [.] __clock_gettime
+            |          
+             --2.86%--__clock_gettime
+                       |          
+                        --2.14%--0x7fff431fb758
+
+     3.07%     0.55%  benchmark  benchmark                [.] libefa::Node::postTx
+            |          
+            |--2.52%--libefa::Node::postTx
+            |          |          
+            |           --2.36%--__clock_gettime
+            |                     |          
+            |                      --1.84%--0x7fff431fb758
+            |          
+             --0.55%--execute_native_thread_routine
+                       std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+                       std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                       std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+
+     2.75%     2.75%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_init_req_hdr
+            |
+            ---0
+               rxr_pkt_init_req_hdr
+
+     2.34%     2.34%  benchmark  libfabric.so.1.16.2      [.] rxr_msg_generic_send
+            |          
+             --2.18%--0
+                       rxr_msg_generic_send
+
+     2.18%     0.75%  benchmark  benchmark                [.] std::_Bit_iterator_base::operator!=
+            |          
+            |--1.43%--std::_Bit_iterator_base::operator!=
+            |          std::_Bit_iterator_base::operator==
+            |          
+             --0.75%--execute_native_thread_routine
+                       std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> > >::_M_run
+                       std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::operator()
+                       std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::_M_invoke<0ul, 1ul>
+                       std::__invoke<void (CsvLogger::*)(), CsvLogger*>
+                       std::__invoke_impl<void, void (CsvLogger::*)(), CsvLogger*>
+                       CsvLogger::loggerTask
+                       |          
+                        --0.59%--CsvLogger::getAggregateConnectionStatus
+                                  std::_Bit_iterator_base::operator!=
+
+     2.14%     0.75%  benchmark  benchmark                [.] std::chrono::duration<long, std::ratio<1l, 1000000000l> >::duration<long, std::ratio<1l, 1l>, void>
+            |          
+            |--1.39%--std::chrono::duration<long, std::ratio<1l, 1000000000l> >::duration<long, std::ratio<1l, 1l>, void>
+            |          |          
+            |           --1.07%--std::chrono::duration_cast<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, long, std::ratio<1l, 1l> >
+            |                     |          
+            |                      --0.93%--std::chrono::__duration_cast_impl<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::ratio<1000000000l, 1l>, long, false, true>::__cast<long, std::ratio<1l, 1l> >
+            |          
+             --0.75%--execute_native_thread_routine
+                       std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+                       std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                       std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                       SendRecvServer::_batchWorker
+                       std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                       |          
+                        --0.63%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+                                  std::chrono::duration<long, std::ratio<1l, 1000000000l> >::duration<long, std::ratio<1l, 1l>, void>
+
+     2.14%     2.14%  benchmark  [vdso]                   [.] 0x0000000000000758
+            |          
+             --1.84%--execute_native_thread_routine
+                       std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+                       std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+                       std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                       std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+                       SendRecvServer::_batchWorker
+                       libefa::Node::postTx
+                       __clock_gettime
+                       0x7fff431fb758
+
+     2.14%     0.00%  benchmark  [vdso]                   [.] 0x00007fff431fb758
+            |
+            ---0x7fff431fb758
+
+     2.10%     2.10%  benchmark  libfabric.so.1.16.2      [.] rxr_msg_post_rtm
+            |          
+             --1.87%--rxr_msg_post_rtm
+
+     2.09%     2.09%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_post_ctrl_once
+            |          
+            |--1.34%--0
+            |          rxr_pkt_post_ctrl_once
+            |          
+             --0.75%--rxr_pkt_post_ctrl_once
+
+     1.89%     1.89%  benchmark  libfabric.so.1.16.2      [.] rxr_ep_record_tx_op_submitted
+            |
+            ---0
+               rxr_ep_record_tx_op_submitted
+
+     1.82%     1.82%  benchmark  libfabric.so.1.16.2      [.] rxr_cq_handle_tx_completion
+            |
+            ---0
+               rxr_cq_handle_tx_completion
+
+     1.82%     0.00%  benchmark  [unknown]                [.] 0x0000000100000000
+            |
+            ---0x100000000
+               |          
+                --1.52%--efa_post_send
+
+     1.72%     1.72%  benchmark  libfabric.so.1.16.2      [.] efa_post_send
+            |          
+             --1.49%--0x7fa5800144f0
+                       efa_post_send
+
+     1.50%     1.50%  benchmark  benchmark                [.] std::_Bit_iterator_base::operator==
+            |
+            ---execute_native_thread_routine
+               std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> > >::_M_run
+               std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::operator()
+               std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::_M_invoke<0ul, 1ul>
+               std::__invoke<void (CsvLogger::*)(), CsvLogger*>
+               std::__invoke_impl<void, void (CsvLogger::*)(), CsvLogger*>
+               CsvLogger::loggerTask
+               CsvLogger::getAggregateConnectionStatus
+               |          
+                --1.43%--std::_Bit_iterator_base::operator!=
+                          std::_Bit_iterator_base::operator==
+
+     1.47%     0.00%  benchmark  [unknown]                [.] 0x0000000100007fa5
+            |
+            ---0x100007fa5
+               |          
+                --1.25%--pthread_spin_lock
+
+     1.36%     0.89%  benchmark  benchmark                [.] std::_Bit_iterator::operator*
+            |          
+             --0.89%--execute_native_thread_routine
+                       std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> > >::_M_run
+                       std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::operator()
+                       std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::_M_invoke<0ul, 1ul>
+                       std::__invoke<void (CsvLogger::*)(), CsvLogger*>
+                       std::__invoke_impl<void, void (CsvLogger::*)(), CsvLogger*>
+                       CsvLogger::loggerTask
+                       |          
+                        --0.80%--CsvLogger::getAggregateConnectionStatus
+                                  std::_Bit_iterator::operator*
+
+     1.34%     1.34%  benchmark  libfabric.so.1.16.2      [.] util_cq_read_ctx
+            |
+            ---util_cq_read_ctx
+
+     1.32%     1.32%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_req_max_data_size
+            |
+            ---rxr_pkt_req_max_data_size
+
+     1.29%     1.29%  benchmark  libfabric.so.1.16.2      [.] ofi_cq_readfrom
+            |          
+             --1.26%--ofi_cq_readfrom
+
+     1.29%     1.29%  benchmark  benchmark                [.] std::chrono::duration<long, std::ratio<1l, 1000000000l> >::count
+            |
+            ---execute_native_thread_routine
+               std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+               std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+               std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+               std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               SendRecvServer::_batchWorker
+               |          
+                --1.00%--std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+                          |          
+                           --0.84%--std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+                                     |          
+                                      --0.63%--std::chrono::duration<long, std::ratio<1l, 1000000000l> >::count
+
+     1.27%     1.27%  benchmark  libfabric.so.1.16.2      [.] rxr_cq_write_tx_completion
+            |
+            ---0
+               rxr_cq_write_tx_completion
+
+     1.17%     1.17%  benchmark  libefa.so.1.1.37.0       [.] cq_next_sub_cqe_get
+            |
+            ---cq_next_sub_cqe_get
+
+     1.11%     1.11%  benchmark  benchmark                [.] std::vector<bool, std::allocator<bool> >::begin
+            |
+            ---execute_native_thread_routine
+               std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> > >::_M_run
+               std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::operator()
+               std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::_M_invoke<0ul, 1ul>
+               std::__invoke<void (CsvLogger::*)(), CsvLogger*>
+               std::__invoke_impl<void, void (CsvLogger::*)(), CsvLogger*>
+               CsvLogger::loggerTask
+               |          
+                --0.95%--CsvLogger::getAggregateConnectionStatus
+                          std::vector<bool, std::allocator<bool> >::begin
+
+     1.09%     1.09%  benchmark  libfabric.so.1.16.2      [.] efa_av_addr_to_conn.part.6
+            |
+            ---0x7fa5800144f0
+               efa_av_addr_to_conn.part.6
+
+     1.09%     0.13%  benchmark  benchmark                [.] std::chrono::duration_cast<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, long, std::ratio<1l, 1l> >
+            |          
+             --0.96%--std::chrono::duration_cast<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, long, std::ratio<1l, 1l> >
+                       |          
+                        --0.93%--std::chrono::__duration_cast_impl<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::ratio<1000000000l, 1l>, long, false, true>::__cast<long, std::ratio<1l, 1l> >
+
+     1.04%     0.54%  benchmark  benchmark                [.] std::chrono::__duration_cast_impl<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::ratio<1000000000l, 1l>, long, false, true>::__cast<long, std::ratio<1l, 1l> >
+            |          
+            |--0.54%--execute_native_thread_routine
+            |          std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+            |          std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+            |          std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+            |          std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+            |          std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+            |          SendRecvServer::_batchWorker
+            |          std::chrono::operator><long, std::ratio<1l, 1000000000l>, long, std::ratio<1l, 1l> >
+            |          std::chrono::operator< <long, std::ratio<1l, 1l>, long, std::ratio<1l, 1000000000l> >
+            |          std::chrono::duration<long, std::ratio<1l, 1000000000l> >::duration<long, std::ratio<1l, 1l>, void>
+            |          
+             --0.50%--std::chrono::__duration_cast_impl<std::chrono::duration<long, std::ratio<1l, 1000000000l> >, std::ratio<1000000000l, 1l>, long, false, true>::__cast<long, std::ratio<1l, 1l> >
+
+     1.00%     1.00%  benchmark  libfabric.so.1.16.2      [.] rxr_ep_record_tx_op_completed
+            |
+            ---0
+               rxr_ep_record_tx_op_completed
+
+     0.96%     0.96%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_init_eager_msgrtm
+            |          
+             --0.91%--rxr_pkt_init_eager_msgrtm
+
+     0.88%     0.88%  benchmark  benchmark                [.] std::_Bit_reference::operator bool
+            |
+            ---execute_native_thread_routine
+               std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> > >::_M_run
+               std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::operator()
+               std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::_M_invoke<0ul, 1ul>
+               std::__invoke<void (CsvLogger::*)(), CsvLogger*>
+               std::__invoke_impl<void, void (CsvLogger::*)(), CsvLogger*>
+               CsvLogger::loggerTask
+               |          
+                --0.81%--CsvLogger::getAggregateConnectionStatus
+                          std::_Bit_reference::operator bool
+
+     0.73%     0.73%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_handle_send_completion
+            |
+            ---0
+               rxr_pkt_handle_send_completion
+
+     0.68%     0.68%  benchmark  libc-2.26.so             [.] __memset_avx2_unaligned_erms
+     0.64%     0.32%  benchmark  libc-2.26.so             [.] __memset_avx2_erms
+     0.60%     0.00%  benchmark  [unknown]                [.] 0x0210000000010c02
+            |
+            ---0x210000000010c02
+               __memset_avx2_erms
+
+     0.57%     0.57%  benchmark  benchmark                [.] std::_Bit_reference::_Bit_reference
+            |
+            ---execute_native_thread_routine
+               std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> > >::_M_run
+               std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::operator()
+               std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::_M_invoke<0ul, 1ul>
+               std::__invoke<void (CsvLogger::*)(), CsvLogger*>
+               std::__invoke_impl<void, void (CsvLogger::*)(), CsvLogger*>
+               CsvLogger::loggerTask
+               CsvLogger::getAggregateConnectionStatus
+
+     0.55%     0.55%  benchmark  libfabric.so.1.16.2      [.] rxr_ep_alloc_tx_entry
+            |
+            ---0
+               rxr_ep_alloc_tx_entry
+
+     0.55%     0.55%  benchmark  benchmark                [.] std::vector<bool, std::allocator<bool> >::end
+            |
+            ---execute_native_thread_routine
+               std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> > >::_M_run
+               std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::operator()
+               std::thread::_Invoker<std::tuple<void (CsvLogger::*)(), CsvLogger*> >::_M_invoke<0ul, 1ul>
+               std::__invoke<void (CsvLogger::*)(), CsvLogger*>
+               std::__invoke_impl<void, void (CsvLogger::*)(), CsvLogger*>
+               CsvLogger::loggerTask
+
+     0.54%     0.27%  benchmark  benchmark                [.] std::_Bit_iterator::operator++
+     0.54%     0.00%  benchmark  [unknown]                [.] 0x00007fa585beaa48
+            |
+            ---0x7fa585beaa48
+               __clock_gettime
+
+     0.50%     0.50%  benchmark  benchmark                [.] std::chrono::time_point<std::chrono::_V2::steady_clock, std::chrono::duration<long, std::ratio<1l, 1000000000l> > >::time_since_epoch
+            |
+            ---execute_native_thread_routine
+               std::thread::_State_impl<std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> > >::_M_run
+               std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::operator()
+               std::thread::_Invoker<std::tuple<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long> >::_M_invoke<0ul, 1ul, 2ul>
+               std::__invoke<void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               std::__invoke_impl<void, void (SendRecvServer::*)(unsigned long), SendRecvServer*, unsigned long>
+               SendRecvServer::_batchWorker
+
+     0.45%     0.45%  benchmark  benchmark                [.] std::chrono::duration<long, std::ratio<1l, 1000000000l> >::duration<long, void>
+     0.43%     0.43%  benchmark  libfabric.so.1.16.2      [.] rxr_release_tx_entry
+     0.43%     0.20%  benchmark  benchmark                [.] libefa::Node::fiCqRead
+     0.43%     0.43%  benchmark  libefa.so.1.1.37.0       [.] efa_post_send_validate
+     0.39%     0.39%  benchmark  benchmark                [.] std::_Bit_iterator_base::_M_bump_up
+     0.39%     0.39%  benchmark  benchmark                [.] ft_post_tx
+     0.39%     0.39%  benchmark  benchmark                [.] std::chrono::duration<long, std::ratio<1l, 1l> >::count
+     0.38%     0.38%  benchmark  libc-2.26.so             [.] __memmove_avx_unaligned_erms
+     0.34%     0.34%  benchmark  libefa.so.1.1.37.0       [.] efa_wq_put_wrid_idx_unlocked
+     0.32%     0.32%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_entry_release_tx
+     0.32%     0.32%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_req_hdr_size
+     0.32%     0.32%  benchmark  [unknown]                [k] 0xffffffff85a00ab0
+     0.31%     0.31%  benchmark  libfabric.so.1.16.2      [.] rxr_ep_progress_internal
+     0.30%     0.30%  benchmark  libfabric.so.1.16.2      [.] rxr_locate_iov_pos
+     0.30%     0.30%  benchmark  libfabric.so.1.16.2      [.] efa_post_flush
+     0.23%     0.23%  benchmark  benchmark                [.] std::vector<unsigned long, std::allocator<unsigned long> >::operator[]
+     0.22%     0.00%  benchmark  [unknown]                [.] 0x1a2658feff662500
+     0.21%     0.21%  benchmark  benchmark                [.] fi_cq_read
+     0.21%     0.21%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_entry_alloc
+     0.20%     0.20%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_req_base_hdr_size
+     0.18%     0.18%  benchmark  libstdc++.so.6.0.24      [.] std::chrono::_V2::steady_clock::now
+     0.18%     0.18%  benchmark  libfabric.so.1.16.2      [.] rxr_pkt_post_ctrl
+     0.17%     0.17%  benchmark  libpthread-2.26.so       [.] pthread_spin_unlock
+     0.15%     0.15%  benchmark  libfabric.so.1.16.2      [.] rdm_ep_poll_ibv_cq.isra.4
+     0.14%     0.14%  benchmark  libfabric.so.1.16.2      [.] efa_cntr_report_tx_completion
+     0.12%     0.12%  benchmark  libfabric.so.1.16.2      [.] ofi_fastlock_release_noop
+     0.11%     0.07%  benchmark  libpthread-2.26.so       [.] __libc_recv
+     0.11%     0.11%  benchmark  libfabric.so.1.16.2      [.] pthread_spin_lock@plt
+     0.11%     0.11%  benchmark  [vdso]                   [.] 0x00000000000009d6
+     0.11%     0.00%  benchmark  [vdso]                   [.] 0x00007fff431fb9d6
+     0.11%     0.11%  benchmark  libfabric.so.1.16.2      [.] ofi_cq_progress
+     0.09%     0.09%  benchmark  [vdso]                   [.] 0x0000000000000750
+     0.09%     0.00%  benchmark  [vdso]                   [.] 0x00007fff431fb750
+     0.09%     0.09%  benchmark  [vdso]                   [.] __vdso_clock_gettime
+     0.09%     0.09%  benchmark  benchmark                [.] std::chrono::duration<long, std::ratio<1l, 1l> >::duration<unsigned int, void>
+     0.08%     0.00%  benchmark  [unknown]                [.] 0x00007fa580011dd8
+     0.08%     0.00%  benchmark  [unknown]                [.] 0x00007fa580014b00
+     0.08%     0.08%  benchmark  libpthread-2.26.so       [.] __pthread_disable_asynccancel
+     0.08%     0.00%  benchmark  [unknown]                [.] 0x00007fa580015370
+     0.07%     0.00%  benchmark  [unknown]                [.] 0x00007fa533f3ffe0
+     0.07%     0.07%  benchmark  [vdso]                   [.] 0x00000000000009df
+     0.07%     0.00%  benchmark  [vdso]                   [.] 0x00007fff431fb9df
+     0.07%     0.07%  benchmark  [vdso]                   [.] 0x00000000000009d0
+     0.07%     0.00%  benchmark  [vdso]                   [.] 0x00007fff431fb9d0
+     0.07%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984e0c0
+     0.06%     0.00%  benchmark  [unknown]                [.] 0x00007fa580014838
+     0.06%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398531c0
+     0.06%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398336c0
+     0.06%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984bfc0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983edc0
+     0.05%     0.05%  benchmark  libstdc++.so.6.0.24      [.] clock_gettime@plt
+     0.05%     0.05%  benchmark  [vdso]                   [.] 0x00000000000009fc
+     0.05%     0.00%  benchmark  [vdso]                   [.] 0x00007fff431fb9fc
+     0.05%     0.05%  benchmark  [vdso]                   [.] 0x0000000000000a40
+     0.05%     0.00%  benchmark  [vdso]                   [.] 0x00007fff431fba40
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398510c0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983f6c0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398312c0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984e9c0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983d8c0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984aac0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398411c0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398384c0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983b1c0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984cec0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398381c0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398315c0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984c8c0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa53985acc0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa539838dc0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa539843bc0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983f0c0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398474c0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984e3c0
+     0.05%     0.05%  benchmark  libfabric.so.1.16.2      [.] ofi_fastlock_acquire_noop
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa53985a9c0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa539854cc0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984f2c0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa53985a3c0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398369c0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa539831ec0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398375c0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984f5c0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984fbc0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983ccc0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa539846bc0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa539842cc0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984a1c0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa539857fc0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa539833fc0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa539858ec0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398552c0
+     0.05%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982fac0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983c9c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa539841ac0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983b4c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398579c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983abc0
+     0.04%     0.04%  benchmark  [unknown]                [k] 0xffffffff85a00000
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398597c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa539836fc0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398525c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983f9c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982bbc0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398390c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398489c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984adc0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa58000fab0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398423c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983d2c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398543c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa539850ac0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398309c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa539835dc0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984d1c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398570c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398357c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398513c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982c4c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982c1c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa539831bc0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398582c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984b3c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398444c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa539857cc0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398540c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398363c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984a7c0
+     0.04%     0.04%  benchmark  [vdso]                   [.] 0x0000000000000a5c
+     0.04%     0.00%  benchmark  [vdso]                   [.] 0x00007fff431fba5c
+     0.04%     0.04%  benchmark  [vdso]                   [.] 0x0000000000000a2f
+     0.04%     0.00%  benchmark  [vdso]                   [.] 0x00007fff431fba2f
+     0.04%     0.04%  benchmark  [vdso]                   [.] 0x0000000000000a84
+     0.04%     0.00%  benchmark  [vdso]                   [.] 0x00007fff431fba84
+     0.04%     0.04%  benchmark  [vdso]                   [.] 0x000000000000075a
+     0.04%     0.00%  benchmark  [vdso]                   [.] 0x00007fff431fb75a
+     0.04%     0.04%  benchmark  [vdso]                   [.] 0x0000000000000a47
+     0.04%     0.00%  benchmark  [vdso]                   [.] 0x00007fff431fba47
+     0.04%     0.04%  benchmark  libfabric.so.1.16.2      [.] memcpy@plt
+     0.04%     0.04%  benchmark  libfabric.so.1.16.2      [.] rxr_msg_sendmsg
+     0.04%     0.04%  benchmark  [vdso]                   [.] 0x0000000000000761
+     0.04%     0.00%  benchmark  [vdso]                   [.] 0x00007fff431fb761
+     0.04%     0.04%  benchmark  benchmark                [.] std::chrono::_V2::steady_clock::now@plt
+     0.04%     0.04%  benchmark  libfabric.so.1.16.2      [.] pthread_spin_unlock@plt
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398378c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa539833cc0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa539837bc0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984f8c0
+     0.04%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398438c0
+     0.03%     0.03%  benchmark  libpthread-2.26.so       [.] __pthread_enable_asynccancel
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982eec0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984efc0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa539840ec0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398519c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa539848fc0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa539834bc0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398324c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398567c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53985a6c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53985b2c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa539848cc0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398522c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398456c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398465c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa539851cc0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398453c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984ddc0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398441c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983dec0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa539847ac0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984a4c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398468c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982cac0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa539858bc0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398408c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984bcc0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa539852ec0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa539841dc0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398549c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984b6c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982dcc0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398417c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983e1c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa580014858
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398393c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983ffc0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa539837ec0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398333c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982d6c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa539849ec0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53985a0c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa539836cc0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984ecc0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398480c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398366c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982dfc0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398573c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa539847dc0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa539844dc0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398486c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983aec0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398528c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982f7c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398576c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983c6c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa580014898
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa539859ac0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398537c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983cfc0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983bdc0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398585c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398546c0
+     0.03%     0.00%  benchmark  [unknown]                [.] 0x00007fa539845cc0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398594c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398447c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398534c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983f3c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa539843ec0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa539845fc0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa539853dc0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa539844ac0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398588c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa539859dc0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984b9c0
+     0.02%     0.02%  benchmark  libfabric.so.1.16.2      [.] rxr_ep_progress
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398405c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984d7c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398330c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984c2c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa580011e78
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa580015910
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398507c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa539839cc0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa539856dc0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398450c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982d3c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398429c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983d5c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982e5c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa539835ac0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398471c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398462c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398348c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984cbc0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa539842fc0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa539856ac0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa539850dc0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398555c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982e8c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982d0c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982c7c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983a8c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398432c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982fdc0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398372c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398321c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398495c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398516c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398420c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982f4c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983eac0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983a2c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984e6c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398351c0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983fcc0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398504d0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x000000000a34596b
+     0.02%     0.02%  benchmark  [vdso]                   [.] 0x0000000000000a22
+     0.02%     0.00%  benchmark  [vdso]                   [.] 0x00007fff431fba22
+     0.02%     0.02%  benchmark  [vdso]                   [.] 0x0000000000000a27
+     0.02%     0.00%  benchmark  [vdso]                   [.] 0x00007fff431fba27
+     0.02%     0.02%  benchmark  [vdso]                   [.] 0x0000000000000a4a
+     0.02%     0.00%  benchmark  [vdso]                   [.] 0x00007fff431fba4a
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398555d0
+     0.02%     0.02%  benchmark  [vdso]                   [.] 0x0000000000000a15
+     0.02%     0.00%  benchmark  [vdso]                   [.] 0x00007fff431fba15
+     0.02%     0.02%  benchmark  [vdso]                   [.] 0x00000000000009f8
+     0.02%     0.00%  benchmark  [vdso]                   [.] 0x00007fff431fb9f8
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398321d0
+     0.02%     0.02%  benchmark  [vdso]                   [.] 0x0000000000000a59
+     0.02%     0.00%  benchmark  [vdso]                   [.] 0x00007fff431fba59
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398540d0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398525d0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x000000001ba011b7
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982e2d0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983c0d0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x0000000034285502
+     0.02%     0.02%  benchmark  [vdso]                   [.] 0x0000000000000a8a
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x0000000000e9fd27
+     0.02%     0.00%  benchmark  [vdso]                   [.] 0x00007fff431fba8a
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa539843bd0
+     0.02%     0.02%  benchmark  [vdso]                   [.] 0x0000000000000a89
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00000000342ca386
+     0.02%     0.00%  benchmark  [vdso]                   [.] 0x00007fff431fba89
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984fbd0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398330d0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x3030303030303030
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x0000000000000078
+     0.02%     0.02%  benchmark  libc-2.26.so             [.] _IO_getdelim
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa539839fc0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa539855bc0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982bec0
+     0.02%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398591c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984d4c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa539832ac0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398504c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398564c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa539849bc0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984c5c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984dac0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa539851fc0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398354c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa539832dc0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x000000002b0e0fec
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398399c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398387c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398414c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa539830fc0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398498c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982b5c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398561c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982f1c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa580014888
+     0.01%     0.01%  benchmark  benchmark                [.] ft_exchange_addresses_oob
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa580001e44
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398558c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398483c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398396c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa539846ec0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398339c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398459c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983b7c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398303c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa539854fc0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa539852bc0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa539838ac0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398318c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398360c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983bac0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398300c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984fec0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982e2c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983a5c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398306c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983e7c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa53985afc0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa539834ec0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa539830cc0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982b8c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398327c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa539840bc0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398345c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398342c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982ebc0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa53984b0c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398435c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982cdc0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983c3c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa539855ec0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398402c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa53983c0c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa53982d9c0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa539853ac0
+     0.01%     0.00%  benchmark  [unknown]                [.] 0x00007fa5398492c0
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] __strstr_sse2_unaligned
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2      [.] ofi_bufpool_grow
+     0.00%     0.00%  benchmark  libefa.so.1.1.37.0       [.] pthread_spin_unlock@plt
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007fa580014868
+     0.00%     0.00%  benchmark  libpthread-2.26.so       [.] __errno_location
+     0.00%     0.00%  benchmark  libefa.so.1.1.37.0       [.] efa_post_recv
+     0.00%     0.00%  benchmark  ld-2.26.so               [.] _dl_runtime_resolve_xsavec
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] _IO_switch_to_get_mode
+     0.00%     0.00%  benchmark  libfabric.so.1.16.2      [.] strstr@plt
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] __memchr_avx2
+     0.00%     0.00%  benchmark  libibverbs.so.1.14.37.0  [.] ibverbs_device_put
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x894853cc89495554
+     0.00%     0.00%  benchmark  libibverbs.so.1.14.37.0  [.] advise_mr
+     0.00%     0.00%  benchmark  libpthread-2.26.so       [.] __pthread_join
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] __libc_calloc
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] tcache_init.part.5
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] __libc_disable_asynccancel
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] read
+     0.00%     0.00%  benchmark  libc-2.26.so             [.] __clone
+     0.00%     0.00%  benchmark  ld-2.26.so               [.] _start
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x0000000000000001
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x0000000000000004
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007fff431988a0
+     0.00%     0.00%  benchmark  libpthread-2.26.so       [.] __libc_accept
+     0.00%     0.00%  benchmark  [unknown]                [.] 0x00007fff431980c8
+
+
+#
+# (Tip: For memory address profiling, try: perf mem record / perf mem report)
+#

@@ -1,0 +1,55 @@
+NEW:
+timestamp,experiment_name,provider,endpoint,node_type,batch_size,thread_count,operation_type,message_size,ops_psec,tx_pkts_psec,rx_pkts_psec,tx_bw_mbps,rx_bw_mbps,app_bw_mbps,latency_usec
+20,batch,efa,rdm,server,1024,1,send,64,1853952.95,1858739.10,0.05,133.88,0.00,118.65,0.54
+20,batch,efa,rdm,server,512,1,send,64,1870636.05,1872222.40,0.05,134.83,0.00,119.72,0.53
+20,batch,efa,rdm,server,256,1,send,64,1846807.60,1847550.50,0.05,133.05,0.00,118.20,0.54
+
+OLD:
+timestamp,experiment_name,provider,endpoint,node_type,batch_size,thread_count,operation_type,message_size,ops_psec,tx_pkts_psec,rx_pkts_psec,tx_bw_mbps,rx_bw_mbps,app_bw_mbps,latency_usec
+
+20,batch,efa,rdm,server,256,1,send,64,1839958.50,1840624.60,0.05,132.55,0.00,117.76,0.54
+
+
+
+
+
+
+
+NEW:
+
+ Performance counter stats for './benchmark --flagfile=server.conf --batch=256 --runtime=20':
+
+         25,329.80 msec task-clock:u              #    1.063 CPUs utilized          
+                 0      context-switches:u        #    0.000 K/sec                  
+                 0      cpu-migrations:u          #    0.000 K/sec                  
+          2,72,217      page-faults:u             #    0.011 M/sec                  
+   83,30,20,42,690      cycles:u                  #    3.289 GHz                    
+ 1,04,91,73,02,498      instructions:u            #    1.26  insn per cycle         
+   18,78,05,93,558      branches:u                #  741.443 M/sec                  
+         63,78,047      branch-misses:u           #    0.03% of all branches        
+
+      23.833908416 seconds time elapsed
+
+      24.456177000 seconds user
+       0.959386000 seconds sys
+       
+
+OLD:
+
+ Performance counter stats for './benchmark --flagfile=server.conf --batch=256 --runtime=20':
+
+         24,050.61 msec task-clock:u              #    1.066 CPUs utilized          
+                 0      context-switches:u        #    0.000 K/sec                  
+                 0      cpu-migrations:u          #    0.000 K/sec                  
+          2,72,212      page-faults:u             #    0.011 M/sec                  
+   79,01,38,69,475      cycles:u                  #    3.285 GHz                    
+ 1,01,57,58,87,427      instructions:u            #    1.29  insn per cycle         
+   18,72,02,42,688      branches:u                #  778.369 M/sec                  
+         54,30,556      branch-misses:u           #    0.03% of all branches        
+
+      22.556364222 seconds time elapsed
+
+      23.234285000 seconds user
+       0.907090000 seconds sys
+
+
